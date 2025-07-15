@@ -1,10 +1,306 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Home - Film Addicted</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
+
+
 <body>
+
+<!-- Navbar -->
+<header class="navbar">
+    <div class="navbar-left">
+        <a href="/home" class="logo">
+            <img src="/assets/logo.png" alt="Film Addicted Logo">
+            <div class="logo-text">
+                <span class="title">Film Addicted</span>
+                <span class="tagline">Can't take my eyes off films</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="search-bar">
+        <form action="/search" method="get" class="d-flex" role="search">
+            <input class="form-control rounded-start" type="search" name="q" placeholder="Search..."
+                   aria-label="Search">
+            <button class="btn btn-outline-light rounded-end" type="submit">Search</button>
+        </form>
+    </div>
+
+
+    <nav class="navbar-menu">
+        <a href="/movies">Movies</a>
+        <a href="/series">Series</a>
+        <a href="/genres">Genres</a>
+        <a href="/lastestrelease">Lastest Release</a>
+    </nav>
+
+    <div class="auth-buttons">
+    <span th:if="${username}" style="margin-right: 10px; color: #fff;">
+        Welcome, <b th:text="${username}">User</b>
+    </span>
+        <a th:if="${username}" href="/profile" class="profile-link" style="margin-right: 10px;">
+            <img src="https://cdn.britannica.com/93/215393-050-E428CADE/Canadian-actor-musician-Ryan-Gosling-2016.jpg"
+                 class="profile-icon" alt="Profile"/>
+        </a>
+        <a th:if="${username}" href="/logout" class="btn logout">Logout</a>
+        <a th:unless="${username}" href="/login" class="btn login">Login</a>
+    </div>
+
+</header>
+
+<!-- Main content -->
+<main>
+    <div id="movieCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://www.santander.co.uk/assets/s3fs-public/styles/default_2500/public/images/F1%20Landing%20Page_7000x3000_V2%202.jpg?itok=WUeCg2RE"
+                     class="d-block w-100" alt="Banner 1">
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/3ZH4ZZ8.jpg" class="d-block w-100" alt="Banner 2">
+            </div>
+            <div class="carousel-item">
+                <img src="https://images5.alphacoders.com/112/1124848.jpg" class="d-block w-100" alt="Banner 3">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#movieCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#movieCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <-- Must Watch-->
+    <div class="container mb-5">
+        <h2 class="text-white mb-4">Must Watch</h2>
+
+        <div class="row row-cols-5 gx-4 gy-4">
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://i.ebayimg.com/images/g/JZMAAOSwODlm6WX~/s-l1200.jpg"
+                         class="card-img-top" alt="Movie 1"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Spider-Man: No Way Home</h6>
+                        <small class="text">Action | 2021</small>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/M/MV5BYWZhNDZiMzAtZmZlYS00MWFmLWE2MWEtNDAxZTZiN2U4Y2U2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+                         class="card-img-top" alt="Movie 2"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">The Bear</h6>
+                        <small class="text">Comedy | 2025</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://static.nutscdn.com/vimg/300-0/3be6d2402e1e4cb412091dfe4c3bcfb9.jpg"
+                         class="card-img-top" alt="Movie 3"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Mindhunter</h6>
+                        <small class="text">Criminal | 2019</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://static.nutscdn.com/vimg/300-0/7f47141a6da58600b99a115103bdd3c6.jpg"
+                         class="card-img-top" alt="Movie 4"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Berserk</h6>
+                        <small class="text">Anime | 1997</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+                         class="card-img-top" alt="Movie 5"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Breaking Bad</h6>
+                        <small class="text">Drama | 2013</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <--Lastest Movies -->
+    <div class="container mb-5">
+        <h2 class="text-white mb-4">Lastest Movie</h2>
+
+        <div class="row row-cols-5 gx-4 gy-4">
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/M/MV5BOGMwZGJiM2EtMzEwZC00YTYzLWIxNzYtMmJmZWNlZjgxZTMwXkEyXkFqcGc@._V1_.jpg"
+                         class="card-img-top" alt="Movie 1"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Superman</h6>
+                        <small class="text">Action | 2025</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://static.nutscdn.com/vimg/300-0/ad92b01db521be321b3b79ee94869555.jpg"
+                         class="card-img-top" alt="Movie 2"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">F1: The Movie</h6>
+                        <small class="text">Drama | 2025</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/M/MV5BODA5Y2M0NjctNWQzMy00ODRhLWE0MzUtYmE1YTAzZjYyYmQyXkEyXkFqcGc@._V1_.jpg"
+                         class="card-img-top" alt="Movie 3"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">How To Train Your Dragon</h6>
+                        <small class="text">Sci-fi | 2025</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/M/MV5BMzc3OWFhZWItMTE2Yy00N2NmLTg1YTktNGVlNDY0ODQ5YjNlXkEyXkFqcGc@._V1_.jpg"
+                         class="card-img-top" alt="Movie 4"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Final Destination: Bloodlines</h6>
+                        <small class="text">Thriller | 2025</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://cdn.marvel.com/content/1x/thunderboltsposter.jpeg"
+                         class="card-img-top" alt="Movie 5"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Thunderbolts*</h6>
+                        <small class="text">Action | 2025</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <--Genre -->
+    <div class="container mb-5">
+        <h2 class="text-white mb-4">Genre</h2>
+
+        <div class="row row-cols-5 gx-4 gy-4">
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/I/61a9p8MFLAL._UF894,1000_QL80_.jpg"
+                         class="card-img-top" alt="Movie 1"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Action</h6>
+                        <small class="text">Collection</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://m.media-amazon.com/images/I/51PULEmCkfL._UF1000,1000_QL80_.jpg"
+                         class="card-img-top" alt="Movie 2"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Horror</h6>
+                        <small class="text">Collection</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://dnm.nflximg.net/api/v6/BvVbc2Wxr2w6QuoANoSpJKEIWjQ/AAAAQYCFsRyDFsGMStspW9d-MnvUlyH7LrtFEfrN2j1X5ynawm7kZiGCxhsvuaNrgczcjrZXnsEftH6GeVB8Zk0RzAERV6de-OijPuBELQM4nLDyPTIW5GH9Qc1zk3FyMkdO0xJG86JKp-z5evAhw4Ciix9kOy4.jpg?r=845"
+                         class="card-img-top" alt="Movie 3"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Criminal</h6>
+                        <small class="text">Collection</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://i.etsystatic.com/35711178/r/il/e5c8e5/3923802987/il_570xN.3923802987_3g92.jpg"
+                         class="card-img-top" alt="Movie 4"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Sci-fi</h6>
+                        <small class="text">Collection</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img src="https://pbs.twimg.com/media/DzYKfhTUYAArtP6?format=jpg&name=4096x4096"
+                         class="card-img-top" alt="Movie 5"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">Drama</h6>
+                        <small class="text">Collection</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+<!-- Footer -->
+<footer class="footer">
+    <div class="d-flex justify-content-center align-items-center gap-3 my-4">
+        <img src="/assets/logo.png" alt="Film Addicted Logo" style="height: 30px;">
+        <h3 class="text-white mb-0">Thanks For Watching Us</h3>
+    </div>
+
+    <p>&copy; 2025 Film Addicted. All rights reserved.</p>
+    <p>Film Addicted - A site to watch high-quality online movies for free with Vietsub, voiceover, full HD dubbing. A
+        huge library of new movies, movies in theaters, series, movies from many countries such as Vietnam, Korea,
+        China, Thailand, Japan, Europe and America... with diverse genres. Discover the best online movie platform in
+        2025 with 4K quality!
+    </p>
+</footer>
 
 </body>
 </html>
