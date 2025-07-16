@@ -245,10 +245,6 @@ button {
 }
 
 
-
-
-
-
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -365,6 +361,90 @@ button {
     text-decoration: underline;
 }
 
-.d-flex{
+.d-flex {
     display: flex;
+}
+
+.v-form {
+    flex-grow: 0 !important;
+}
+
+
+/* ==== Modal Overlay (nếu không dùng Bootstrap mặc định) ==== */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translateY(-30px);
+    max-width: 400px;
+    margin: 1.75rem auto;
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0);
+}
+
+/* ==== Modal Content ==== */
+.modal-content.v-modal {
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #2A314E;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* ==== Modal Header ==== */
+.is-header h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffff;
+}
+
+/* ==== Modal Close Button ==== */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+/* ==== Modal Body ==== */
+.is-body {
+    margin-top: 10px;
+}
+
+.is-body .form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #95969b;
+}
+
+.v-form-control {
+    border-radius: 6px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+}
+
+.v-form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+}
+
+/* ==== Modal Footer Buttons ==== */
+.is-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.is-footer .btn {
+    min-width: 110px;
 }

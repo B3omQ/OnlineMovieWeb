@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/member_profile.css">
     <title>Profile</title>
 </head>
@@ -53,134 +54,181 @@
 
 </header>
 
-    <div id="wrapper" class="account-wrap">
-        <div class="dashboard-container">
-            <div class="dcc-side">
-                <div class="ds-menu">
-                    <div class="heading-sm">
-                        Account Management
-                    </div>
-                    <div class="menu-user">
-                        <a class="item" href="/user/favorite">
-                            <div class="line-center flex">
-                                <i class="fa-solid fa-heart"></i>
-                                <span>Favorites</span>
-                            </div>
-                        </a>
-
-                        <a class="item" href="/user/playlist">
-                            <div class="line-center flex">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Playlist</span>
-                            </div>
-                        </a>
-
-                        <a class="item" href="/user/xem-tiep">
-                            <div class="line-center flex">
-                                <i class="fa-solid fa-history"></i>
-                                <span>Continue Watching</span>
-                            </div>
-                        </a>
-
-                        <a class="item" href="/user/thong-bao">
-                            <div class="line-center flex">
-                                <i class="fa-solid fa-bell"></i>
-                                <span>Notifications</span>
-                            </div>
-                        </a>
-
-                        <a class="item active" href="/user/profile">
-                            <div class="line-center flex">
-                                <i class="fa-solid fa-user"></i>
-                                <span>Profile</span>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="side-user">
-                        <div class="user-avatar">
-                            <img alt="unknown" src="/images//avatars/pack2/04.jpg">
-                        </div>
-
-                        <div class="info">
-                            <div class="user-name line-center gr-free"></div>
-
-                            <div class="alias-name lim-1 mb-3" th:text="${user.email}"></div>
-
-                            <a class="btn btn-sx btn-basic px-0"></a>
-                        </div>
-                    </div>
-
+<div id="wrapper" class="account-wrap">
+    <div class="dashboard-container">
+        <div class="dcc-side">
+            <div class="ds-menu">
+                <div class="heading-sm">
+                    Account Management
                 </div>
-            </div>
-            <div class="dcc-main">
-                <div class="cg-body-box py-0 is-profile">
-                    <div class="box-header flex-column align-items-start gap-2 flex">
-                        <div class="heading-sm mb-0">Profile</div>
-                        <p class="mb-0">Update your profile information</p>
+                <div class="menu-user">
+                    <a class="item" href="/user/favorite">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>Favorites</span>
+                        </div>
+                    </a>
+
+                    <a class="item" href="/user/playlist">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Playlist</span>
+                        </div>
+                    </a>
+
+                    <a class="item" href="/user/xem-tiep">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-history"></i>
+                            <span>Continue Watching</span>
+                        </div>
+                    </a>
+
+                    <a class="item" href="/user/thong-bao">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-bell"></i>
+                            <span>Notifications</span>
+                        </div>
+                    </a>
+
+                    <a class="item active" href="/user/profile">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Profile</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="side-user">
+                    <div class="user-avatar">
+                        <img alt="unknown" src="/images//avatars/pack2/04.jpg">
                     </div>
 
-                    <div class="box-body">
-                        <div class="dash-form flex">
-                            <form class="v-form flex-grow-1">
-                                <div class="form-group mb-4">
-                                    <label class="form-label small">Email</label>
-                                    <input disabled class="form-control v-form-control" type="text"
-                                        th:value="${user.email}" />
-                                </div>
+                    <div class="info">
+                        <div class="user-name line-center gr-free"></div>
 
-                                <div class="form-group mb-3">
-                                    <label class="form-label small">Display Name</label>
-                                    <input class="form-control v-form-control" required type="text" name="name"
-                                        th:value="${user.username}" />
-                                </div>
+                        <div class="alias-name lim-1 mb-3" th:text="${user.email}"></div>
 
-<!--                                <div class="form-group mb-5">-->
-<!--                                    <label class="form-label d-block small mb-3">Gender</label>-->
-<!--                                    <div class="form-check form-check-inline">-->
-<!--                                        <input class="form-check-input" id="gender2" type="radio" value="2"-->
-<!--                                            name="gender" th:checked="${user.gender == 2}" />-->
-<!--                                        <label class="form-check-label" for="gender2">Male</label>-->
-<!--                                    </div>-->
-<!--                                    <div class="form-check form-check-inline">-->
-<!--                                        <input class="form-check-input" id="gender1" type="radio" value="1"-->
-<!--                                            name="gender" th:checked="${user.gender == 1}" />-->
-<!--                                        <label class="form-check-label" for="gender1">Female</label>-->
-<!--                                    </div>-->
-<!--                                    <div class="form-check form-check-inline">-->
-<!--                                        <input class="form-check-input" id="gender3" type="radio" value="3"-->
-<!--                                            name="gender" th:checked="${user.gender == 3}" />-->
-<!--                                        <label class="form-check-label" for="gender3">Other / Unspecified</label>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-
-                                <div class="button-group line-center gap-3 flex">
-                                    <button class="btn px-4 btn-primary">Update</button>
-                                </div>
-
-                                <p class="mt-5">
-                                    To change your password, click
-                                    <a class="text-primary">here</a>
-                                </p>
-                            </form>
-                            <div class="v-avatar flex-shrink-0 text-center">
-                                <a id="change-avatar-btn" style="cursor: pointer;">
-                                    <div class="user-avatar large square mb-2">
-                                        <img id="avatar-preview" th:src="@{/images/avatars/pack2/04.jpg}" alt="unknown">
-                                    </div>
-                                    <span class="small text-white">Change Avatar</span>
-                                </a>
-
-                                <!-- Hidden file input -->
-                                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                            </div>
-                        </div>
+                        <a class="btn btn-sx btn-basic px-0"></a>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
+        <div class="dcc-main">
+            <div class="cg-body-box py-0 is-profile">
+                <div class="box-header flex-column align-items-start gap-2 flex">
+                    <div class="heading-sm mb-0">Profile</div>
+                    <p class="mb-0">Update your profile information</p>
+                </div>
+
+                <div class="box-body">
+                    <div class="dash-form flex">
+                        <form class="v-form flex-grow-1" th:action="@{/edit_profile}" method="POST">
+                            <div class="form-group mb-4">
+                                <label class="form-label small">Email</label>
+                                <input disabled class="form-control v-form-control" type="text"
+                                       th:value="${user.email}"/>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label small">Display Name</label>
+                                <input class="form-control v-form-control" required type="text" name="name"
+                                       th:value="${user.username}"/>
+                            </div>
+
+                            <div class="form-group mb-5">
+                                <label class="form-label d-block small mb-3">Gender</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" id="gender2" type="radio" value="Male"
+                                           name="gender" th:checked="${user.gender == 'Male'}"/>
+                                    <label class="form-check-label" for="gender2">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" id="gender1" type="radio" value="Female"
+                                           name="gender" th:checked="${user.gender == 'Female'}"/>
+                                    <label class="form-check-label" for="gender1">Female</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" id="gender3" type="radio" value="Other"
+                                           name="gender" th:checked="${user.gender == 'Other'}"/>
+                                    <label class="form-check-label" for="gender3">Other / Unspecified</label>
+                                </div>
+                            </div>
+
+                            <div class="button-group line-center gap-3 flex">
+                                <button class="btn px-4 btn-primary">Update</button>
+                            </div>
+
+                            <p class="mt-5">
+                                To change your password, click
+                                <a href="#" class="text-primary" data-bs-toggle="modal"
+                                   data-bs-target="#changePasswordModal">here</a>
+                            </p>
+
+                            <div class="modal fade" id="changePasswordModal" tabindex="-1"
+                                 aria-labelledby="changePasswordLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-sm">
+                                    <div class="modal-content v-modal">
+                                        <!-- Close button -->
+                                        <button type="button" class="btn modal-close" data-bs-dismiss="modal"
+                                                aria-label="Close">
+                                            <i class="fa-solid fa-times"></i>
+                                        </button>
+
+                                        <div class="is-header mb-4">
+                                            <h4 class="heading-sm text-center mb-0">Change Password</h4>
+                                        </div>
+
+                                        <!-- Change password form -->
+                                        <form class="v-form" method="post" th:action="@{/change_password}">
+                                            <div class="is-body mb-5">
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label">Current Password</label>
+                                                    <input class="form-control v-form-control" required type="password"
+                                                           name="oldPassword">
+                                                </div>
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label">New Password</label>
+                                                    <input class="form-control v-form-control" required type="password"
+                                                           name="newPassword">
+                                                </div>
+                                                <div class="form-group mb-4">
+                                                    <label class="form-label">Confirm New Password</label>
+                                                    <input class="form-control v-form-control" required type="password"
+                                                           name="confirmPassword">
+                                                </div>
+                                            </div>
+                                            <div class="is-footer">
+                                                <button type="submit" class="btn btn-sm btn-primary">Change Password
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-light px-4"
+                                                        data-bs-dismiss="modal">Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                        <div class="v-avatar flex-shrink-0 text-center">
+                            <a id="change-avatar-btn" style="cursor: pointer;">
+                                <div class="user-avatar large square mb-2">
+                                    <img id="avatar-preview" th:src="@{/assets/avatars/logo.png}" alt="unknown">
+                                </div>
+                                <span class="small text-white">Change Avatar</span>
+                            </a>
+
+                            <!-- Hidden file input -->
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 <footer class="footer">
     <div class="d-flex justify-content-center align-items-center gap-3 my-4">
         <img src="/assets/logo.png" alt="Film Addicted Logo" style="height: 30px;">
@@ -195,7 +243,7 @@
     </p>
 </footer>
 </body>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // When clicking "Change Avatar", trigger file input
     document.getElementById("change-avatar-btn").addEventListener("click", function () {
