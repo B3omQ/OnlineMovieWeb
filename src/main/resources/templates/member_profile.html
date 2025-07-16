@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/member_profile.css">
+    <title>Profile</title>
+</head>
+
+<body>
+<header class="navbar">
+    <div class="navbar-left">
+        <a href="/home" class="logo">
+            <img src="/assets/logo.png" alt="Film Addicted Logo">
+            <div class="logo-text">
+                <span class="title">Film Addicted</span>
+                <span class="tagline">Can't take my eyes off films</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="search-bar">
+        <form action="/search" method="get" class="d-flex" role="search">
+            <input class="form-control rounded-start" type="search" name="q" placeholder="Search..."
+                   aria-label="Search">
+            <button class="btn btn-outline-light rounded-end" type="submit">Search</button>
+        </form>
+    </div>
+
+
+    <nav class="navbar-menu">
+        <a href="/movies">Movies</a>
+        <a href="/series">Series</a>
+        <a href="/genres">Genres</a>
+        <a href="/lastestrelease">Lastest Release</a>
+    </nav>
+
+    <div class="auth-buttons">
+    <span th:if="${username}" style="margin-right: 10px; color: #fff;">
+        Welcome, <b th:text="${username}">User</b>
+    </span>
+        <a th:if="${username}" href="/profile" class="profile-link" style="margin-right: 10px;">
+            <img src="https://cdn.britannica.com/93/215393-050-E428CADE/Canadian-actor-musician-Ryan-Gosling-2016.jpg"
+                 class="profile-icon" alt="Profile"/>
+        </a>
+        <a th:if="${username}" href="/logout" class="btn logout">Logout</a>
+        <a th:unless="${username}" href="/login" class="btn login">Login</a>
+    </div>
+
+</header>
+
+    <div id="wrapper" class="account-wrap">
+        <div class="dashboard-container">
+            <div class="dcc-side">
+                <div class="ds-menu">
+                    <div class="heading-sm">
+                        Account Management
+                    </div>
+                    <div class="menu-user">
+                        <a class="item" href="/user/favorite">
+                            <div class="line-center flex">
+                                <i class="fa-solid fa-heart"></i>
+                                <span>Favorites</span>
+                            </div>
+                        </a>
+
+                        <a class="item" href="/user/playlist">
+                            <div class="line-center flex">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Playlist</span>
+                            </div>
+                        </a>
+
+                        <a class="item" href="/user/xem-tiep">
+                            <div class="line-center flex">
+                                <i class="fa-solid fa-history"></i>
+                                <span>Continue Watching</span>
+                            </div>
+                        </a>
+
+                        <a class="item" href="/user/thong-bao">
+                            <div class="line-center flex">
+                                <i class="fa-solid fa-bell"></i>
+                                <span>Notifications</span>
+                            </div>
+                        </a>
+
+                        <a class="item active" href="/user/profile">
+                            <div class="line-center flex">
+                                <i class="fa-solid fa-user"></i>
+                                <span>Profile</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="side-user">
+                        <div class="user-avatar">
+                            <img alt="unknown" src="/images//avatars/pack2/04.jpg">
+                        </div>
+
+                        <div class="info">
+                            <div class="user-name line-center gr-free"></div>
+
+                            <div class="alias-name lim-1 mb-3" th:text="${user.email}"></div>
+
+                            <a class="btn btn-sx btn-basic px-0"></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="dcc-main">
+                <div class="cg-body-box py-0 is-profile">
+                    <div class="box-header flex-column align-items-start gap-2 flex">
+                        <div class="heading-sm mb-0">Profile</div>
+                        <p class="mb-0">Update your profile information</p>
+                    </div>
+
+                    <div class="box-body">
+                        <div class="dash-form flex">
+                            <form class="v-form flex-grow-1">
+                                <div class="form-group mb-4">
+                                    <label class="form-label small">Email</label>
+                                    <input disabled class="form-control v-form-control" type="text"
+                                        th:value="${user.email}" />
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label small">Display Name</label>
+                                    <input class="form-control v-form-control" required type="text" name="name"
+                                        th:value="${user.username}" />
+                                </div>
+
+<!--                                <div class="form-group mb-5">-->
+<!--                                    <label class="form-label d-block small mb-3">Gender</label>-->
+<!--                                    <div class="form-check form-check-inline">-->
+<!--                                        <input class="form-check-input" id="gender2" type="radio" value="2"-->
+<!--                                            name="gender" th:checked="${user.gender == 2}" />-->
+<!--                                        <label class="form-check-label" for="gender2">Male</label>-->
+<!--                                    </div>-->
+<!--                                    <div class="form-check form-check-inline">-->
+<!--                                        <input class="form-check-input" id="gender1" type="radio" value="1"-->
+<!--                                            name="gender" th:checked="${user.gender == 1}" />-->
+<!--                                        <label class="form-check-label" for="gender1">Female</label>-->
+<!--                                    </div>-->
+<!--                                    <div class="form-check form-check-inline">-->
+<!--                                        <input class="form-check-input" id="gender3" type="radio" value="3"-->
+<!--                                            name="gender" th:checked="${user.gender == 3}" />-->
+<!--                                        <label class="form-check-label" for="gender3">Other / Unspecified</label>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+                                <div class="button-group line-center gap-3 flex">
+                                    <button class="btn px-4 btn-primary">Update</button>
+                                </div>
+
+                                <p class="mt-5">
+                                    To change your password, click
+                                    <a class="text-primary">here</a>
+                                </p>
+                            </form>
+                            <div class="v-avatar flex-shrink-0 text-center">
+                                <a id="change-avatar-btn" style="cursor: pointer;">
+                                    <div class="user-avatar large square mb-2">
+                                        <img id="avatar-preview" th:src="@{/images/avatars/pack2/04.jpg}" alt="unknown">
+                                    </div>
+                                    <span class="small text-white">Change Avatar</span>
+                                </a>
+
+                                <!-- Hidden file input -->
+                                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+<footer class="footer">
+    <div class="d-flex justify-content-center align-items-center gap-3 my-4">
+        <img src="/assets/logo.png" alt="Film Addicted Logo" style="height: 30px;">
+        <h3 class="text-white mb-0">Thanks For Watching Us</h3>
+    </div>
+
+    <p>&copy; 2025 Film Addicted. All rights reserved.</p>
+    <p>Film Addicted - A site to watch high-quality online movies for free with Vietsub, voiceover, full HD dubbing. A
+        huge library of new movies, movies in theaters, series, movies from many countries such as Vietnam, Korea,
+        China, Thailand, Japan, Europe and America... with diverse genres. Discover the best online movie platform in
+        2025 with 4K quality!
+    </p>
+</footer>
+</body>
+
+<script>
+    // When clicking "Change Avatar", trigger file input
+    document.getElementById("change-avatar-btn").addEventListener("click", function () {
+        document.getElementById("avatar-input").click();
+    });
+
+    // Preview selected image
+    document.getElementById("avatar-input").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("avatar-preview").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+</html>
