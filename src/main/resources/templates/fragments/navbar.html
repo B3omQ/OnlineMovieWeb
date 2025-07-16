@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="navbar">
+    <header class="navbar">
+        <div class="navbar-left">
+            <a href="/home" class="logo">
+                <img src="/assets/logo.png" alt="Film Addicted Logo">
+                <div class="logo-text">
+                    <span class="title">Film Addicted</span>
+                    <span class="tagline">Can't take my eyes off films</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="search-bar">
+            <form action="/search" method="get" class="d-flex" role="search">
+                <input class="form-control rounded-start" type="search" name="q" placeholder="Search..."
+                       aria-label="Search">
+                <button class="btn btn-outline-light rounded-end" type="submit">Search</button>
+            </form>
+        </div>
+
+        <nav class="navbar-menu">
+            <a href="/movies">Movies</a>
+            <a href="/series">Series</a>
+            <a href="/genres">Genres</a>
+            <a href="/lastestrelease">Latest Release</a>
+        </nav>
+
+        <div class="auth-buttons">
+            <span th:if="${username}" style="margin-right: 10px; color: #fff;">
+                Welcome, <b th:text="${username}">User</b>
+            </span>
+            <a th:if="${username}" href="/profile" class="profile-link" style="margin-right: 10px;">
+                <img src="https://cdn.britannica.com/93/215393-050-E428CADE/Canadian-actor-musician-Ryan-Gosling-2016.jpg"
+                     class="profile-icon" alt="Profile"/>
+            </a>
+            <a th:if="${username}" href="/logout" class="btn logout">Logout</a>
+            <a th:unless="${username}" href="/login" class="btn login">Login</a>
+        </div>
+    </header>
+</div>
+</html>
