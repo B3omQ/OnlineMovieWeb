@@ -14,17 +14,23 @@ public class Media {
 
     private String description;
 
-    private String genre;
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
+    private Genre genre;
 
     private int releaseYear;
 
     private String language;
 
-    private String type;
+    private String type; //TV Show or Movie
 
     private String videoUrl;
 
     private int views = 0;
+
+    private String poster;
+
+    private String banner;
 
     @OneToMany(mappedBy = "media", cascade = CascadeType.ALL)
     private List<Episode> episodes;
@@ -56,11 +62,11 @@ public class Media {
         this.description = description;
     }
 
-    public String getGenre() {
+    public Genre  getGenre() {
         return genre;
     }
 
-    public void setGenre(String genre) {
+    public void setGenre(Genre  genre) {
         this.genre = genre;
     }
 
@@ -106,6 +112,22 @@ public class Media {
 
     public List<Episode> getEpisodes() {
         return episodes;
+    }
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
+    }
+
+    public String getBanner() {
+        return banner;
+    }
+
+    public void setBanner(String banner) {
+        this.banner = banner;
     }
 
     public void setEpisodes(List<Episode> episodes) {
