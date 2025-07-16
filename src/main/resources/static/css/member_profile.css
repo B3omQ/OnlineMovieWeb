@@ -23,7 +23,7 @@ button {
 
 /* ==== Layout ==== */
 .account-wrap {
-    padding: 40px;
+    padding: 30px;
 }
 
 .dashboard-container {
@@ -254,7 +254,7 @@ button {
     justify-content: space-between;
     align-items: center;
     background-color: #141414;
-    padding: 15px 30px;
+    padding: 10px 30px;
     flex-wrap: wrap;
 }
 
@@ -363,4 +363,8 @@ button {
 
 .footer a:hover {
     text-decoration: underline;
+}
+
+.d-flex{
+    display: flex;
 }
