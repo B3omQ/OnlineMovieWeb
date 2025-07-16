@@ -91,6 +91,7 @@
 		<div class="right-panel">
 			<h3 class="mb-4">Login</h3>
 			<p>Don't have an account? <a href="/register" class="text-warning">Sign up now.</a></p>
+			<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 			<form th:action="@{/login}" method="post">
 				<div class="mb-3">
 					<label for="email">Email</label>
