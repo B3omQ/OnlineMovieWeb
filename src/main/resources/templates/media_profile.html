@@ -12,67 +12,28 @@
 <body>
 
 <!-- Navbar -->
-<header class="navbar">
-  <div class="navbar-left">
-    <a href="/home" class="logo">
-      <img src="/assets/logo.png" alt="Film Addicted Logo">
-      <div class="logo-text">
-        <span class="title">Film Addicted</span>
-        <span class="tagline">Can't take my eyes off films</span>
-      </div>
-    </a>
-  </div>
-
-  <div class="search-bar">
-    <form action="/search" method="get" class="d-flex" role="search">
-      <input class="form-control rounded-start" type="search" name="q" placeholder="Search..."
-             aria-label="Search">
-      <button class="btn btn-outline-light rounded-end" type="submit">Search</button>
-    </form>
-  </div>
-
-
-  <nav class="navbar-menu">
-    <a href="/movies">Movies</a>
-    <a href="/series">Series</a>
-    <a href="/genres">Genres</a>
-    <a href="/lastestrelease">Lastest Release</a>
-  </nav>
-
-  <div class="auth-buttons">
-    <span th:if="${username}" style="margin-right: 10px; color: #fff;">
-        Welcome, <b th:text="${username}">User</b>
-    </span>
-    <a th:if="${username}" href="/profile" class="profile-link" style="margin-right: 10px;">
-      <img src="https://cdn.britannica.com/93/215393-050-E428CADE/Canadian-actor-musician-Ryan-Gosling-2016.jpg"
-           class="profile-icon" alt="Profile"/>
-    </a>
-    <a th:if="${username}" href="/logout" class="btn logout">Logout</a>
-    <a th:unless="${username}" href="/login" class="btn login">Login</a>
-  </div>
-
-</header>
+<div th:insert="fragments/navbar :: navbar"></div>
 
 <!-- Main content -->
-<main style="margin-top: 50px">
+<main>
 
-<!--  <div id="movieCarousel" class="carousel slide mb-5" data-bs-ride="carousel">-->
-<!--    <div class="carousel-inner">-->
-<!--      <div class="carousel-item active">-->
-<!--        <img src="https://static.nutscdn.com/vimg/1920-0/7caa7f053b8731c7e558a5fe9d9a8be6.jpg"-->
-<!--             class="d-block w-100"-->
-<!--             style="height: 55vh; object-fit: cover;"-->
-<!--             alt="Banner 1">-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <div id="movieCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img th:src="${media.banner}"
+             class="d-block w-100"
+             style=""
+             alt="Banner">
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <div class="row g-5 align-items-start">
 
       <div class="col-md-4">
         <div class="poster-wrapper rounded overflow-hidden shadow">
-          <img src="https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Poster" class="img-fluid rounded">
+          <img th:src="${media.poster}" alt="Poster" class="img-fluid rounded">
         </div>
       </div>
 
@@ -84,7 +45,10 @@
         <!-- Tags / Info -->
         <div class="mb-3">
           <span class="badge bg-secondary me-2" th:text="${media.type}"></span>
-          <span class="badge bg-warning text-dark me-2" th:text="${media.genre}"></span>
+          <span th:each="genre : ${media.genres}"
+                class="badge bg-warning text-dark me-2"
+                th:text="${genre.name}">
+          </span>
           <span class="badge bg-info text-dark me-2" th:text="${media.language}"></span>
           <span class="badge bg-light text-dark me-2" th:text="${media.releaseYear}"></span>
         </div>
@@ -105,19 +69,7 @@
 
 </main>
 <!-- Footer -->
-<footer class="footer">
-  <div class="d-flex justify-content-center align-items-center gap-3 my-4">
-    <img src="/assets/logo.png" alt="Film Addicted Logo" style="height: 30px;">
-    <h3 class="text-white mb-0">Thanks For Watching Us</h3>
-  </div>
-
-  <p>&copy; 2025 Film Addicted. All rights reserved.</p>
-  <p>Film Addicted - A site to watch high-quality online movies for free with Vietsub, voiceover, full HD dubbing. A
-    huge library of new movies, movies in theaters, series, movies from many countries such as Vietnam, Korea,
-    China, Thailand, Japan, Europe and America... with diverse genres. Discover the best online movie platform in
-    2025 with 4K quality!
-  </p>
-</footer>
+<div th:insert="fragments/footer :: footer"></div>
 
 </body>
 </html>
