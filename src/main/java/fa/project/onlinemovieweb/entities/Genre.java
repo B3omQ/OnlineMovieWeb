@@ -14,7 +14,7 @@ public class Genre {
 
     private String name; // e.g., Action, Drama, Comedy
 
-    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "genres")
     private List<Media> mediaList;
 
     public Long getId() {
