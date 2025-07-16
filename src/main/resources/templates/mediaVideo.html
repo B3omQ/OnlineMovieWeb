@@ -131,11 +131,14 @@
             <h6 class="text-warning">⭐ RECOMMEND FOR YOU</h6>
             <ul class="list-group">
                 <li th:each="media : ${mediaList}" class="list-group-item d-flex align-items-center">
-                    <img th:src="${media.poster}" class="me-2 rounded" style="width: 60px; height: 100px;" th:alt="${media.title} + ' thumbnail'">
-                    <div class="flex-grow-1">
-                        <span th:text="${media.title}">Title</span>
-                        <span class="badge text-warning float-end" th:text="${media.releaseYear}"></span>
-                    </div>
+                    <a th:href="@{|/mediaVideo/${#strings.replace(media.title.toLowerCase(), ' ', '-')}.${media.id}?ep=1|}"
+                       class="media-card d-flex align-items-center mb-3 p-2 rounded shadow-sm text-decoration-none text-light">
+                        <img th:src="${media.poster}" class="media-thumb me-3 rounded" th:alt="${media.title + ' thumbnail'}">
+                        <div class="media-info flex-grow-1">
+                            <h6 class="mb-1" th:text="${media.title}">Media Title</h6>
+                            <small class="text-warning fw-bold" th:text="${media.releaseYear}">2025</small>
+                        </div>
+                    </a>
                 </li>
             </ul>
         </div>

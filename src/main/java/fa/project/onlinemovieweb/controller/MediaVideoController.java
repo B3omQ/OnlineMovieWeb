@@ -24,15 +24,11 @@ public class MediaVideoController {
 
     @GetMapping("/mediaVideo/{slug}.{id}")
     public String viewMediaVideo(HttpSession session, Model model, @PathVariable Long id,
-                                 @RequestParam(name = "ver", required = false, defaultValue = "1") int ver,
-                                 @RequestParam(name = "ss", required = false, defaultValue = "1") int season,
                                  @RequestParam(name = "ep", required = false, defaultValue = "1") int episode
     ) {
         Media media = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("media", media);
-        model.addAttribute("season", season);
         model.addAttribute("episode", episode);
-        model.addAttribute("ver", ver);
         List<Media> mediaList = mediaRepo.findAll();
         model.addAttribute("mediaList", mediaList);
         User user = (User) session.getAttribute("user");

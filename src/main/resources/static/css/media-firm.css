@@ -157,3 +157,20 @@ body {
     object-fit: cover;
     border: 2px solid #fff;
 }
+
+.media-thumb {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border: 1px solid #444;
+}
+
+.media-info h6 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.media-info small {
+    font-size: 0.85rem;
+}
