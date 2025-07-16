@@ -1,0 +1,67 @@
+# ========================
+# Java & Spring Boot
+# ========================
+/target/
+*.log
+*.class
+
+# If using Maven
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# If using Gradle (optional)
+.gradle/
+build/
+
+# ========================
+# Environment & Secrets
+# ========================
+.env
+.env.*
+application.properties
+application.yml
+
+# ========================
+# IntelliJ IDEA
+# ========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ========================
+# Eclipse / Spring Tool Suite
+# ========================
+.classpath
+.project
+.settings/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+# ========================
+# VS Code
+# ========================
+.vscode/
+
+# ========================
+# NetBeans
+# ========================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ========================
+# Ignore any nested build/ or target/ under src (not needed)
+!**/src/main/**/build/
+!**/src/test/**/build/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ========================
+# Docs or Help Files
+# ========================
+HELP.md
