@@ -44,7 +44,15 @@
                              style="height: 350px; object-fit: cover; border-radius: 8px;">
                         <div class="card-body">
                             <h6 class="card-title mb-1" th:text="${media.title}">Movie Title</h6>
-                            <small th:text="${media.genre != null ? media.genre.name + ' | ' + media.releaseYear : 'Unknown | ' + media.releaseYear}"></small>
+                            <small class="text"
+                                   th:text="${#lists.size(media.genres) >= 2
+           ? media.genres[0].name + ', ' + media.genres[1].name + ' | ' + media.releaseYear
+           : #lists.size(media.genres) == 1
+           ? media.genres[0].name + ' | ' + media.releaseYear
+           : 'Unknown | ' + media.releaseYear}">
+                                Genre | Year
+                            </small>
+
                         </div>
                     </div>
                 </a>
@@ -65,10 +73,16 @@
                              style="height: 350px; object-fit: cover; border-radius: 8px;">
                         <div class="card-body">
                             <h6 class="card-title mb-1" th:text="${media.title}">Movie Title</h6>
+
                             <small class="text"
-                                   th:text="${media.genre != null ? media.genre.name + ' | ' + media.releaseYear : 'Unknown | ' + media.releaseYear}">
+                                   th:text="${#lists.size(media.genres) >= 2
+           ? media.genres[0].name + ', ' + media.genres[1].name + ' | ' + media.releaseYear
+           : #lists.size(media.genres) == 1
+           ? media.genres[0].name + ' | ' + media.releaseYear
+           : 'Unknown | ' + media.releaseYear}">
                                 Genre | Year
                             </small>
+
                         </div>
                     </div>
                 </a>
@@ -79,23 +93,27 @@
 
     <!--Genre -->
     <div class="container mb-5">
-        <h2 class="text-white mb-4">Genre</h2>
+        <h2 class="text-white mb-4">Popular Genres</h2>
 
         <div class="row row-cols-5 gx-4 gy-4">
             <div class="col" th:each="genre : ${genres}">
                 <a th:href="@{'/genre/' + ${genre.id}}" style="text-decoration: none; color: inherit;">
                     <div class="card bg-dark border-0 h-100 text-white text-center">
-                        <img th:src="${genre.imageUrl}" class="card-img-top" alt="Genre Image"
+                        <img th:src="${#lists.isEmpty(genre.mediaList) ? '/assets/default.jpg' : genre.mediaList[0].poster}"
+                             class="card-img-top" alt="Genre Poster"
                              style="height: 350px; object-fit: cover; border-radius: 8px;">
                         <div class="card-body">
                             <h6 class="card-title mb-1" th:text="${genre.name}">Genre Name</h6>
-                            <small class="text">Collection</small>
+                            <small class="text" th:text="'Total: ' + ${#lists.size(genre.mediaList)} + ' titles'">
+                                Total: X titles
+                            </small>
                         </div>
                     </div>
                 </a>
             </div>
         </div>
     </div>
+
 
 </main>
 <!-- Footer -->
