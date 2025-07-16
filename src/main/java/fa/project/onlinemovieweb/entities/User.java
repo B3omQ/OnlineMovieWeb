@@ -23,6 +23,10 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    private String gender;// "Male", "Female", "Other"
+
+    private String avatar;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<WatchHistory> watchHistories;
 
@@ -80,6 +84,22 @@ public class User {
 
     public void setWatchHistories(List<WatchHistory> watchHistories) {
         this.watchHistories = watchHistories;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
 
