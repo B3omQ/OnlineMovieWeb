@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 @Controller
 public class ProfileController {
 
-  @GetMapping("/member_profile")
+  @GetMapping("/profile")
     public String member_profile(HttpSession session,  Model model) {
       Object user = session.getAttribute("user");
       if (user == null) {
