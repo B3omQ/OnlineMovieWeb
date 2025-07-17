@@ -14,9 +14,13 @@ public class Media {
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "genre_id")
-    private Genre genre;
+    @ManyToMany
+    @JoinTable(
+            name = "media_genre",
+            joinColumns = @JoinColumn(name = "media_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private List<Genre> genres;
 
     private int releaseYear;
 
@@ -62,12 +66,12 @@ public class Media {
         this.description = description;
     }
 
-    public Genre  getGenre() {
-        return genre;
+    public List<Genre> getGenres() {
+        return genres;
     }
 
-    public void setGenre(Genre  genre) {
-        this.genre = genre;
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 
     public int getReleaseYear() {
