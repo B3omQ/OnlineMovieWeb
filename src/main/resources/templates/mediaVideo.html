@@ -17,33 +17,26 @@
             <h5 class="">YOU ARE WATCHING <span th:text="${media.title}">Media Title</span></h5>
 
             <div class="video-container mb-3 bg-dark">
-                <iframe th:src="${media.videoUrl}" frameborder="0" allowfullscreen></iframe>
+                <iframe th:src="${media.type == 'TV Show'} ? ${selectedEpisode?.videoUrl} : ${media.videoUrl}"
+                        frameborder="0" allowfullscreen></iframe>
             </div>
-
-            <div class="mb-3">
-                <button class="btn btn-outline-light btn-sm btn-custom">Prev</button>
-                <button class="btn btn-outline-light btn-sm btn-custom">Next</button>
-                <button class="btn btn-outline-light btn-sm btn-custom">Download</button>
-            </div>
-
             <div class="bg-secondary p-2 rounded">
                 🔥 Watch more quality firm at <a href="#" class="text-warning">Film Addicted</a>
             </div>
 
-            <div class="mb-3 d-flex align-items-center">
-                <strong class="me-2"><i class="bi bi-list"></i>Part 1</strong>
+            <div th:if="${media.type == 'TV Show'}" class="mb-3 d-flex align-items-center">
+                <strong class="me-2">
+                    <i class="bi bi-list"></i>
+                    <span th:text="'Part ' + ${season}">Part 1</span>
+                </strong>
             </div>
 
-            <div class="mb-4 d-flex flex-wrap">
-                <button class="episode-btn active"><i class="bi bi-play-fill"></i> Ep 1</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 2</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 3</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 4</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 5</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 6</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 7</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 8</button>
-                <button class="episode-btn"><i class="bi bi-play-fill"></i> Ep 9</button>
+            <div th:if="${media.type == 'TV Show'}" class="mb-4 d-flex flex-wrap">
+                <a th:each="ep : ${episodes}"
+                   th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber}}"
+                   th:class="'episode-btn me-2' + (${ep.episodeNumber} == ${episode} ? ' active' : '')">
+                    <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
+                </a>
             </div>
 
             <!-- Banner-->
