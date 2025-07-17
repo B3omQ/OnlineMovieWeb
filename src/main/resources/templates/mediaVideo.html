@@ -7,46 +7,8 @@
     <link rel="stylesheet" href="/css/media-firm.css"/>
 </head>
 <body>
-<header class="navbar">
-    <div class="navbar-left">
-        <a href="/home" class="logo">
-            <img src="/assets/logo.png" alt="Film Addicted Logo">
-            <div class="logo-text">
-                <span class="title">Film Addicted</span>
-                <span class="tagline">Can't take my eyes off films</span>
-            </div>
-        </a>
-    </div>
-
-    <div class="search-bar">
-        <form action="/search" method="get" class="d-flex" role="search">
-            <input class="form-control rounded-start" type="search" name="q" placeholder="Search..."
-                   aria-label="Search">
-            <button class="btn btn-outline-light rounded-end" type="submit">Search</button>
-        </form>
-    </div>
-
-
-    <nav class="navbar-menu">
-        <a href="/movies">Movies</a>
-        <a href="/series">Series</a>
-        <a href="/genres">Genres</a>
-        <a href="/lastestrelease">Lastest Release</a>
-    </nav>
-
-    <div class="auth-buttons">
-    <span th:if="${username}" style="margin-right: 10px; color: #fff;">
-        Welcome, <b th:text="${username}">User</b>
-    </span>
-        <a th:if="${username}" href="/profile" class="profile-link" style="margin-right: 10px;">
-            <img src="https://cdn.britannica.com/93/215393-050-E428CADE/Canadian-actor-musician-Ryan-Gosling-2016.jpg"
-                 class="profile-icon" alt="Profile"/>
-        </a>
-        <a th:if="${username}" href="/logout" class="btn logout">Logout</a>
-        <a th:unless="${username}" href="/login" class="btn login">Login</a>
-    </div>
-
-</header>
+<!--header-->
+<div th:insert="fragments/navbar :: navbar"></div>
 <div class="container">
 <div class="container-fluid py-3">
 
@@ -131,7 +93,7 @@
             <h6 class="text-warning">⭐ RECOMMEND FOR YOU</h6>
             <ul class="list-group">
                 <li th:each="media : ${mediaList}" class="list-group-item d-flex align-items-center">
-                    <a th:href="@{|/mediaVideo/${#strings.replace(media.title.toLowerCase(), ' ', '-')}.${media.id}?ep=1|}"
+                    <a th:href="@{|/media/${media.id}}"
                        class="media-card d-flex align-items-center mb-3 p-2 rounded shadow-sm text-decoration-none text-light">
                         <img th:src="${media.poster}" class="media-thumb me-3 rounded" th:alt="${media.title + ' thumbnail'}">
                         <div class="media-info flex-grow-1">
@@ -146,6 +108,6 @@
 </div>
 </div>
 </body>
-<footer>
-</footer>
+<!-- Footer -->
+<div th:insert="fragments/footer :: footer"></div>
 </html>
