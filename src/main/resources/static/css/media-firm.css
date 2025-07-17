@@ -60,3 +60,117 @@ body {
     color: #000;
     text-align: center;
 }
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #141414;
+    padding: 15px 30px;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo img {
+    height: 50px;
+    margin-left: 10px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-text .title {
+    font-weight: bold;
+    font-size: 18px;
+    color: #fff;
+}
+
+.logo-text .tagline {
+    font-size: 12px;
+    color: #bbb;
+}
+
+.navbar-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.navbar-menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.navbar-menu a:hover {
+    color: #e50914;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+.auth-buttons span {
+    font-size: 14px;
+}
+
+.auth-buttons .btn.login,
+.auth-buttons .btn.logout {
+    padding: 6px 12px;
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+.auth-buttons .btn:hover {
+    background-color: #e50914;
+    border-color: #e50914;
+    color: #fff;
+}
+
+.profile-icon {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+.media-thumb {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border: 1px solid #444;
+}
+
+.media-info h6 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.media-info small {
+    font-size: 0.85rem;
+}

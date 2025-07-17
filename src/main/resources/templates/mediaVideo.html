@@ -6,15 +6,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/media-firm.css"/>
 </head>
-<body class="container">
-
+<body>
+<!--header-->
+<div th:insert="fragments/navbar :: navbar"></div>
+<div class="container">
 <div class="container-fluid py-3">
 
     <div class="row mt-3">
         <div class="col-md-9">
-            <h5 class="">YOU ARE WATCHING NEVER GONNA GIVE U UP</h5>
+            <h5 class="">YOU ARE WATCHING <span th:text="${media.title}">Media Title</span></h5>
+
             <div class="video-container mb-3 bg-dark">
-                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+                <iframe th:src="${media.videoUrl}" frameborder="0" allowfullscreen></iframe>
             </div>
 
             <div class="mb-3">
@@ -62,9 +65,6 @@
                     <textarea class="form-control comment-box mb-2" rows="3" maxlength="1000" placeholder="Write your comment..."></textarea>
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <button class="spoiler-toggle btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-eye-slash"></i> Tiết lộ?
-                            </button>
                         </div>
                         <div>
                             <small class="me-3 text-muted">0 / 1000</small>
@@ -92,73 +92,22 @@
         <div class="col-md-3 sidebar">
             <h6 class="text-warning">⭐ RECOMMEND FOR YOU</h6>
             <ul class="list-group">
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="xxxHOLIC thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">24/24</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Zettai Karen thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">12/12</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Arifureta thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1<span class="badge text-warning float-end">13/13</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Kanojo thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">03/En?</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Kakkou thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">02/??</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Kakkou thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">02/??</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Kakkou thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">02/??</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Kakkou thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">02/??</span>
-                    </div>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center">
-                    <img src="https://placehold.co/60x100" class="me-2 rounded" alt="Kakkou thumbnail">
-                    <div class="flex-grow-1">
-                        Firm1 <span class="badge text-warning float-end">02/??</span>
-                    </div>
+                <li th:each="media : ${mediaList}" class="list-group-item d-flex align-items-center">
+                    <a th:href="@{|/media/${media.id}}"
+                       class="media-card d-flex align-items-center mb-3 p-2 rounded shadow-sm text-decoration-none text-light">
+                        <img th:src="${media.poster}" class="media-thumb me-3 rounded" th:alt="${media.title + ' thumbnail'}">
+                        <div class="media-info flex-grow-1">
+                            <h6 class="mb-1" th:text="${media.title}">Media Title</h6>
+                            <small class="text-warning fw-bold" th:text="${media.releaseYear}">2025</small>
+                        </div>
+                    </a>
                 </li>
             </ul>
         </div>
     </div>
 </div>
+</div>
 </body>
-<footer>
-</footer>
+<!-- Footer -->
+<div th:insert="fragments/footer :: footer"></div>
 </html>
