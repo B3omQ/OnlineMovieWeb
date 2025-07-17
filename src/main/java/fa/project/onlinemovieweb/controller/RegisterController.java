@@ -55,6 +55,7 @@ public class RegisterController {
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRole(Role.USER);
+        user.setOauthUser(false);
         userRepo.save(user);
         return "redirect:/login";
     }

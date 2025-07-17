@@ -20,14 +20,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2SuccessHandler customOAuth2SuccessHandler) throws Exception {
         http
+        	.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/home", "/complete-profile", "/register", "/login", "/css/**", "/js/**", "/img/**", "/assets/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .permitAll()
-            )
+            
+//            .formLogin(form -> form
+//                .loginPage("/login1")
+//                .loginProcessingUrl("/login1")
+//                .defaultSuccessUrl("/home", true)
+//                .failureUrl("/login1?error=true")
+//                .permitAll()
+//            )
+            
+            .formLogin(form -> form.disable())
+            
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
             )
