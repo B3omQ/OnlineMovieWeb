@@ -34,18 +34,43 @@ public class ProfileController {
             @RequestParam("gender") String gender,
             HttpSession session,
             Model model) {
+
         User currentUser = (User) session.getAttribute("user");
 
         if (currentUser == null) {
             return "redirect:/login";
         }
-        currentUser.setUsername(name);
-        currentUser.setGender(gender);
+
+        if (name == null || name.trim().isEmpty()) {
+            model.addAttribute("error", "Name cannot be empty.");
+            model.addAttribute("user", currentUser);
+            return "member_profile";
+        }
+
+        if (!name.matches("^[a-zA-ZÀ-ỹ\\s]{2,50}$")) {
+            model.addAttribute("error", "Name must be 2-50 characters and contain only letters.");
+            model.addAttribute("user", currentUser);
+            return "member_profile";
+        }
+
+        if (!gender.equalsIgnoreCase("male") &&
+                !gender.equalsIgnoreCase("female") &&
+                !gender.equalsIgnoreCase("other")) {
+            model.addAttribute("error", "Invalid gender selected.");
+            model.addAttribute("user", currentUser);
+            return "member_profile";
+        }
+
+        currentUser.setUsername(name.trim());
+        currentUser.setGender(gender.toLowerCase());
         userRepo.save(currentUser);
         session.setAttribute("user", currentUser);
 
-        return "redirect:/profile";
+        model.addAttribute("success", "Profile updated successfully.");
+        model.addAttribute("user", currentUser);
+        return "member_profile";
     }
+
 
     @PostMapping("/change_password")
     public String change_password(
@@ -69,6 +94,13 @@ public class ProfileController {
 
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match.");
+            return "member_profile";
+        }
+
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9])\\S{8,}$";
+        if (!newPassword.matches(passwordRegex)) {
+            model.addAttribute("error",
+                    "Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character. Spaces are not allowed.");
             return "member_profile";
         }
 
