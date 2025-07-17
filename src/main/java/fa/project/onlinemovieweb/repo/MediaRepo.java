@@ -11,6 +11,8 @@ public interface MediaRepo extends JpaRepository<Media, Long> {
     List<Media> findTop5ByOrderByViewsDesc();
 
     List<Media> findTop5ByOrderByReleaseYearDesc();
+
+    List<Media> findAllByType(String type);
 }
 
 

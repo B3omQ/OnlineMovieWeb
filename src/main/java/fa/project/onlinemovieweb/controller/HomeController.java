@@ -59,7 +59,7 @@ public class HomeController {
     // HomeController.java
     @GetMapping("/movies")
     public String showAllMovies(Model model) {
-        List<Media> allMedia = mediaRepository.findAll();
+        List<Media> allMedia = mediaRepository.findAllByType("movie");
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
         return "movies";
@@ -67,18 +67,10 @@ public class HomeController {
 
     @GetMapping("/series")
     public String showAllSeries(Model model) {
-        List<Media> allMedia = mediaRepository.findAll();
+        List<Media> allMedia = mediaRepository.findAllByType("Tv Show");
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
         return "series";
     }
-
-//    @GetMapping("/genres")
-//    public String showAllGenres(Model model) {
-//        List<Genre> allGenres = genreRepo.findAll();
-//        model.addAttribute("allGenres", allGenres);
-//        return "genre";
-//    }
-
 
 }
