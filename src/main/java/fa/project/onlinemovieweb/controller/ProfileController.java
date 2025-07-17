@@ -47,5 +47,37 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
+    @PostMapping("/change_password")
+    public String change_password(
+            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            HttpSession session,
+            Model model
+    ) {
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", currentUser);
+
+        if (!currentUser.getPassword().equals(oldPassword)) {
+            model.addAttribute("error", "Old password is incorrect.");
+            return "member_profile";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "New passwords do not match.");
+            return "member_profile";
+        }
+
+        currentUser.setPassword(newPassword);
+        userRepo.save(currentUser);
+        model.addAttribute("success", "Password changed successfully.");
+
+        return "member_profile";
+    }
+
 
 }
