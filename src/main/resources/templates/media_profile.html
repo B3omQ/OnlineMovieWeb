@@ -40,6 +40,55 @@
   </div>
 </section>
 
+<section class="episodes-section py-5 bg-dark text-white">
+  <div class="container">
+    <h2 class="mb-4">Episodes</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div class="col">
+        <div class="episode-card p-4 rounded shadow-sm bg-secondary h-100">
+          <h5 class="mb-2" th:text="${media.title}"></h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comments Section -->
+<section class="comments-section py-5 bg-dark text-white">
+  <div class="container">
+    <h2 class="mb-4">Comments</h2>
+
+    <!-- Comment Input -->
+    <div class="comment-input mb-4">
+      <textarea class="comment-box" rows="4" placeholder="Leave a comment..."></textarea>
+      <div class="text-end mt-2">
+        <button class="btn btn-primary">Post</button>
+      </div>
+    </div>
+
+    <!-- Comment List -->
+    <div class="comment-list d-flex flex-column gap-4">
+      <div class="comment">
+        <strong>newuser1023</strong>
+        <p class="mb-1">Re-Watched it 7 times and counting. I guess I liked it.</p>
+        <small class="text-light">2 hours ago</small>
+      </div>
+      <div class="comment">
+        <strong>newuser1056</strong>
+        <p class="mb-1">For me it is the greatest TV series of all time.
+
+          The show is better written than any other show I have ever seen. The entire storyline is a sweet cake of masterpiece and Walter White's classic character arc is the cherry on top of it.
+
+          The story seems like it was well crafted from the very beginning, like every action has a thrilling and/or heartbreaking consequence. It built it's reputation well on its villains. Vince Gilligan's genius embodies 99,1% purely great story.
+
+          Mostly I liked the episodes Face off, Ozymandias, Full measure, Salud, and of course Felina. Breaking Bad is one of the few TV shows that delivered a satisfying conclusion. Iconic characters like Walter White, Jesse, Saul, Mike, Hank and Gus were well written.</p>
+        <small class="text-light">3 hours ago</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>

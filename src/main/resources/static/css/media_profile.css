@@ -54,4 +54,54 @@
   text-shadow: 1px 1px 8px rgba(0,0,0,0.8);
 }
 
+.episodes-section {
+  background-color: #1c1c1c;
+  color: #ffffff;
+}
+
+.episode-card {
+  background-color: #2c2c2c;
+  border: 1px solid #444;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-height: 180px;
+  display: flex;
+   flex-direction: column;
+   justify-content: center;
+}
+
+.episode-card:hover {
+  background-color: #383838;
+  transform: translateY(-3px);
+}
+
+.comment-box {
+  background-color: #ffffff;      /* White background */
+  color: #000000;                 /* Black input text */
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  resize: none;
+  font-size: 1rem;
+}
+
+/* Placeholder color override */
+.comment-box::placeholder {
+  color: #000000;
+  opacity: 1;
+}
+
+
+.comment-list .comment p {
+  font-size: 0.95rem;
+  color: #e0e0e0;
+}
+
+.comment-list .comment small {
+  font-size: 0.8rem;
+  color: #ccc; /* lighter than black */
+}
+
+
+
 
