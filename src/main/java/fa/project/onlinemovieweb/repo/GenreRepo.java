@@ -13,4 +13,5 @@ public interface GenreRepo extends JpaRepository<Genre, Integer> {
     @Query("SELECT g FROM Genre g JOIN g.mediaList m GROUP BY g ORDER BY COUNT(m.id) DESC")
     List<Genre> findTop5MostUsedGenres(org.springframework.data.domain.Pageable pageable);
 
+
 }

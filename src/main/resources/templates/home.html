@@ -19,18 +19,57 @@
 <main>
     <div id="movieCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item" th:each="media, iter : ${mustWatch}"
+            <div class="carousel-item"
+                 th:each="media, iter : ${mustWatch}"
                  th:classappend="${iter.index == 0} ? ' active'">
+
                 <img th:src="${media.banner}" class="d-block w-100" th:alt="${media.title}">
+
+                <!-- Overlay content -->
+                <div class="carousel-caption d-none d-md-block text-start bg-dark bg-opacity-50 p-4 rounded">
+                    <h2 class="text-light" th:text="${media.title}">Media Title</h2>
+
+                    <p class="text-white">
+                        <span th:text="'Release: ' + ${media.releaseYear}">2025</span> |
+                        <span th:text="'Type: ' + ${media.type}">Movie</span>
+                    </p>
+
+                    <!-- Genres -->
+                    <div class="mb-3">
+                    <span class="badge bg-secondary me-1"
+                          th:each="genre : ${media.genres}"
+                          th:text="${genre.name}">Genre</span>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div>
+                        <a th:href="@{|/mediaVideo/${#strings.replace(media.title.toLowerCase(), ' ', '-')}.${media.id}?ep=1|}"
+                           class="btn btn-warning me-2">
+                            <i class="bi bi-play-fill"></i> Play
+                        </a>
+                        <button class="btn btn-outline-light me-2">
+                            <i class="bi bi-heart"></i>❤️
+                        </button>
+                        <a th:href="@{|/media/${media.id}}" class="btn btn-outline-light">
+                            <strong>!</strong>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#movieCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#movieCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+
+        <!-- Round dot indicators -->
+        <div class="carousel-indicators">
+            <button type="button"
+                    th:each="media, iter : ${mustWatch}"
+                    data-bs-target="#movieCarousel"
+                    th:attr="data-bs-slide-to=${iter.index}"
+                    th:classappend="${iter.index == 0} ? 'active'"
+                    aria-label="Slide" class="rounded-circle"
+                    style="width: 12px; height: 12px; background-color: #fff;"></button>
+        </div>
     </div>
+
 
     <!-- Must Watch-->
     <div class="container mb-5">
@@ -95,24 +134,73 @@
     <div class="container mb-5">
         <h2 class="text-white mb-4">Popular Genres</h2>
 
-        <div class="row row-cols-5 gx-4 gy-4">
-            <div class="col" th:each="genre : ${genres}">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 gx-4 gy-4">
+            <div class="col" th:each="genre, iterStat : ${genres}">
                 <a th:href="@{'/genre/' + ${genre.id}}" style="text-decoration: none; color: inherit;">
-                    <div class="card bg-dark border-0 h-100 text-white text-center">
-                        <img th:src="${#lists.isEmpty(genre.mediaList) ? '/assets/default.jpg' : genre.mediaList[0].poster}"
-                             class="card-img-top" alt="Genre Poster"
-                             style="height: 350px; object-fit: cover; border-radius: 8px;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-1" th:text="${genre.name}">Genre Name</h6>
-                            <small class="text" th:text="'Total: ' + ${#lists.size(genre.mediaList)} + ' titles'">
-                                Total: X titles
-                            </small>
+                    <div class="card text-white text-start border-0 p-4 h-100 genre-card"
+                         th:classappend="' genre-bg-' + ${iterStat.index % 6}">
+                        <h5 class="mb-3 fw-bold" th:text="${genre.name}">Genre Name</h5>
+                        <div>
+                            <small class="fw-normal">Watch More→</small>
                         </div>
                     </div>
                 </a>
             </div>
         </div>
     </div>
+
+    <style>
+        .genre-card {
+            border-radius: 1rem;
+            min-height: 150px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            cursor: pointer;
+            position: relative; /* for absolute overlay */
+            overflow: hidden;
+        }
+
+        .genre-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 500 150' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'><path d='M0.00,49.98 C150.00,150.00 349.88,-50.00 500.00,49.98 L500.00,150.00 L0.00,150.00 Z' fill='rgba(255,255,255,0.05)'/></svg>");
+            background-repeat: repeat;
+            background-size: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+
+        .genre-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0.95;
+        }
+
+        .genre-bg-0 {
+            background: linear-gradient(135deg, #6A8DFF, #667EEA);
+        }
+
+        .genre-bg-1 {
+            background: linear-gradient(135deg, #8A8DA8, #7D84B2);
+        }
+
+        .genre-bg-2 {
+            background: linear-gradient(135deg, #6FA58B, #7EB9A8);
+        }
+
+        .genre-bg-3 {
+            background: linear-gradient(135deg, #9A83CE, #A589D6);
+        }
+
+        .genre-bg-4 {
+            background: linear-gradient(135deg, #D5A588, #E6BCA0);
+        }
+
+        .genre-bg-5 {
+            background: linear-gradient(135deg, #B26A5E, #C98175);
+        }
+    </style>
 
 
 </main>
