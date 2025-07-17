@@ -1,6 +1,7 @@
 package fa.project.onlinemovieweb.controller;
 
 
+import fa.project.onlinemovieweb.entities.Episode;
 import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.MediaRepo;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -23,16 +26,45 @@ public class MediaVideoController {
     MediaRepo mediaRepo;
 
     @GetMapping("/mediaVideo/{slug}.{id}")
-    public String viewMediaVideo(HttpSession session, Model model, @PathVariable Long id,
-                                 @RequestParam(name = "ep", required = false, defaultValue = "1") int episode
-    ) {
-        Media media = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public String viewMediaVideo(HttpSession session, Model model,
+                                 @PathVariable Long id,
+                                 @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber) {
+
+        Media media = mediaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        List<Episode> episodes = new ArrayList<>();
+        Episode selectedEpisode = null;
+        int season = 1;
+
+        if ("TV Show".equalsIgnoreCase(media.getType())) {
+            episodes = media.getEpisodes().stream()
+                    .sorted(Comparator.comparingInt(Episode::getEpisodeNumber))
+                    .toList();
+
+            selectedEpisode = episodes.stream()
+                    .filter(ep -> ep.getEpisodeNumber() == episodeNumber)
+                    .findFirst()
+                    .orElse(null);
+
+            if (selectedEpisode != null) {
+                season = selectedEpisode.getSeason();
+            }
+        }
+
         model.addAttribute("media", media);
-        model.addAttribute("episode", episode);
+        model.addAttribute("episodes", episodes);
+        model.addAttribute("selectedEpisode", selectedEpisode);
+        model.addAttribute("episode", episodeNumber);
+        model.addAttribute("season", season);
+
         List<Media> mediaList = mediaRepo.findAll();
         model.addAttribute("mediaList", mediaList);
+
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+
         return "mediaVideo";
     }
+
 }
