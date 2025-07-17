@@ -21,7 +21,7 @@ public class ProfileCompletionController {
         Object userIdObj = session.getAttribute("userIdToComplete");
         if (userIdObj == null) return "redirect:/login";
         model.addAttribute("error", null);
-        return "complete-profile";
+        return "complete_profile";
     }
 
     @PostMapping("/complete-profile")
@@ -32,7 +32,7 @@ public class ProfileCompletionController {
 
         if (userRepo.findByUsername(username) != null) {
             model.addAttribute("error", "Username is already taken");
-            return "complete-profile";
+            return "complete_profile";
         }
 
         User user = userRepo.findById(userId).orElse(null);

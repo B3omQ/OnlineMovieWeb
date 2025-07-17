@@ -18,14 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class RegisterController {
-    private final UserRepo userRepo;
-    private final BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    public RegisterController(UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
+	
+	@Autowired
+    private UserRepo userRepo;
+	
+	@Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("/register")
     public String register(Model model){

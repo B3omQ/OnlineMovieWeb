@@ -14,33 +14,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class LoginController {
 
-    private final UserRepo userRepo;
-    private final BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    public LoginController(UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
+	@Autowired
+    private UserRepo userRepo;
+	
+	@Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("/login")
     public String login(){
         return "login";
     }
     @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) {
-        User user = userRepo.findByEmail(email);
-        if (user == null) {
-            model.addAttribute("error", "Invalid email or password");
-            return "login";
-        }
-        try {
-            if (!passwordEncoder.matches(password, user.getPassword())) {
-                model.addAttribute("error", "Invalid email or password");
-                return "login";
-            }
-        } catch (IllegalArgumentException ex) {
-            model.addAttribute("error", "Invalid email or password");
+    public String login(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
+        User user = userRepo.findByUsername(username);
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            model.addAttribute("error", "Invalid username or password");
             return "login";
         }
         session.setAttribute("user", user);

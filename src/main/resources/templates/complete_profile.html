@@ -1,23 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<title>Complete Your Profile</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+	<meta charset="UTF-8">
+	<title>Complete Profile</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/style.css" rel="stylesheet">
+	<style>
+		body,
+		html {
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			overflow-x: hidden;
+			font-family: 'Segoe UI', sans-serif;
+		}
+
+		.container-fluid {
+			display: flex;
+			height: 100vh;
+			width: 100vw;
+			padding: 0;
+			margin: 0;
+		}
+
+		.left-panel {
+			flex: 1;
+			background-image: url('/img/login-bg.jpg');
+			background-size: cover;
+			background-position: center;
+			position: relative;
+			color: white;
+		}
+
+		.branding {
+			position: absolute;
+			bottom: 30px;
+			left: 30px;
+			font-size: 24px;
+		}
+
+		.right-panel {
+			flex: 1;
+			background-color: #0f111f;
+			color: white;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			padding: 0 50px;
+		}
+
+		.form-control,
+		.btn {
+			border-radius: 0.5rem;
+		}
+
+		.btn-custom {
+			background-color: #e2aa00;
+			border: none;
+			color: black;
+			font-weight: bold;
+		}
+
+		.text-link a {
+			color: #ffc107;
+			text-decoration: none;
+		}
+	</style>
 </head>
 
 <body>
-	<div class="container mt-5">
-		<h3>Welcome! Complete Your Profile</h3>
-		<form method="post" action="/complete-profile">
-			<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-			<div class="mb-3">
-				<label for="username" class="form-label">Choose a Username:</label>
-				<input type="text" class="form-control" id="username" name="username" required>
+
+	<div class="container-fluid">
+		<div class="left-panel">
+			<div class="branding text-white d-flex">
+				<img src="/assets/logo.png" alt="Film Addicted Logo"
+					style="width: 120px; height: auto; margin-right: 10px;">
+				<div>
+					<h2 class="mb-0">Film Addicted</h2>
+					<small class="text-white">Can't take my eyes off films</small>
+				</div>
 			</div>
-			<button class="btn btn-primary" type="submit">Save Username</button>
-		</form>
+		</div>
+		<div class="right-panel">
+			<h3 class="mb-4">Complete Your Profile</h3>
+			<p>Set your username to finish signing up.</p>
+			<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+			<form th:action="@{/complete-profile}" method="post">
+				<div class="mb-3">
+					<label for="username">Username</label>
+					<input type="text" class="form-control" name="username" id="username" required>
+				</div>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<button type="submit" class="btn btn-custom w-100">Save</button>
+			</form>
+			<div class="text-end mt-2 text-link"><a href="/login">Back to login</a></div>
+		</div>
 	</div>
+
 </body>
 
 </html>
