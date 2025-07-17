@@ -23,7 +23,7 @@ public class SecurityConfig {
         	.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/home", "/complete-profile", "/register",
-                        "/profile", "/media/***", "/genres", "/lastestrelease", "/movies", "/series", "/mediaVideo/***",
+//                        "/profile", "/media/***", "/genres",  "/movies", "/series", "/mediaVideo/***",
                         "/login", "/css/**", "/js/**", "/img/**", "/assets/**").permitAll()
                 .anyRequest().authenticated()
             )
