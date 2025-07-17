@@ -32,9 +32,7 @@ public class MediaVideoController {
         List<Media> mediaList = mediaRepo.findAll();
         model.addAttribute("mediaList", mediaList);
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            model.addAttribute("username", user.getUsername());
-        }
+        model.addAttribute("user", user);
         return "mediaVideo";
     }
 }
