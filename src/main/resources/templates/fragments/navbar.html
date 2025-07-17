@@ -28,15 +28,18 @@
         </nav>
 
         <div class="auth-buttons">
-            <span th:if="${username}" style="margin-right: 10px; color: #fff;">
-                Welcome, <b th:text="${username}">User</b>
+            <span th:if="${user != null and user.username != null}" style="margin-right: 10px; color: #fff;">
+                    Welcome, <b th:text="${user.username}"></b>
             </span>
-            <a th:if="${username}" href="/profile" class="profile-link" style="margin-right: 10px;">
-                <img src="https://cdn.britannica.com/93/215393-050-E428CADE/Canadian-actor-musician-Ryan-Gosling-2016.jpg"
-                     class="profile-icon" alt="Profile"/>
+
+            <a th:if="${user != null and user.username != null}" href="/profile" class="profile-link"
+               style="margin-right: 10px;">
+                <img src="${user.avatar}" class="profile-icon" alt="Profile"/>
             </a>
-            <a th:if="${username}" href="/logout" class="btn logout">Logout</a>
-            <a th:unless="${username}" href="/login" class="btn login">Login</a>
+
+            <a th:if="${user != null and user.username != null}" href="/logout" class="btn logout">Logout</a>
+            <a th:if="${user == null or user.username == null}" href="/login" class="btn login">Login</a>
+
         </div>
     </header>
 </div>

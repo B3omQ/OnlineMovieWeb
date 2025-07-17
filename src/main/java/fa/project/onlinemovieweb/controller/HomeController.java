@@ -27,9 +27,7 @@ public class HomeController {
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            model.addAttribute("username", user.getUsername());
-        }
+        model.addAttribute("user", user);
         List<Media> mustWatch = mediaRepository.findTop5ByOrderByViewsDesc();
         List<Media> latestMedia = mediaRepository.findTop5ByOrderByReleaseYearDesc();
         List<Genre> topGenres = genreRepo.findTop5MostUsedGenres(PageRequest.of(0, 5));
