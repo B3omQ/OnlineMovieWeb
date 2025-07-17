@@ -14,18 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ProfileController {
     private final UserRepo userRepo;
 
-  @GetMapping("/profile")
-    public String member_profile(HttpSession session,  Model model) {
-      Object user = session.getAttribute("user");
-      if (user == null) {
-          return "redirect:/login";
-      }
-      model.addAttribute("user", user);
-      return "member_profile";
-
     public ProfileController(UserRepo userRepo) {
         this.userRepo = userRepo;
-
+    }
 
     @GetMapping("/profile")
     public String member_profile(HttpSession session, Model model) {
