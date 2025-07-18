@@ -84,6 +84,67 @@
             <a href="/genres">Genres</a>
             <a href="/lastestrelease">Latest Release</a>
         </nav>
+        <div class="d-flex align-items-center gap-2" style="margin-left: 10px;">
+            <button id="musicToggle" class="btn btn-outline-light">🎵 Play Music</button>
+            <button id="nextSong" class="btn btn-outline-light">⏭️</button>
+            <audio id="audioPlayer" autoplay hidden></audio>
+        </div>
+
+        <script>
+            const musicTracks = [
+                "/assets/music/song1.mp3",
+                "/assets/music/song2.mp3",
+                "/assets/music/song3.mp3",
+                "/assets/music/song4.mp3",
+                "/assets/music/song5.mp3",
+                "/assets/music/song6.mp3"
+            ];
+
+            const audioPlayer = document.getElementById("audioPlayer");
+            const musicButton = document.getElementById("musicToggle");
+            const nextButton = document.getElementById("nextSong");
+
+            let currentTrack = parseInt(localStorage.getItem("currentTrackIndex") || "0", 10);
+            let isPlaying = false;
+
+            if (currentTrack >= musicTracks.length) {
+                currentTrack = 0;
+            }
+
+            audioPlayer.src = musicTracks[currentTrack];
+
+            function playNextTrack() {
+                currentTrack = (currentTrack + 1) % musicTracks.length;
+                localStorage.setItem("currentTrackIndex", currentTrack.toString());
+                audioPlayer.src = musicTracks[currentTrack];
+                if (isPlaying) {
+                    audioPlayer.play();
+                }
+            }
+
+            audioPlayer.addEventListener("ended", playNextTrack);
+
+            musicButton.addEventListener("click", () => {
+                if (!isPlaying) {
+                    isPlaying = true;
+                    audioPlayer.play();
+                    musicButton.textContent = "⏸️ Pause Music";
+                } else {
+                    isPlaying = false;
+                    audioPlayer.pause();
+                    musicButton.textContent = "🎵 Play Music";
+                }
+            });
+
+            nextButton.addEventListener("click", () => {
+                playNextTrack();
+                if (!isPlaying) {
+                    isPlaying = true;
+                    musicButton.textContent = "⏸️ Pause Music";
+                }
+            });
+        </script>
+
 
         <div class="auth-buttons">
             <span th:if="${user != null and user.username != null}" style="margin-right: 10px; color: #fff;">
