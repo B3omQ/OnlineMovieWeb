@@ -11,9 +11,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.text.Normalizer;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -86,5 +91,37 @@ public class HomeController {
         model.addAttribute("user", user);
         return "seperated_film";
     }
+
+    @GetMapping("/api/suggestions")
+    @ResponseBody
+    public List<Map<String, String>> getSuggestions(@RequestParam("q") String query) {
+        String normalizedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        List<Media> suggestions = mediaRepository.findTop5ByTitleContainingIgnoreCase(normalizedQuery);
+
+        return suggestions.stream()
+                .map(media -> Map.of(
+                        "title", media.getTitle(),
+                        "poster", media.getPoster() != null ? media.getPoster() : ""
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    @GetMapping("/search")
+    public String search(@RequestParam("q") String query, Model model, HttpSession session) {
+        List<Media> results = mediaRepository.findByTitleContainingIgnoreCase(query);
+
+        model.addAttribute("allMedia", results); // Match expected attribute in seperated_film.html
+        model.addAttribute("sectionTitle", "Search results for \"" + query + "\"");
+        model.addAttribute("pageTitle", "Search");
+
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+
+        return "seperated_film";
+    }
+
 
 }

@@ -15,6 +15,11 @@ public interface MediaRepo extends JpaRepository<Media, Long> {
     List<Media> findAllByType(String type);
 
     List<Media> findByGenresContaining(Genre genre);
+
+    List<Media> findByTitleContainingIgnoreCase(String title);
+
+    List<Media> findTop5ByTitleContainingIgnoreCase(String title);
+
 }
 
 
