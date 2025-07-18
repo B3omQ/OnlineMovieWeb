@@ -43,14 +43,20 @@
 <section class="episodes-section py-5 bg-dark text-white">
   <div class="container">
     <h2 class="mb-4">Episodes</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      <div class="col">
-        <div class="episode-card p-4 rounded shadow-sm bg-secondary h-100">
-          <h5 class="mb-2" th:text="${media.title}"></h5>
-        </div>
+    <div th:if="${media.type == 'Movie'}">
+    <a th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id}}"
+       th:class="'episode-btn me-2' + (${episode} ? ' active' : '')">
+      <i class="bi bi-play-fill "></i> Movie
+    </a>
       </div>
+    <div th:if="${media.type == 'TV Show'}" class="mb-4 d-flex flex-wrap">
+      <a th:each="ep : ${episodes}"
+         th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber}}"
+         th:class="'episode-btn me-2' + (${ep.episodeNumber} == ${episode} ? ' active' : '')">
+        <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
+      </a>
     </div>
-  </div>
+      </div>
 </section>
 
 <!-- Comments Section -->
@@ -60,38 +66,48 @@
 
     <!-- Comment Input -->
     <div class="comment-input mb-4">
-      <textarea class="comment-box" rows="4" placeholder="Leave a comment..."></textarea>
-      <div class="text-end mt-2">
-        <button class="btn btn-primary">Post</button>
-      </div>
+      <form th:action="@{/media/{id}/comment(id=${media.id})}" method="post">
+                <textarea name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
+                          placeholder="Write your comment..." required></textarea>
+        <div class="d-flex justify-content-between align-items-center">
+          <div></div>
+          <div>
+            <button class="btn btn-warning send-btn" type="submit">
+              Send <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
 
     <!-- Comment List -->
     <div class="comment-list d-flex flex-column gap-4">
-      <div class="comment">
-        <strong>newuser1023</strong>
-        <p class="mb-1">Re-Watched it 7 times and counting. I guess I liked it.</p>
-        <small class="text-light">2 hours ago</small>
+      <div id="commentSection">
+        <div class="comment-box" th:each="c : ${comments}" th:object="${c}">
+          <img th:src="*{user.avatar}" alt="avatar">
+          <div>
+            <div class="comment-header">
+              <strong th:text="*{user.username}">Username</strong>
+              <span th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+            </div>
+            <div class="comment-content" th:text="*{content}">Comment here</div>
+          </div>
+        </div>
       </div>
-      <div class="comment">
-        <strong>newuser1056</strong>
-        <p class="mb-1">For me it is the greatest TV series of all time.
+      <div class="pagination">
+        <a th:if="${currentPage > 0}"
+           th:href="@{|/media/${media.id}?page=${currentPage - 1}|}">Previous</a>
 
-          The show is better written than any other show I have ever seen. The entire storyline is a sweet cake of masterpiece and Walter White's classic character arc is the cherry on top of it.
+        <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
 
-          The story seems like it was well crafted from the very beginning, like every action has a thrilling and/or heartbreaking consequence. It built it's reputation well on its villains. Vince Gilligan's genius embodies 99,1% purely great story.
-
-          Mostly I liked the episodes Face off, Ozymandias, Full measure, Salud, and of course Felina. Breaking Bad is one of the few TV shows that delivered a satisfying conclusion. Iconic characters like Walter White, Jesse, Saul, Mike, Hank and Gus were well written.</p>
-        <small class="text-light">3 hours ago</small>
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{|/media/${media.id}?page=${currentPage + 1}|}">Next</a>
       </div>
     </div>
-  </div>
 </section>
-
-
-
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>
 
 </body>
+
 </html>

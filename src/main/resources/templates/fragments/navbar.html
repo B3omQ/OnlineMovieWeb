@@ -92,7 +92,7 @@
 
             <a th:if="${user != null and user.username != null}" href="/profile" class="profile-link"
                style="margin-right: 10px;">
-                <img th:if="${user.avatar != null}" src="${user.avatar}" class="profile-icon" alt="Profile"/>
+                <img th:if="${user.avatar != null}" th:src="@{${user.avatar}}" class="profile-icon" alt="Profile"/>
                 <img th:if="${user.avatar == null}"
                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s"
                      class="profile-icon" alt="Profile"/>
