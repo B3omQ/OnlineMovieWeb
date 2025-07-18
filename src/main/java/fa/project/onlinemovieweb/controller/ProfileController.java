@@ -124,7 +124,10 @@ public class ProfileController {
                                HttpSession session,
                                Model model) {
         User currentUser = (User) session.getAttribute("user");
-
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", currentUser);
         if (currentUser == null) {
             return "redirect:/login";
         }
@@ -146,9 +149,9 @@ public class ProfileController {
             }
 
             // ==== TẠO TÊN FILE MỚI ====
-            String shortId = UUID.randomUUID().toString().substring(0, 8);
-            String filename = shortId + "_" + file.getOriginalFilename();
-
+//            String shortId = UUID.randomUUID().toString().substring(0, 8);
+//            String filename = shortId + "_" + file.getOriginalFilename();
+            String filename = file.getOriginalFilename();
             String uploadDir = "assets/avatars/";
             File uploadPath = new File(uploadDir);
             if (!uploadPath.exists()) uploadPath.mkdirs();

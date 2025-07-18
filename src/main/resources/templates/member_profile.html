@@ -59,8 +59,12 @@
                 </div>
 
                 <div class="side-user">
-                    <div class="user-avatar">
-                        <img alt="unknown" th:src="${user.avatar}" />
+                    <div th:if="${user != null and user.username != null}" class="user-avatar">
+                        <!--                        <img alt="unknown" th:src="${user.avatar}" />-->
+                        <img th:if="${user.avatar != null}" src="${user.avatar}" alt="Profile"/>
+                        <img th:if="${user.avatar == null}"
+                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s"
+                             alt="Profile"/>
                     </div>
 
                     <div class="info">
@@ -78,7 +82,6 @@
             <div class="cg-body-box py-0 is-profile">
                 <div class="box-header flex-column align-items-start gap-2 flex">
                     <div class="heading-sm mb-0">Profile</div>
-                    <span th:text="${user.avatar}"></span>
                     <p class="mb-0">Update your profile information</p>
                 </div>
 
@@ -176,24 +179,27 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="text-center">
+                            <form th:action="@{/upload_avatar}" method="post" enctype="multipart/form-data">
+                                <div class="v-avatar flex-shrink-0 text-center">
+                                    <a id="change-avatar-btn" style="cursor: pointer;">
+                                        <div th:if="${user != null and user.username != null}"
+                                             class="user-avatar large square mb-2">
+                                            <img id="avatar-preview"
+                                                 th:src="${user.avatar != null} ? ${user.avatar} : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s'"
+                                                 class="profile-icon" alt="Profile"/>
+                                        </div>
+                                        <span class="small text-white">Change Avatar</span>
+                                    </a>
 
-                        <form th:action="@{/upload_avatar}" method="post" enctype="multipart/form-data">
-                            <div class="v-avatar flex-shrink-0 text-center">
-                                <a id="change-avatar-btn" style="cursor: pointer;">
-                                    <div class="user-avatar large square mb-2">
-                                        <img id="avatar-preview" th:src="@{${user.avatar}}" alt="unknown">
-                                    </div>
-                                    <span class="small text-white">Change Avatar</span>
-                                </a>
+                                    <!-- Hidden file input -->
+                                    <input type="file" id="avatar-input" name="avatar" accept="image/*"
+                                           style="display: none;">
+                                </div>
 
-                                <!-- Hidden file input -->
-                                <input type="file" id="avatar-input" name="avatar" accept="image/*"
-                                       style="display: none;">
-                            </div>
-
-                            <button type="submit" class="btn btn-primary mt-2">Save Avatar</button>
-                        </form>
-
+                                <button type="submit" class="btn btn-primary mt-2">Save Avatar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
