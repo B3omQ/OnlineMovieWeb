@@ -24,6 +24,11 @@ public class HomeController {
     @Autowired
     private GenreRepo genreRepo;
 
+    @GetMapping("/")
+    public String redirectToHome() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -47,28 +52,39 @@ public class HomeController {
 
     // HomeController.java
     @GetMapping("/lastestrelease")
-    public String showAllRelease(Model model) {
+    public String showAllRelease(Model model, HttpSession session) {
         List<Media> allMedia = mediaRepository.findAll();
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
-        return "lastestrelease";
+        model.addAttribute("pageTitle", "Latest Release");
+        model.addAttribute("sectionTitle", "Latest Release");
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "seperated_film";
     }
 
-    // HomeController.java
     @GetMapping("/movies")
-    public String showAllMovies(Model model) {
+    public String showAllMovies(Model model, HttpSession session) {
         List<Media> allMedia = mediaRepository.findAllByType("movie");
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
-        return "movies";
+        model.addAttribute("pageTitle", "All Movies");
+        model.addAttribute("sectionTitle", "All Movies");
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "seperated_film";
     }
 
     @GetMapping("/series")
-    public String showAllSeries(Model model) {
+    public String showAllSeries(Model model, HttpSession session) {
         List<Media> allMedia = mediaRepository.findAllByType("Tv Show");
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
-        return "series";
+        model.addAttribute("pageTitle", "All Series");
+        model.addAttribute("sectionTitle", "All Series");
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "seperated_film";
     }
 
 }
