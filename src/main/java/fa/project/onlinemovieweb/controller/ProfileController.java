@@ -9,6 +9,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Controller
 public class ProfileController {
@@ -20,11 +29,10 @@ public class ProfileController {
 
     @GetMapping("/profile")
     public String member_profile(HttpSession session, Model model) {
-        Object user = session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("user", user);
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) return "redirect:/login";
+
+        model.addAttribute("user", currentUser);
         return "member_profile";
     }
 
@@ -107,6 +115,58 @@ public class ProfileController {
         currentUser.setPassword(newPassword);
         userRepo.save(currentUser);
         model.addAttribute("success", "Password changed successfully.");
+
+        return "member_profile";
+    }
+
+    @PostMapping("/upload_avatar")
+    public String uploadAvatar(@RequestParam("avatar") MultipartFile file,
+                               HttpSession session,
+                               Model model) {
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        if (file.isEmpty()) {
+            model.addAttribute("error", "Please choose a file.");
+            return "member_profile";
+        }
+
+        try {
+            // ==== XÓA FILE ẢNH CŨ (nếu có) ====
+            String oldAvatar = currentUser.getAvatar(); // ví dụ: /assets/avatars/abc123_avatar.jpg
+            if (oldAvatar != null && !oldAvatar.isEmpty()) {
+                String oldFilePath = "." + oldAvatar; // ./assets/avatars/abc123_avatar.jpg
+                File oldFile = new File(oldFilePath);
+                if (oldFile.exists()) {
+                    oldFile.delete(); // xóa file cũ
+                }
+            }
+
+            // ==== TẠO TÊN FILE MỚI ====
+            String shortId = UUID.randomUUID().toString().substring(0, 8);
+            String filename = shortId + "_" + file.getOriginalFilename();
+
+            String uploadDir = "assets/avatars/";
+            File uploadPath = new File(uploadDir);
+            if (!uploadPath.exists()) uploadPath.mkdirs();
+
+            // ==== LƯU FILE MỚI ====
+            Path path = Paths.get(uploadDir + filename);
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+            // ==== CẬP NHẬT USER ====
+            currentUser.setAvatar("/" + uploadDir + filename);
+            userRepo.save(currentUser);
+            session.setAttribute("user", currentUser);
+
+            model.addAttribute("success", "Avatar updated successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Upload failed.");
+        }
 
         return "member_profile";
     }
