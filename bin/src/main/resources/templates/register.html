@@ -2,106 +2,95 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Register</title>
+  <title>Sign up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<!--  <link rel="stylesheet" href="/css/register.css">-->
+  <style>
+    body, html {
+      height: 100%;
+	  width: 100%;
+      margin: 0;
+	  padding: 0;
+	  overflow-x: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container-fluid {
+      display: flex;
+      height: 100vh;
+	  width: 100vw;
+	  padding: 0;
+	  margin: 0;
+    }
+    .left-panel {
+      flex: 1;
+      background-image: url('/img/login-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      color: white;
+    }
+    .branding {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      font-size: 24px;
+    }
+    .right-panel {
+      flex: 1;
+      background-color: #0f111f;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 50px;
+    }
+    .form-control, .btn {
+      border-radius: 0.5rem;
+    }
+    .btn-custom {
+      background-color: #e2aa00;
+      border: none;
+      color: black;
+      font-weight: bold;
+    }
+  </style>
 </head>
-<body class="">
+<body>
 
-<div class="register-container">
-  <h2 class="text-center mb-4">BookStore Register</h2>
-  <form th:action="@{/register}" method="POST" onsubmit="return validateForm()">
-    <div class="mb-3">
-      <label for="username" class="form-label">Username:</label>
-      <input type="text" class="form-control" id="username" name="username">
-      <span id="nameError" class="error"></span>
-    </div>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email:</label>
-      <input type="email" class="form-control" id="email" name="email">
-      <span id="emailError" class="error"></span>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password:</label>
-      <input type="password" class="form-control" id="password" name="password" required>
-      <span id="passwordError" class="error"></span>
-    </div>
-    <div class="mb-3">
-      <label for="confirmPassword" class="form-label">Confirm password:</label>
-      <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-      <span id="confirmPasswordError" class="error"></span>
-    </div>
-    <div class="d-grid">
-      <button type="submit" value="Submit" class="btn btn-primary">Register</button>
-    </div>
-    <div class="login-link text-center mt-3">
-      Already have an account? <a href="/login">Log in now</a>
-    </div>
-    <div class="login-link text-center mt-3">
-      Back to <a href="/home">Home Page</a>
-    </div>
-  </form>
+<div class="container-fluid">
+  <div class="left-panel">
+	<div class="branding text-white d-flex">
+		<img src="/assets/logo.png" alt="Film Addicted Logo" style="width: 120px; height: auto; margin-right: 10px;">
+	  	<div>
+		<h2 class="mb-0">Film Addicted</h2>
+		<small class="text-white">Can't take my eyes off films</small>
+		</div>
+	</div>
+  </div>
+  <div class="right-panel">
+    <h3 class="mb-4">Sign up</h3>
+    <form th:action="@{/register}" method="POST">
+      <div class="mb-3">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" required>
+      </div>
+      <div class="mb-3">
+        <label for="confirmPassword">Re-enter Password</label>
+        <input type="password" class="form-control" name="confirmPassword" required>
+      </div>
+      <button type="submit" class="btn btn-custom w-100">Sign up</button>
+    </form>
+    <div class="mt-3">Have an account? <a href="/login" class="text-warning">Login</a></div>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  function validateForm() {
-    let name = document.getElementById("username").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let password = document.getElementById("password").value;
-    let confirmPassword = document.getElementById("confirmPassword").value;
-    let valid = true;
-
-    // Clear previous error messages
-    document.getElementById("nameError").innerText = "";
-    document.getElementById("emailError").innerText = "";
-
-    // Create or reuse error elements for password fields
-    if (!document.getElementById("passwordError")) {
-      let pwErr = document.createElement("span");
-      pwErr.id = "passwordError";
-      pwErr.className = "error";
-      document.getElementById("password").after(pwErr);
-    }
-    if (!document.getElementById("confirmPasswordError")) {
-      let cpwErr = document.createElement("span");
-      cpwErr.id = "confirmPasswordError";
-      cpwErr.className = "error";
-      document.getElementById("confirmPassword").after(cpwErr);
-    }
-
-    document.getElementById("passwordError").innerText = "";
-    document.getElementById("confirmPasswordError").innerText = "";
-
-    // Name validation
-    if (name === "") {
-      document.getElementById("nameError").innerText = "Name is required";
-      valid = false;
-    }
-
-    // Email validation
-    let emailPattern = /^[\w.-]+@[\w.-]+\.\w+$/;
-    if (email === "") {
-      document.getElementById("emailError").innerText = "Email is required";
-      valid = false;
-    } else if (!emailPattern.test(email)) {
-      document.getElementById("emailError").innerText = "Invalid email format";
-      valid = false;
-    }
-
-    // Password validation
-    if (password.length < 6) {
-      document.getElementById("passwordError").innerText = "Password must be at least 6 characters";
-      valid = false;
-    }
-
-    if (password !== confirmPassword) {
-      document.getElementById("confirmPasswordError").innerText = "Passwords do not match";
-      valid = false;
-    }
-
-    return valid;
-  }
-</script>
 </body>
 </html>

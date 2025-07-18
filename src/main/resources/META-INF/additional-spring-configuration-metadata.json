@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "spring.security.oauth2.client.client-name",
+  "type": "java.lang.String",
+  "description": "A description for 'spring.security.oauth2.client.client-name'"
+}]}
