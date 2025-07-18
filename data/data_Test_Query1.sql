@@ -1,5 +1,5 @@
 
-select * from media
+
 
 
 
@@ -18,6 +18,14 @@ INSERT INTO Media (title, description, language, release_year, type, video_url, 
 ('Blade Runner 2049', 'Blade Runner 2049 is a 2017 American epic neo-noir science fiction film directed by Denis Villeneuve from a screenplay by Hampton Fancher and Michael Green, based on a story by Fancher.', 'English', 2017, 'Movie', 'https://example.com/silent-storm.mp4', 129000000, 'https://images5.alphacoders.com/112/1124848.jpg', 'https://m.media-amazon.com/images/M/MV5BNzA1Njg4NzYxOV5BMl5BanBnXkFtZTgwODk5NjU3MzI@._V1_FMjpg_UX1000_.jpg'),
 ('Avatar: The Way of Water', 'Avatar: The Way of Water is a 2022 epic science fiction film co-produced, co-edited, and directed by James Cameron, who co-wrote the screenplay with Rick Jaffa and Amanda Silver from a story the trio wrote with Josh Friedman and Shane Salerno.', 'English', 2022, 'Movie', 'https://i.pinimg.com/736x/ca/d9/92/cad992f25a337b9ee4d742e9d7a4ffa5.jpg', 111000000, 'https://images7.alphacoders.com/129/1292803.jpg', 'https://m.media-amazon.com/images/M/MV5BNmQxNjZlZTctMWJiMC00NGMxLWJjNTctNTFiNjA1Njk3ZDQ5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg');
 
+
+
+INSERT INTO episode (title, season, episode_number, video_url, media_id) VALUES
+('Pilot', 1, 1, 'https://www.youtube.com/embed/HhesaQXLuRY', 1),
+('Cat''s in the Bag...', 1, 2, 'https://www.youtube.com/embed/pTPCHhbMZB0', 1),
+('...And the Bag''s in the River', 1, 3, 'https://www.youtube.com/embed/KF6No8fUwts', 1);
+
+select * from media
 
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (1, 6);
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (1, 8);
