@@ -91,7 +91,8 @@
 
             <div id="musicDropdownMenu" class="dropdown-menu p-3"
                  style="display: none; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
-            z-index: 1000; background-color: #222; border-radius: 8px; width: 250px; color: white;">
+                z-index: 1000; background-color: #222; border-radius: 8px; width: 250px; color: white;">
+
                 <div id="nowPlaying" class="mb-2" style="font-size: 14px;">Now Playing: 🎵 Phep Mau</div>
 
                 <div class="d-flex justify-content-between mb-2">
@@ -100,36 +101,41 @@
                     <button id="nextSong" class="btn btn-sm btn-outline-light">⏭️</button>
                 </div>
 
-                <select id="trackSelect" class="form-select form-select-sm">
+                <select id="trackSelect" class="form-select form-select-sm mb-2">
                     <option value="0">🎵 Phep Mau</option>
-                    <option value="1">🎵 Trinh</option>
+                    <option value="1">🎵 Haru Haru</option>
                     <option value="2">🎵 Flower</option>
                     <option value="3">🎵 Feel It</option>
                     <option value="4">🎵 Death Bed</option>
                     <option value="5">🎵 Let Down</option>
+                    <option value="6">🎵 No Surprise</option>
                 </select>
 
-                <audio id="audioPlayer" autoplay hidden></audio>
+                <input type="range" id="volumeControl" class="form-range" min="0" max="1" step="0.01" value="1">
+
+                <audio id="audioPlayer" hidden></audio>
             </div>
         </div>
 
         <script>
             const musicTracks = [
                 "/assets/music/phep_mau.mp3",
-                "/assets/music/trinh.mp3",
+                "/assets/music/haru_haru.mp3",    
                 "/assets/music/flower.mp3",
                 "/assets/music/feel_it.mp3",
                 "/assets/music/death_bed.mp3",
                 "/assets/music/let_down.mp3",
+                "/assets/music/no_surprise.mp3"
             ];
 
             const trackNames = [
                 "🎵 Phep Mau",
-                "🎵 Trinh",
+                "🎵 Haru Haru",
                 "🎵 Flower",
                 "🎵 Feel It",
                 "🎵 Death Bed",
                 "🎵 Let Down",
+                "🎵 No Surprise"
             ];
 
             const audioPlayer = document.getElementById("audioPlayer");
@@ -140,10 +146,11 @@
             const prevBtn = document.getElementById("prevSong");
             const trackSelect = document.getElementById("trackSelect");
             const nowPlayingText = document.getElementById("nowPlaying");
+            const volumeControl = document.getElementById("volumeControl");
 
-            let currentTrack = parseInt(localStorage.getItem("currentTrack")) || 0;
+            let currentTrack = parseInt(localStorage.getItem("currentTrack") || "0", 10);
             let isPlaying = localStorage.getItem("isPlaying") === "true";
-            let savedTime = parseFloat(localStorage.getItem("currentTime")) || 0;
+            let savedTime = parseFloat(localStorage.getItem("currentTime") || "0");
 
             function updateNowPlaying() {
                 nowPlayingText.textContent = "Now Playing: " + trackNames[currentTrack];
@@ -152,17 +159,19 @@
             function loadTrack(index) {
                 if (index >= musicTracks.length) index = 0;
                 if (index < 0) index = musicTracks.length - 1;
+
                 currentTrack = index;
+                localStorage.setItem("currentTrack", currentTrack);
+                localStorage.setItem("currentTime", savedTime);
+
                 audioPlayer.src = musicTracks[currentTrack];
                 trackSelect.value = currentTrack;
                 updateNowPlaying();
-                localStorage.setItem("currentTrack", currentTrack);
-                audioPlayer.load();
 
                 audioPlayer.onloadedmetadata = () => {
                     audioPlayer.currentTime = savedTime;
                     if (isPlaying) {
-                        audioPlayer.play();
+                        audioPlayer.play().catch(() => {});
                         playPauseBtn.textContent = "⏸️";
                     } else {
                         playPauseBtn.textContent = "▶️";
@@ -176,7 +185,7 @@
 
             playPauseBtn.addEventListener("click", () => {
                 if (!isPlaying) {
-                    audioPlayer.play();
+                    audioPlayer.play().catch(() => {});
                     playPauseBtn.textContent = "⏸️";
                     isPlaying = true;
                 } else {
@@ -211,16 +220,26 @@
                 loadTrack((currentTrack + 1) % musicTracks.length);
             });
 
-            // Track progress every second
+            // Save playback position
             setInterval(() => {
                 if (!isNaN(audioPlayer.currentTime)) {
                     localStorage.setItem("currentTime", audioPlayer.currentTime);
                 }
             }, 1000);
 
-            // Initialize
+            // Volume setup
+            audioPlayer.volume = parseFloat(localStorage.getItem("volume") || "1");
+            volumeControl.value = audioPlayer.volume;
+
+            volumeControl.addEventListener("input", () => {
+                audioPlayer.volume = volumeControl.value;
+                localStorage.setItem("volume", audioPlayer.volume);
+            });
+
+            // Load track on startup
             loadTrack(currentTrack);
         </script>
+
 
 
         <div class="auth-buttons">
