@@ -22,10 +22,10 @@ public class SecurityConfig {
         http
         	.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/home", "/complete-profile", "/register",
+//                .requestMatchers("/home", "/complete-profile", "/register",
 //                        "/profile", "/media/***", "/genres",  "/movies", "/series", "/mediaVideo/***",
-                        "/login", "/css/**", "/js/**", "/img/**", "/assets/**").permitAll()
-                .anyRequest().authenticated()
+//                        "/login", "/css/**", "/js/**", "/img/**", "/assets/**").permitAll()
+                .anyRequest().permitAll()
             )
             
 //            .formLogin(form -> form
@@ -40,6 +40,7 @@ public class SecurityConfig {
             
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
+                .permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")

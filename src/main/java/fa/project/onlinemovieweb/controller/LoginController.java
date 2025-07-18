@@ -4,6 +4,8 @@ import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,9 +23,14 @@ public class LoginController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("/login")
-    public String login(){
+    public String login(HttpSession session, Model model) {
+        if (session.getAttribute("error") != null) {
+            model.addAttribute("error", session.getAttribute("error"));
+            session.removeAttribute("error");
+        }
         return "login";
     }
+    
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
         User user = userRepo.findByUsername(username);
@@ -31,6 +38,7 @@ public class LoginController {
             model.addAttribute("error", "Invalid username or password");
             return "login";
         }
+
         session.setAttribute("user", user);
         return "redirect:/home";
     }
