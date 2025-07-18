@@ -1,0 +1,10 @@
+<div class="comment-box" th:fragment="comment">
+  <img th:src="${c.user.avatar}" alt="avatar" class="comment-avatar">
+  <div>
+    <div class="comment-header">
+      <strong th:text="${c.user.username}">Username</strong>
+      <span th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}">time</span>
+    </div>
+    <div class="comment-content" th:text="${c.content}">Comment here</div>
+  </div>
+</div>

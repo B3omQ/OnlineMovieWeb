@@ -1,0 +1,54 @@
+package fa.project.onlinemovieweb.entities;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+public class Comment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
+
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "episode_id", nullable = true)
+    private Episode episode;
+
+    @ManyToOne
+    @JoinColumn(name = "media_id", nullable = true)
+    private Media media;
+
+    // Optional: Add if you have a User entity
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    // Getters & Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public Episode getEpisode() { return episode; }
+    public void setEpisode(Episode episode) { this.episode = episode; }
+
+    public Media getMedia() { return media; }
+    public void setMedia(Media media) { this.media = media; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+}
+
