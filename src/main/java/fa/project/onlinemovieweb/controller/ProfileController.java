@@ -111,5 +111,4 @@ public class ProfileController {
         return "member_profile";
     }
 
-
 }
