@@ -25,6 +25,17 @@ public class Episode {
     @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL)
     private List<WatchHistory> watchHistories;
 
+    @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     public Long getId() {
         return id;
     }
