@@ -1,6 +1,5 @@
 package fa.project.onlinemovieweb.entities;
 
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,97 +8,107 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String username;
+	private String username;
 
-    private String email;
+	private String email;
 
-    private String password;
+	private String password;
 
-    private Role role; // "USER", "ADMIN"
+	private Role role; // "USER", "ADMIN"
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+	private LocalDateTime createdAt = LocalDateTime.now();
 
-    private String gender;// "Male", "Female", "Other"
+	private String gender;// "Male", "Female", "Other"
 
-    private String avatar;
+	private String avatar;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<WatchHistory> watchHistories;
+	@Column(nullable = false)
+	private Boolean oauthUser;
 
-    public Long getId() {
-        return id;
-    }
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<WatchHistory> watchHistories;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public Role getRole() {
-        return role;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+	public Role getRole() {
+		return role;
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public void setRole(Role role) {
+		this.role = role;
+	}
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public List<WatchHistory> getWatchHistories() {
-        return watchHistories;
-    }
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    public void setWatchHistories(List<WatchHistory> watchHistories) {
-        this.watchHistories = watchHistories;
-    }
+	public List<WatchHistory> getWatchHistories() {
+		return watchHistories;
+	}
 
-    public String getGender() {
-        return gender;
-    }
+	public void setWatchHistories(List<WatchHistory> watchHistories) {
+		this.watchHistories = watchHistories;
+	}
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public String getAvatar() {
-        return avatar;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public boolean isOauthUser() {
+		return oauthUser;
+	}
+
+	public void setOauthUser(Boolean oauthUser) {
+		this.oauthUser = oauthUser;
+	}
 }
-
