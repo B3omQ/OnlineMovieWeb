@@ -84,65 +84,142 @@
             <a href="/genres">Genres</a>
             <a href="/lastestrelease">Latest Release</a>
         </nav>
-        <div class="d-flex align-items-center gap-2" style="margin-left: 10px;">
-            <button id="musicToggle" class="btn btn-outline-light">🎵 Play Music</button>
-            <button id="nextSong" class="btn btn-outline-light">⏭️</button>
-            <audio id="audioPlayer" autoplay hidden></audio>
+        <div class="dropdown" style="margin-left: 5px; position: relative;">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="musicDropdownBtn">
+                🎵
+            </button>
+
+            <div id="musicDropdownMenu" class="dropdown-menu p-3"
+                 style="display: none; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+            z-index: 1000; background-color: #222; border-radius: 8px; width: 250px; color: white;">
+                <div id="nowPlaying" class="mb-2" style="font-size: 14px;">Now Playing: 🎵 Phep Mau</div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <button id="prevSong" class="btn btn-sm btn-outline-light">⏮️</button>
+                    <button id="playPause" class="btn btn-sm btn-outline-light">▶️</button>
+                    <button id="nextSong" class="btn btn-sm btn-outline-light">⏭️</button>
+                </div>
+
+                <select id="trackSelect" class="form-select form-select-sm">
+                    <option value="0">🎵 Phep Mau</option>
+                    <option value="1">🎵 Trinh</option>
+                    <option value="2">🎵 Flower</option>
+                    <option value="3">🎵 Feel It</option>
+                    <option value="4">🎵 Death Bed</option>
+                    <option value="5">🎵 Let Down</option>
+                </select>
+
+                <audio id="audioPlayer" autoplay hidden></audio>
+            </div>
         </div>
 
         <script>
             const musicTracks = [
-                "/assets/music/song1.mp3",
-                "/assets/music/song2.mp3",
-                "/assets/music/song3.mp3",
-                "/assets/music/song4.mp3",
-                "/assets/music/song5.mp3",
-                "/assets/music/song6.mp3"
+                "/assets/music/phep_mau.mp3",
+                "/assets/music/trinh.mp3",
+                "/assets/music/flower.mp3",
+                "/assets/music/feel_it.mp3",
+                "/assets/music/death_bed.mp3",
+                "/assets/music/let_down.mp3",
+            ];
+
+            const trackNames = [
+                "🎵 Phep Mau",
+                "🎵 Trinh",
+                "🎵 Flower",
+                "🎵 Feel It",
+                "🎵 Death Bed",
+                "🎵 Let Down",
             ];
 
             const audioPlayer = document.getElementById("audioPlayer");
-            const musicButton = document.getElementById("musicToggle");
-            const nextButton = document.getElementById("nextSong");
+            const dropdownBtn = document.getElementById("musicDropdownBtn");
+            const dropdownMenu = document.getElementById("musicDropdownMenu");
+            const playPauseBtn = document.getElementById("playPause");
+            const nextBtn = document.getElementById("nextSong");
+            const prevBtn = document.getElementById("prevSong");
+            const trackSelect = document.getElementById("trackSelect");
+            const nowPlayingText = document.getElementById("nowPlaying");
 
-            let currentTrack = parseInt(localStorage.getItem("currentTrackIndex") || "0", 10);
-            let isPlaying = false;
+            let currentTrack = parseInt(localStorage.getItem("currentTrack")) || 0;
+            let isPlaying = localStorage.getItem("isPlaying") === "true";
+            let savedTime = parseFloat(localStorage.getItem("currentTime")) || 0;
 
-            if (currentTrack >= musicTracks.length) {
-                currentTrack = 0;
+            function updateNowPlaying() {
+                nowPlayingText.textContent = "Now Playing: " + trackNames[currentTrack];
             }
 
-            audioPlayer.src = musicTracks[currentTrack];
-
-            function playNextTrack() {
-                currentTrack = (currentTrack + 1) % musicTracks.length;
-                localStorage.setItem("currentTrackIndex", currentTrack.toString());
+            function loadTrack(index) {
+                if (index >= musicTracks.length) index = 0;
+                if (index < 0) index = musicTracks.length - 1;
+                currentTrack = index;
                 audioPlayer.src = musicTracks[currentTrack];
-                if (isPlaying) {
-                    audioPlayer.play();
-                }
+                trackSelect.value = currentTrack;
+                updateNowPlaying();
+                localStorage.setItem("currentTrack", currentTrack);
+                audioPlayer.load();
+
+                audioPlayer.onloadedmetadata = () => {
+                    audioPlayer.currentTime = savedTime;
+                    if (isPlaying) {
+                        audioPlayer.play();
+                        playPauseBtn.textContent = "⏸️";
+                    } else {
+                        playPauseBtn.textContent = "▶️";
+                    }
+                };
             }
 
-            audioPlayer.addEventListener("ended", playNextTrack);
+            dropdownBtn.addEventListener("click", () => {
+                dropdownMenu.style.display = dropdownMenu.style.display === "none" ? "block" : "none";
+            });
 
-            musicButton.addEventListener("click", () => {
+            playPauseBtn.addEventListener("click", () => {
                 if (!isPlaying) {
-                    isPlaying = true;
                     audioPlayer.play();
-                    musicButton.textContent = "⏸️ Pause Music";
+                    playPauseBtn.textContent = "⏸️";
+                    isPlaying = true;
                 } else {
-                    isPlaying = false;
                     audioPlayer.pause();
-                    musicButton.textContent = "🎵 Play Music";
+                    playPauseBtn.textContent = "▶️";
+                    isPlaying = false;
                 }
+                localStorage.setItem("isPlaying", isPlaying);
             });
 
-            nextButton.addEventListener("click", () => {
-                playNextTrack();
-                if (!isPlaying) {
-                    isPlaying = true;
-                    musicButton.textContent = "⏸️ Pause Music";
-                }
+            nextBtn.addEventListener("click", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack((currentTrack + 1) % musicTracks.length);
             });
+
+            prevBtn.addEventListener("click", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack((currentTrack - 1 + musicTracks.length) % musicTracks.length);
+            });
+
+            trackSelect.addEventListener("change", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack(parseInt(trackSelect.value, 10));
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack((currentTrack + 1) % musicTracks.length);
+            });
+
+            // Track progress every second
+            setInterval(() => {
+                if (!isNaN(audioPlayer.currentTime)) {
+                    localStorage.setItem("currentTime", audioPlayer.currentTime);
+                }
+            }, 1000);
+
+            // Initialize
+            loadTrack(currentTrack);
         </script>
 
 
