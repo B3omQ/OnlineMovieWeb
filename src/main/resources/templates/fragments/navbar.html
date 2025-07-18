@@ -11,13 +11,71 @@
                 </div>
             </a>
         </div>
-
-        <div class="search-bar" style="width: 400px;">
-            <form action="/search" method="get" class="d-flex" role="search">
-                <input class="form-control rounded w-100" type="search" name="q" placeholder="Search..."
-                       aria-label="Search">
+        <!-- Search-->
+        <div class="search-bar position-relative" style="width: 400px;">
+            <form action="/search" method="get" class="d-flex flex-column gap-1" role="search" autocomplete="off">
+                <input id="searchInput" class="form-control rounded w-100" type="search" name="q"
+                       placeholder="Search..." aria-label="Search">
+                <ul id="suggestionsList"
+                    class="list-group bg-white shadow rounded"
+                    style="z-index: 1000; max-height: 300px; overflow-y: auto; position: absolute; top: 100%; left: 0; right: 0; margin-top: 0.25rem;">
+                </ul>
             </form>
         </div>
+
+
+        <script>
+            const input = document.getElementById("searchInput");
+            const suggestionsList = document.getElementById("suggestionsList");
+
+            input.addEventListener("input", async () => {
+                let query = input.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                suggestionsList.innerHTML = "";
+
+                if (query.length < 1) return;
+
+                try {
+                    const response = await fetch(`/api/suggestions?q=${encodeURIComponent(query)}`);
+                    const suggestions = await response.json();
+
+                    suggestions.forEach(item => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-action d-flex align-items-center";
+                        li.style.cursor = "pointer";
+
+                        const img = document.createElement("img");
+                        img.src = item.poster || "/assets/placeholder.jpg";
+                        img.alt = item.title;
+                        img.style.width = "40px";
+                        img.style.height = "60px";
+                        img.style.objectFit = "cover";
+                        img.className = "me-2 rounded";
+
+                        const span = document.createElement("span");
+                        span.textContent = item.title;
+
+                        li.appendChild(img);
+                        li.appendChild(span);
+
+                        li.onclick = () => {
+                            input.value = item.title;
+                            suggestionsList.innerHTML = "";
+                            input.form.submit(); // Submit on click
+                        };
+
+                        suggestionsList.appendChild(li);
+                    });
+                } catch (e) {
+                    console.error("Suggestion fetch failed", e);
+                }
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!input.contains(e.target) && !suggestionsList.contains(e.target)) {
+                    suggestionsList.innerHTML = "";
+                }
+            });
+        </script>
 
 
         <nav class="navbar-menu">
@@ -35,7 +93,9 @@
             <a th:if="${user != null and user.username != null}" href="/profile" class="profile-link"
                style="margin-right: 10px;">
                 <img th:if="${user.avatar != null}" src="${user.avatar}" class="profile-icon" alt="Profile"/>
-                <img th:if="${user.avatar == null}" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s" class="profile-icon" alt="Profile"/>
+                <img th:if="${user.avatar == null}"
+                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s"
+                     class="profile-icon" alt="Profile"/>
             </a>
 
             <a th:if="${user != null and user.username != null}" href="/logout" class="btn logout">Logout</a>
