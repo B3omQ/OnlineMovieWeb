@@ -46,39 +46,48 @@
 
             <!-- Comment -->
             <div class="mt-4">
-                <h5><i class="bi bi-chat-left-text"></i> Comments (33)</h5>
+                <h5><i class="bi bi-chat-left-text"></i> Comments</h5>
                 <div class="mb-3">
                     <button class="btn btn-outline-light btn-sm">Comment</button>
                     <button class="btn btn-outline-light btn-sm">Rate</button>
                 </div>
-                <p>Please<a href="/login" class="text-warning">Login</a> to leave a comment</p>
+                <p th:if="${user == null or user.username == null}" >Please<a href="/login" class="text-warning">Login</a> to leave a comment</p>
 
                 <!--Comment box-->
-                <div class="p-3 comment-box mb-3">
-                    <textarea class="form-control comment-box mb-2" rows="3" maxlength="1000" placeholder="Write your comment..."></textarea>
+                <form id="commentForm" th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment${media.type == 'TV Show' ? ('?ep=' + episode) : ''}|}" method="post">
+                <textarea id="commentContent" name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
+              placeholder="Write your comment..." required></textarea>
+                    <input type="hidden" id="episodeId" name="episodeId" th:value="${episode}">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                        </div>
+                        <div></div>
                         <div>
                             <small class="me-3 text-muted">0 / 1000</small>
-                            <button class="btn send-btn">
-                                Sent <i class="bi bi-send-fill"></i>
+                            <button class="btn send-btn" type="submit">
+                                Send <i class="bi bi-send-fill"></i>
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- a comment -->
-                <div class="d-flex mb-3">
-                    <img src="https://i.imgur.com/NxQx6Yf.jpg" class="rounded-circle me-3" width="45" height="45" alt="avatar">
-                    <div>
-                        <strong>User</strong> • <small class="text-muted">1 day ago</small>
-                        <p class="mb-1">Damn this shi good</p>
-                        <small class="text-muted">
-                            <i class="bi bi-hand-thumbs-up"></i> 2
-                            • <a href="#" class="text-decoration-none ms-2">Reply</a>
-                        </small>
+                </form>
+                <div id="commentSection">
+                    <div class="comment-box" th:each="c : ${comments}" th:object="${c}">
+                        <img th:src="*{user.avatar}" alt="avatar">
+                        <div>
+                            <div class="comment-header">
+                                <strong th:text="*{user.username}">Username</strong>
+                                <span th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                            </div>
+                            <div class="comment-content" th:text="*{content}">Comment here</div>
+                        </div>
                     </div>
+                </div>
+                <div class="pagination">
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{|/mediaVideo/${media.title}.${media.id}?ep=${episode}&page=${currentPage - 1}|}">Previous</a>
+
+                    <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
+
+                    <a th:if="${currentPage + 1 < totalPages}"
+                       th:href="@{|/mediaVideo/${media.title}.${media.id}?ep=${episode}&page=${currentPage + 1}|}">Next</a>
                 </div>
             </div>
         </div>
@@ -101,6 +110,52 @@
 </div>
 </div>
 </body>
+<script>
+    document.getElementById("commentForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const content = document.getElementById("commentContent").value.trim();
+        const episodeId = document.getElementById("episodeId")?.value || "";
+
+        if (!content) return;
+
+        const formData = new URLSearchParams();
+        formData.append("content", content);
+        if (episodeId) formData.append("ep", episodeId);
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert("Please login to comment.");
+                } else {
+                    throw new Error("Server error");
+                }
+                return;
+            }
+
+            const newCommentHtml = await response.text();
+
+            const commentSection = document.getElementById("commentSection");
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = newCommentHtml;
+
+            commentSection.insertBefore(tempDiv.firstElementChild, commentSection.firstChild);
+            form.reset();
+        } catch (err) {
+            alert("Error submitting comment: " + err.message);
+        }
+    });
+</script>
+
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>
 </html>

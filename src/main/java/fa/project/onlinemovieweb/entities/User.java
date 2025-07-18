@@ -26,7 +26,7 @@ public class User {
 
 	private String avatar;
 
-	@Column(nullable = false)
+//	@Column(nullable = false)
 	private Boolean oauthUser;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
