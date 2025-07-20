@@ -106,8 +106,7 @@ public class AdminController{
         mediaRepo.delete(m);
         return "redirect:/admin/medias";
     }
-
-
+        
     @GetMapping("/admin/users")
     public String getUsers(Model model){
         List<User> users = userRepo.findAll();
