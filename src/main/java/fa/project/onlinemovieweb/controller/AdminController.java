@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,10 @@ public class AdminController{
     }
 
     @GetMapping("admin/medias")
-    public String getMedias(Model model){
+    public String getMedias(Model model, @RequestParam(required = false) String query){
         List<Media> medias = mediaRepo.findAll();
         model.addAttribute("medias", medias);
+        model.addAttribute("query", query);
         return "admin_medias";
     }
 
@@ -50,18 +52,27 @@ public class AdminController{
     }
 
     @PostMapping("admin/medias/update")
-    public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Integer> genreIds){
+    public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Integer> genreIds, RedirectAttributes redirectAttributes){
+        Media m = mediaRepo.findById(media.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        m.setTitle(media.getTitle());
+        m.setDescription(media.getDescription());
+        m.setReleaseYear(media.getReleaseYear());
+        m.setLanguage(media.getLanguage());
+        m.setType(media.getType());
+        m.setVideoUrl(media.getVideoUrl());
+        m.setPoster(media.getPoster());
+        m.setBanner(media.getBanner());
         if(genreIds==null || genreIds.isEmpty()){
-            media.setGenres(new ArrayList<>());
+            m.setGenres(new ArrayList<>());
         }
         else{
             List<Genre> genres = genreRepo.findAllById(genreIds);
-            media.setGenres(genres);
+            m.setGenres(genres);
         }
-        mediaRepo.save(media);
+        mediaRepo.save(m);
+        redirectAttributes.addAttribute("query", m.getTitle());
         return "redirect:/admin/medias";
     }
-
 
 
     @GetMapping("/admin/users")
