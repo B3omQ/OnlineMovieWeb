@@ -64,12 +64,12 @@ public class ProfileController {
             return "member_profile";
         }
 
-        if (!name.matches("^[a-zA-ZÀ-ỹ](?:[a-zA-ZÀ-ỹ\\s]{0,48}[a-zA-ZÀ-ỹ])?$")) {
-            model.addAttribute("error", "Name must be 2-50 characters, letters only, no leading/trailing spaces.");
-            model.addAttribute("user", currentUser);
-            model.addAttribute("userDtoCp", new UserChangePasswordDto());
-            return "member_profile";
-        }
+//        if (!name.matches("^[a-zA-ZÀ-ỹ](?:[a-zA-ZÀ-ỹ\\s]{0,48}[a-zA-ZÀ-ỹ])?$")) {
+//            model.addAttribute("error", "Name must be 2-50 characters, letters only, no leading/trailing spaces.");
+//            model.addAttribute("user", currentUser);
+//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+//            return "member_profile";
+//        }
 
 
         if (!gender.equalsIgnoreCase("male") &&
