@@ -2,7 +2,6 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.Genre;
 import fa.project.onlinemovieweb.entities.Media;
-import fa.project.onlinemovieweb.entities.Role;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
@@ -43,11 +42,12 @@ public class AdminController{
     }
 
     @GetMapping("admin/medias/update/{id}")
-    public String getMedia(@PathVariable Long id, Model model){
+    public String getUpdate(@PathVariable Long id, Model model){
         Media media = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("media", media);
         List<Genre> genres = genreRepo.findAll();
         model.addAttribute("genres", genres);
+        model.addAttribute("isUpdate", true);
         return "update_media";
     }
 
@@ -74,7 +74,39 @@ public class AdminController{
         return "redirect:/admin/medias";
     }
 
+    @GetMapping("/admin/medias/create")
+    public String getCreate(Model model){
+        Media media = new Media();
+        model.addAttribute("media", media);
+        List<Genre> genres = genreRepo.findAll();
+        model.addAttribute("genres", genres);
+        model.addAttribute("isUpdate", false);
+        return "update_media";
+    }
 
+    @PostMapping("/admin/medias/create")
+    public String createMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Integer> genreIds, RedirectAttributes redirectAttributes){
+        if(media!=null){
+            if(genreIds==null || genreIds.isEmpty()){
+                media.setGenres(new ArrayList<>());
+            }
+            else{
+                List<Genre> genres = genreRepo.findAllById(genreIds);
+                media.setGenres(genres);
+            }
+            mediaRepo.save(media);
+            redirectAttributes.addAttribute("query", media.getTitle());
+        }
+        return "redirect:/admin/medias";
+    }
+
+    @GetMapping("/admin/medias/delete/{id}")
+    public String deleteMedia(@PathVariable Long id){
+        Media m = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        mediaRepo.delete(m);
+        return "redirect:/admin/medias";
+    }
+        
     @GetMapping("/admin/users")
     public String getUsers(Model model){
         List<User> users = userRepo.findAll();
