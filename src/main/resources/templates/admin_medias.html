@@ -14,6 +14,9 @@
         <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
         <div class="col">
             <input class="form-control" id="search" name="search" th:value="${query}" placeholder="Search medias..." oninput="filterMedias()">
+            <div class="row">
+                <a th:href="@{/admin/medias/create}" class="col-auto text-end btn btn-success">New</a>
+            </div>
             <br/>
             <table class="table table-striped">
                 <thead>
@@ -31,6 +34,9 @@
                     <td class="col-2"><img th:src="${media.poster}" width="200px"></td>
                     <td>
                         <a th:href="@{/admin/medias/update/{id}(id=${media.id})}" class="btn btn-warning">Change</a>
+                        <a th:href="@{/admin/medias/delete/{id}(id=${media.id})}" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this media?')"
+                        >Delete</a>
                     </td>
                 </tr>
                 </tbody>
