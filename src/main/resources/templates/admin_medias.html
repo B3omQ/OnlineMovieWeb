@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
         <div class="col">
-            <input class="form-control" id="search" name="search" placeholder="Search medias..." oninput="filterMedias()">
+            <input class="form-control" id="search" name="search" th:value="${query}" placeholder="Search medias..." oninput="filterMedias()">
             <br/>
             <table class="table table-striped">
                 <thead>
@@ -43,5 +43,28 @@
 <script>
     function filterMedias(){
         const query = document.getElementById("search").value.toLowerCase();
+        const tableRows = document.querySelectorAll("tbody tr");
+        tableRows.forEach(row=>{
+            const titleCell = row.querySelector("td:first-child");
+            const title = titleCell ? titleCell.textContent.toLowerCase() : "";
+
+            const genreCell = row.querySelector("td:nth-child(2)");
+            const genreBadges = genreCell ? genreCell.querySelectorAll(".badge") : [];
+            const genres = Array.from(genreBadges).map(b => b.textContent.toLowerCase()).join(" ");
+
+            if(query === "" || title.includes(query) || genres.includes(query)){
+                row.style.display = "";
+            }
+            else{
+                row.style.display = "none";
+            }
+        });
     }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        const searchField = document.getElementById('search');
+        if(searchField.value.trim('') !== ''){
+            filterMedias();
+        }
+    });
 </script>
