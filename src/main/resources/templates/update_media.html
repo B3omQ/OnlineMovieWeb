@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${media.title}"></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+    <div class="row">
+        <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
+        <div class="col">
+            <form th:action="@{/admin/medias/update}" th:object="${media}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-8">
+                                <label for="title">Title</label>
+                                <input class="form-control" id="title" th:field="*{title}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label for="language">Language</label>
+                                <input class="form-control" id="language" th:field="*{language}" required>
+                            </div>
+                            <div class="col">
+                                <label for="year">Release year</label>
+                                <input class="form-control" id="year" th:field="*{releaseYear}" required oninput="validateDigits(this)">
+                            </div>
+                            <div class="col">
+                                <label for="type">Type</label>
+                                <input class="form-control" id="type" th:field="*{type}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label>Genres</label>
+                            <div class="d-flex flex-wrap">
+                                <span
+                                    th:each="genre : ${genres}"
+                                    th:text="${genre.name}"
+                                    class="btn mb-2 me-2 badge" th:classappend="${media.genres.contains(genre)?'bg-primary':'bg-secondary'}"
+                                    th:attr="data-genre-id=${genre.id}"
+                                    onclick="toggleGenre(this)">
+                                </span>
+                                <div id="genreInputsContainer"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label for="video">Video</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" th:field="*{videoUrl}" required oninput="updateVideo()" placeholder="embedded https video link here">
+                            </div>
+                            <div style="aspect-ratio: 16/9; width: 100%">
+                                <iframe id="video" th:src="*{videoUrl}" width="100%" height="100%" style="display: block" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label for="bannerUrl">Banner</label>
+                            </div>
+                            <div class="col">
+                                <input id="bannerUrl" class="form-control" th:field="*{banner}" required oninput="updateBanner()" placeholder="https image link here">
+                            </div>
+                            <img id="banner" th:src="*{banner}">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" th:field="*{description}"></textarea>
+                        </div>
+                        <div class="col-auto">
+                            <label for="posterUrl">Poster</label>
+                        </div>
+                        <div class="col">
+                            <input id="posterUrl" class="form-control" th:field="*{poster}" required oninput="updatePoster()" placeholder="https image link here">
+                        </div>
+                        <img id="poster" th:src="*{poster}" width="95%">
+                    </div>
+                </div>
+                <div class="row">
+                    <button type="submit" class="col-auto btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<style>
+    label{
+        color: white;
+    }
+</style>
+<script th:inline="javascript">
+    let selectedGenreIds = [];
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectedBadges = document.querySelectorAll('.badge.bg-primary');
+            selectedBadges.forEach(badge => {
+                const genreId = parseInt(badge.getAttribute('data-genre-id'));
+                selectedGenreIds.push(genreId);
+            });
+
+        updateGenreInputs();
+        console.log(selectedGenreIds);
+    });
+
+    function toggleGenre(element){
+        const genreId = parseInt(element.getAttribute('data-genre-id'));
+        if(selectedGenreIds.includes(genreId)){
+            selectedGenreIds = selectedGenreIds.filter(id => id!=genreId);
+            element.classList.remove('bg-primary');
+            element.classList.add('bg-secondary');
+        }
+        else{
+            selectedGenreIds.push(genreId);
+            element.classList.remove('bg-secondary');
+            element.classList.add('bg-primary');
+        }
+        updateGenreInputs();
+        console.log(selectedGenreIds);
+    }
+
+    function updateGenreInputs() {
+        const container = document.getElementById('genreInputsContainer');
+        // Clear existing inputs
+        container.innerHTML = '';
+
+        // Create hidden input for each selected genre
+        selectedGenreIds.forEach(genreId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'genreIds';
+            input.value = genreId;
+            container.appendChild(input);
+        });
+    }
+
+    function updateVideo(){
+        const videoUrl = document.getElementById('videoUrl');
+        const videoPlayer = document.getElementById('video');
+        videoPlayer.src = videoUrl.value;
+    }
+
+    function updateBanner(){
+        const bannerUrl = document.getElementById('bannerUrl');
+        const bannerImg = document.getElementById('banner');
+        bannerImg.src =  bannerUrl.value;
+    }
+
+    function updatePoster(){
+        const posterUrl = document.getElementById('posterUrl');
+        const posterImg = document.getElementById('poster');
+        posterImg.src =  posterUrl.value;
+    }
+
+    function validateDigits(input){
+        input.value = input.value.replace(/\D/g, '');
+    }
+</script>

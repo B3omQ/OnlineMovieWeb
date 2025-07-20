@@ -1,0 +1,16 @@
+<div th:fragment="admin_sidebar">
+    <aside class="bg-gray text-white vh-100 p-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a th:href="@{/admin/users}" class="nav-link text-white">
+                    <i class="bi bi-person-fill"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/admin/medias}" class="nav-link text-white">
+                    <i class="bi bi-camera-fill"></i> Medias
+                </a>
+            </li>
+        </ul>
+    </aside>
+</div>
