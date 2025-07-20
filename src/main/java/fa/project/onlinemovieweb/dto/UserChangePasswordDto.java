@@ -1,11 +1,11 @@
 package fa.project.onlinemovieweb.dto;
 
-public class UserRegistrationDto {
+public class UserChangePasswordDto {
     private String username;
     private String email;
     private String password;
+    private String newPassword;
     private String confirmPassword;
-
 
     public String getUsername() {
         return username;
@@ -31,6 +31,14 @@ public class UserRegistrationDto {
         this.password = password;
     }
 
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
     public String getConfirmPassword() {
         return confirmPassword;
     }
@@ -38,5 +46,4 @@ public class UserRegistrationDto {
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
-
 }
