@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -57,16 +58,29 @@ public class HomeController {
 
     // HomeController.java
     @GetMapping("/lastestrelease")
-    public String showAllRelease(Model model, HttpSession session) {
-        List<Media> allMedia = mediaRepository.findAll();
+    public String showAllRelease(@RequestParam(required = false) Integer year, Model model, HttpSession session) {
+        List<Media> allMedia;
+
+        // Treat 0 or null as "All Years"
+        if (year != null && year != 0) {
+            allMedia = mediaRepository.findByReleaseYear(year);
+        } else {
+            allMedia = mediaRepository.findAll();
+        }
+
+        // Sort by newest release first
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
+
         model.addAttribute("allMedia", allMedia);
         model.addAttribute("pageTitle", "Latest Release");
-        model.addAttribute("sectionTitle", "Latest Release");
+        model.addAttribute("sectionTitle", (year != null && year != 0) ? "Latest Release: " + year : "Latest Release");
+
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
+
         return "seperated_film";
     }
+
 
     @GetMapping("/movies")
     public String showAllMovies(Model model, HttpSession session) {
@@ -121,6 +135,11 @@ public class HomeController {
         model.addAttribute("user", user);
 
         return "seperated_film";
+    }
+
+    @ModelAttribute("availableYears")
+    public List<Integer> populateAvailableYears() {
+        return mediaRepository.findDistinctYears(); // must return List<Integer>
     }
 
 
