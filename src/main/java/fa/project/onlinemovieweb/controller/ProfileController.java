@@ -117,6 +117,12 @@ public class ProfileController {
             return "member_profile";
         }
 
+        if (newPassword.contains(" ")) {
+            model.addAttribute("error", "Password must not contain spaces.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match.");
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
