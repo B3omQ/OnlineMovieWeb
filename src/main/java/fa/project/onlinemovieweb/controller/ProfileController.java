@@ -111,17 +111,18 @@ public class ProfileController {
         String newPassword = userDtoCp.getNewPassword();
         String confirmPassword = userDtoCp.getConfirmPassword();
 
+        if (newPassword.contains(" ")) {
+            model.addAttribute("error", "Password must not contain spaces.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+        
         if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
             model.addAttribute("error", "Old password is incorrect.");
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
-        if (newPassword.contains(" ")) {
-            model.addAttribute("error", "Password must not contain spaces.");
-            model.addAttribute("userDtoCp", new UserChangePasswordDto());
-            return "member_profile";
-        }
 
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match.");
