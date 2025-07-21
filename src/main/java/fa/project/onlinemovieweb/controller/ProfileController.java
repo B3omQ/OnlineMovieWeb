@@ -1,8 +1,12 @@
 package fa.project.onlinemovieweb.controller;
 
+import fa.project.onlinemovieweb.dto.UserChangePasswordDto;
+import fa.project.onlinemovieweb.dto.UserRegistrationDto;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
@@ -21,7 +25,11 @@ import java.util.UUID;
 
 @Controller
 public class ProfileController {
-    private final UserRepo userRepo;
+
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     public ProfileController(UserRepo userRepo) {
         this.userRepo = userRepo;
@@ -31,7 +39,7 @@ public class ProfileController {
     public String member_profile(HttpSession session, Model model) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) return "redirect:/login";
-
+        model.addAttribute("userDtoCp", new UserChangePasswordDto());
         model.addAttribute("user", currentUser);
         return "member_profile";
     }
@@ -52,20 +60,24 @@ public class ProfileController {
         if (name == null || name.trim().isEmpty()) {
             model.addAttribute("error", "Name cannot be empty.");
             model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
-        if (!name.matches("^[a-zA-ZÀ-ỹ\\s]{2,50}$")) {
-            model.addAttribute("error", "Name must be 2-50 characters and contain only letters.");
-            model.addAttribute("user", currentUser);
-            return "member_profile";
-        }
+//        if (!name.matches("^[a-zA-ZÀ-ỹ](?:[a-zA-ZÀ-ỹ\\s]{0,48}[a-zA-ZÀ-ỹ])?$")) {
+//            model.addAttribute("error", "Name must be 2-50 characters, letters only, no leading/trailing spaces.");
+//            model.addAttribute("user", currentUser);
+//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+//            return "member_profile";
+//        }
+
 
         if (!gender.equalsIgnoreCase("male") &&
                 !gender.equalsIgnoreCase("female") &&
                 !gender.equalsIgnoreCase("other")) {
             model.addAttribute("error", "Invalid gender selected.");
             model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
@@ -76,15 +88,14 @@ public class ProfileController {
 
         model.addAttribute("success", "Profile updated successfully.");
         model.addAttribute("user", currentUser);
+        model.addAttribute("userDtoCp", new UserChangePasswordDto());
         return "member_profile";
     }
 
 
     @PostMapping("/change_password")
     public String change_password(
-            @RequestParam("oldPassword") String oldPassword,
-            @RequestParam("newPassword") String newPassword,
-            @RequestParam("confirmPassword") String confirmPassword,
+            @ModelAttribute("userDtoCp") UserChangePasswordDto userDtoCp,
             HttpSession session,
             Model model
     ) {
@@ -93,31 +104,42 @@ public class ProfileController {
         if (currentUser == null) {
             return "redirect:/login";
         }
+
         model.addAttribute("user", currentUser);
 
-        if (!currentUser.getPassword().equals(oldPassword)) {
+        String oldPassword = userDtoCp.getPassword();
+        String newPassword = userDtoCp.getNewPassword();
+        String confirmPassword = userDtoCp.getConfirmPassword();
+
+        if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
             model.addAttribute("error", "Old password is incorrect.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
-        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9])\\S{8,}$";
-        if (!newPassword.matches(passwordRegex)) {
-            model.addAttribute("error",
-                    "Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character. Spaces are not allowed.");
-            return "member_profile";
-        }
+//        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9])\\S{8,}$";
+//        if (!newPassword.matches(passwordRegex)) {
+//            model.addAttribute("error",
+//                    "Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character. Spaces are not allowed.");
+//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+//            return "member_profile";
+//        }
 
-        currentUser.setPassword(newPassword);
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(currentUser);
-        model.addAttribute("success", "Password changed successfully.");
 
+        model.addAttribute("success", "Password changed successfully.");
+        model.addAttribute("userDtoCp", new UserChangePasswordDto());
         return "member_profile";
     }
+
+
 
     @PostMapping("/upload_avatar")
     public String uploadAvatar(@RequestParam("avatar") MultipartFile file,
@@ -134,33 +156,32 @@ public class ProfileController {
 
         if (file.isEmpty()) {
             model.addAttribute("error", "Please choose a file.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
         try {
-            // ==== XÓA FILE ẢNH CŨ (nếu có) ====
-            String oldAvatar = currentUser.getAvatar(); // ví dụ: /assets/avatars/abc123_avatar.jpg
+            String oldAvatar = currentUser.getAvatar();
             if (oldAvatar != null && !oldAvatar.isEmpty()) {
-                String oldFilePath = "." + oldAvatar; // ./assets/avatars/abc123_avatar.jpg
+                String oldFilePath = "." + oldAvatar;
                 File oldFile = new File(oldFilePath);
                 if (oldFile.exists()) {
-                    oldFile.delete(); // xóa file cũ
+                    oldFile.delete();
                 }
             }
 
-            // ==== TẠO TÊN FILE MỚI ====
-//            String shortId = UUID.randomUUID().toString().substring(0, 8);
-//            String filename = shortId + "_" + file.getOriginalFilename();
-            String filename = file.getOriginalFilename();
+            String shortId = UUID.randomUUID().toString().substring(0, 8);
+            String filename = shortId + "_" + file.getOriginalFilename();
+//            String filename = file.getOriginalFilename();
             String uploadDir = "assets/avatars/";
             File uploadPath = new File(uploadDir);
             if (!uploadPath.exists()) uploadPath.mkdirs();
 
-            // ==== LƯU FILE MỚI ====
+
             Path path = Paths.get(uploadDir + filename);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-            // ==== CẬP NHẬT USER ====
+
             currentUser.setAvatar("/" + uploadDir + filename);
             userRepo.save(currentUser);
             session.setAttribute("user", currentUser);
@@ -170,7 +191,7 @@ public class ProfileController {
             e.printStackTrace();
             model.addAttribute("error", "Upload failed.");
         }
-
+        model.addAttribute("userDtoCp", new UserChangePasswordDto());
         return "member_profile";
     }
 
