@@ -1,0 +1,66 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<!-- fragments/profilesidebar.html -->
+<div th:fragment="sidebar">
+    <div class="dcc-side">
+        <div class="ds-menu">
+            <div class="heading-sm">
+                Account Management
+            </div>
+            <div class="menu-user">
+                <a class="item" href="/user/favorite">
+                    <div class="line-center flex">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Favorites</span>
+                    </div>
+                </a>
+
+                <a class="item" href="/user/playlist">
+                    <div class="line-center flex">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Playlist</span>
+                    </div>
+                </a>
+
+                <a class="item" href="/history">
+                    <div class="line-center flex">
+                        <i class="fa-solid fa-history"></i>
+                        <span>History</span>
+                    </div>
+                </a>
+
+                <a class="item" href="/user/thong-bao">
+                    <div class="line-center flex">
+                        <i class="fa-solid fa-bell"></i>
+                        <span>Notifications</span>
+                    </div>
+                </a>
+
+                <a class="item" href="/profile">
+                    <div class="line-center flex">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Profile</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="side-user">
+                <div th:if="${user != null and user.username != null}" class="user-avatar">
+                    <img th:if="${user.avatar != null}" th:src="${user.avatar}" alt="Profile"/>
+                    <img th:if="${user.avatar == null}"
+                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s"
+                         alt="Profile"/>
+                </div>
+
+                <div class="info">
+                    <div class="user-name line-center gr-free"></div>
+                    <div class="alias-name lim-1 mb-3" th:text="${user.email}"></div>
+                    <a class="btn btn-sx btn-basic px-0"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

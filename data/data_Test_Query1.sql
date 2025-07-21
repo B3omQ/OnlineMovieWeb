@@ -128,4 +128,10 @@ INSERT INTO Media_Genre (media_id, genre_id) VALUES (41, 6), (41, 38)
 
 
 
+INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
+VALUES ('2025-07-20 21:00:00', 3600, 4, 10, NULL);
+INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
+VALUES ('2025-07-18 15:30:00', 2400, 4, 12, NULL);
+INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
+VALUES ('2025-07-16 10:05:00', 3200, 4, 8, NULL);
 
