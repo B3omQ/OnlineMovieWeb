@@ -116,7 +116,7 @@ public class ProfileController {
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
-        
+
         if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
             model.addAttribute("error", "Old password is incorrect.");
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
