@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class AdminController{
+public class AdminController {
     @Autowired
     private UserRepo userRepo;
 
@@ -29,12 +29,12 @@ public class AdminController{
     private GenreRepo genreRepo;
 
     @GetMapping("admin/")
-    public String getAdmin(){
+    public String getAdmin() {
         return "redirect:/admin/medias";
     }
 
     @GetMapping("admin/medias")
-    public String getMedias(Model model, @RequestParam(required = false) String query){
+    public String getMedias(Model model, @RequestParam(required = false) String query) {
         List<Media> medias = mediaRepo.findAll();
         model.addAttribute("medias", medias);
         model.addAttribute("query", query);
@@ -42,7 +42,7 @@ public class AdminController{
     }
 
     @GetMapping("admin/medias/update/{id}")
-    public String getUpdate(@PathVariable Long id, Model model){
+    public String getUpdate(@PathVariable Long id, Model model) {
         Media media = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("media", media);
         List<Genre> genres = genreRepo.findAll();
@@ -52,7 +52,7 @@ public class AdminController{
     }
 
     @PostMapping("admin/medias/update")
-    public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Integer> genreIds, RedirectAttributes redirectAttributes){
+    public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds, RedirectAttributes redirectAttributes) {
         Media m = mediaRepo.findById(media.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         m.setTitle(media.getTitle());
         m.setDescription(media.getDescription());
@@ -62,10 +62,9 @@ public class AdminController{
         m.setVideoUrl(media.getVideoUrl());
         m.setPoster(media.getPoster());
         m.setBanner(media.getBanner());
-        if(genreIds==null || genreIds.isEmpty()){
+        if (genreIds == null || genreIds.isEmpty()) {
             m.setGenres(new ArrayList<>());
-        }
-        else{
+        } else {
             List<Genre> genres = genreRepo.findAllById(genreIds);
             m.setGenres(genres);
         }
@@ -75,7 +74,7 @@ public class AdminController{
     }
 
     @GetMapping("/admin/medias/create")
-    public String getCreate(Model model){
+    public String getCreate(Model model) {
         Media media = new Media();
         model.addAttribute("media", media);
         List<Genre> genres = genreRepo.findAll();
@@ -85,12 +84,11 @@ public class AdminController{
     }
 
     @PostMapping("/admin/medias/create")
-    public String createMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Integer> genreIds, RedirectAttributes redirectAttributes){
-        if(media!=null){
-            if(genreIds==null || genreIds.isEmpty()){
+    public String createMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds, RedirectAttributes redirectAttributes) {
+        if (media != null) {
+            if (genreIds == null || genreIds.isEmpty()) {
                 media.setGenres(new ArrayList<>());
-            }
-            else{
+            } else {
                 List<Genre> genres = genreRepo.findAllById(genreIds);
                 media.setGenres(genres);
             }
@@ -101,14 +99,14 @@ public class AdminController{
     }
 
     @GetMapping("/admin/medias/delete/{id}")
-    public String deleteMedia(@PathVariable Long id){
+    public String deleteMedia(@PathVariable Long id) {
         Media m = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         mediaRepo.delete(m);
         return "redirect:/admin/medias";
     }
-        
+
     @GetMapping("/admin/users")
-    public String getUsers(Model model){
+    public String getUsers(Model model) {
         List<User> users = userRepo.findAll();
         model.addAttribute("users", users);
         return "admin_users";
