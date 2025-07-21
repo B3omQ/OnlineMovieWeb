@@ -1,5 +1,7 @@
 package fa.project.onlinemovieweb.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,7 +32,12 @@ public class ProfileCompletionController {
         if (userIdObj == null) return "redirect:/login";
         Long userId = (Long) userIdObj;
 
-        if (userRepo.findByUsername(username) != null) {
+        List<User> matches = userRepo.findByUsername(username);
+    	User exactMatch = matches.stream()
+    		    .filter(u -> u.getUsername().equals(username))
+    		    .findFirst()
+    		    .orElse(null);
+    	if (exactMatch != null) {
             model.addAttribute("error", "Username is already taken");
             return "complete_profile";
         }
