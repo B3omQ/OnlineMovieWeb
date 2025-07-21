@@ -33,7 +33,7 @@ public class GenreController {
     }
 
     @GetMapping("/genres/{id}")
-    public String showGenre(@PathVariable("id") Integer genreId, HttpSession session, Model model) {
+    public String showGenre(@PathVariable("id") Long genreId, HttpSession session, Model model) {
 
         Genre genre = genreRepo.findById(genreId).orElse(null);
         List<Media> mediaList = mediaRepo.findByGenresContaining(genre);

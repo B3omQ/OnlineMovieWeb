@@ -104,7 +104,7 @@
                                 <label class="form-label d-block small mb-3">Gender</label>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" id="gender2" type="radio" value="male"
-                                           name="gender" th:checked="${user.gender == 'male'}"/>
+                                           name="gender" th:checked="${user.gender == 'male'}" required />
                                     <label class="form-check-label" for="gender2">Male</label>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -123,16 +123,12 @@
                                 <button class="btn px-4 btn-primary">Update</button>
                             </div>
 
-                            <p class="mt-5">
+                            <p class="mt-5" th:if="${!user.isOauthUser()}">
                                 To change your password, click
                                 <a href="#" class="text-primary" data-bs-toggle="modal"
                                    data-bs-target="#changePasswordModal">here</a>
                             </p>
 
-                            <div id="errorMessage" th:if="${error}" class="alert alert-danger mt-3"
-                                 th:text="${error}"></div>
-                            <div id="successMessage" th:if="${success}" class="alert alert-success mt-3"
-                                 th:text="${success}"></div>
                         </form>
 
                         <div class="modal fade" id="changePasswordModal" tabindex="-1"
@@ -150,32 +146,30 @@
                                     </div>
 
                                     <!-- Change password form -->
-                                    <form class="v-form" th:action="@{/change_password}" method="POST">
+                                    <form class="v-form" th:action="@{/change_password}" method="POST" th:object="${userDtoCp}">
                                         <div class="is-body mb-5">
                                             <div class="form-group mb-2">
                                                 <label class="form-label">Current Password</label>
                                                 <input class="form-control v-form-control" required type="password"
-                                                       name="oldPassword">
+                                                       th:field="*{password}">
                                             </div>
                                             <div class="form-group mb-2">
                                                 <label class="form-label">New Password</label>
                                                 <input class="form-control v-form-control" required type="password"
-                                                       name="newPassword">
+                                                       th:field="*{newPassword}">
                                             </div>
                                             <div class="form-group mb-4">
                                                 <label class="form-label">Confirm New Password</label>
                                                 <input class="form-control v-form-control" required type="password"
-                                                       name="confirmPassword">
+                                                       th:field="*{confirmPassword}">
                                             </div>
                                         </div>
                                         <div class="is-footer">
-                                            <button type="submit" class="btn btn-sm btn-primary">Change Password
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-light px-4"
-                                                    data-bs-dismiss="modal">Cancel
-                                            </button>
+                                            <button type="submit" class="btn btn-sm btn-primary">Change Password</button>
+                                            <button type="button" class="btn btn-sm btn-light px-4" data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </form>
+
                                 </div>
                             </div>
                         </div>
@@ -201,6 +195,10 @@
                             </form>
                         </div>
                     </div>
+                    <div id="errorMessage" th:if="${error}" class="alert alert-danger mt-3"
+                         th:text="${error}"></div>
+                    <div id="successMessage" th:if="${success}" class="alert alert-success mt-3"
+                         th:text="${success}"></div>
                 </div>
             </div>
         </div>
