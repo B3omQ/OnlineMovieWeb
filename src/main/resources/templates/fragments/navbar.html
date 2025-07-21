@@ -84,31 +84,42 @@
             <a href="/genres">Genres</a>
             <a href="/lastestrelease">Latest Release</a>
         </nav>
+        <!-- Font Awesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
         <div class="dropdown" style="margin-left: 5px; position: relative;">
             <button class="btn btn-outline-light dropdown-toggle" type="button" id="musicDropdownBtn">
-                🎵
+                <i class="fas fa-music"></i>
             </button>
 
             <div id="musicDropdownMenu" class="dropdown-menu p-3"
                  style="display: none; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
                 z-index: 1000; background-color: #222; border-radius: 8px; width: 250px; color: white;">
 
-                <div id="nowPlaying" class="mb-2" style="font-size: 14px;">Now Playing: 🎵 Phep Mau</div>
+                <div id="nowPlaying" class="mb-2" style="font-size: 14px;">
+                    Now Playing: <i class="fas fa-music"></i> Phep Mau
+                </div>
 
                 <div class="d-flex justify-content-between mb-2">
-                    <button id="prevSong" class="btn btn-sm btn-outline-light">⏮️</button>
-                    <button id="playPause" class="btn btn-sm btn-outline-light">▶️</button>
-                    <button id="nextSong" class="btn btn-sm btn-outline-light">⏭️</button>
+                    <button id="prevSong" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-backward"></i>
+                    </button>
+                    <button id="playPause" class="btn btn-sm btn-outline-light">
+                        <i id="playPauseIcon" class="fas fa-play"></i>
+                    </button>
+                    <button id="nextSong" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-forward"></i>
+                    </button>
                 </div>
 
                 <select id="trackSelect" class="form-select form-select-sm mb-2">
-                    <option value="0">🎵 Phep Mau</option>
-                    <option value="1">🎵 Haru Haru</option>
-                    <option value="2">🎵 Flower</option>
-                    <option value="3">🎵 Feel It</option>
-                    <option value="4">🎵 Death Bed</option>
-                    <option value="5">🎵 Let Down</option>
-                    <option value="6">🎵 No Surprise</option>
+                    <option value="0">Phep Mau</option>
+                    <option value="1">Haru Haru</option>
+                    <option value="2">Flower</option>
+                    <option value="3">Feel It</option>
+                    <option value="4">Death Bed</option>
+                    <option value="5">Let Down</option>
+                    <option value="6">No Surprise</option>
                 </select>
 
                 <input type="range" id="volumeControl" class="form-range" min="0" max="1" step="0.01" value="1">
@@ -120,7 +131,7 @@
         <script>
             const musicTracks = [
                 "/assets/music/phep_mau.mp3",
-                "/assets/music/haru_haru.mp3",    
+                "/assets/music/haru_haru.mp3",
                 "/assets/music/flower.mp3",
                 "/assets/music/feel_it.mp3",
                 "/assets/music/death_bed.mp3",
@@ -129,19 +140,20 @@
             ];
 
             const trackNames = [
-                "🎵 Phep Mau",
-                "🎵 Haru Haru",
-                "🎵 Flower",
-                "🎵 Feel It",
-                "🎵 Death Bed",
-                "🎵 Let Down",
-                "🎵 No Surprise"
+                "Phep Mau",
+                "Haru Haru",
+                "Flower",
+                "Feel It",
+                "Death Bed",
+                "Let Down",
+                "No Surprise"
             ];
 
             const audioPlayer = document.getElementById("audioPlayer");
             const dropdownBtn = document.getElementById("musicDropdownBtn");
             const dropdownMenu = document.getElementById("musicDropdownMenu");
             const playPauseBtn = document.getElementById("playPause");
+            const playPauseIcon = document.getElementById("playPauseIcon");
             const nextBtn = document.getElementById("nextSong");
             const prevBtn = document.getElementById("prevSong");
             const trackSelect = document.getElementById("trackSelect");
@@ -153,7 +165,7 @@
             let savedTime = parseFloat(localStorage.getItem("currentTime") || "0");
 
             function updateNowPlaying() {
-                nowPlayingText.textContent = "Now Playing: " + trackNames[currentTrack];
+                nowPlayingText.innerHTML = `Now Playing: <i class="fas fa-music"></i> ${trackNames[currentTrack]}`;
             }
 
             function loadTrack(index) {
@@ -171,10 +183,11 @@
                 audioPlayer.onloadedmetadata = () => {
                     audioPlayer.currentTime = savedTime;
                     if (isPlaying) {
-                        audioPlayer.play().catch(() => {});
-                        playPauseBtn.textContent = "⏸️";
+                        audioPlayer.play().catch(() => {
+                        });
+                        playPauseIcon.className = "fas fa-pause";
                     } else {
-                        playPauseBtn.textContent = "▶️";
+                        playPauseIcon.className = "fas fa-play";
                     }
                 };
             }
@@ -185,12 +198,13 @@
 
             playPauseBtn.addEventListener("click", () => {
                 if (!isPlaying) {
-                    audioPlayer.play().catch(() => {});
-                    playPauseBtn.textContent = "⏸️";
+                    audioPlayer.play().catch(() => {
+                    });
+                    playPauseIcon.className = "fas fa-pause";
                     isPlaying = true;
                 } else {
                     audioPlayer.pause();
-                    playPauseBtn.textContent = "▶️";
+                    playPauseIcon.className = "fas fa-play";
                     isPlaying = false;
                 }
                 localStorage.setItem("isPlaying", isPlaying);
@@ -239,7 +253,6 @@
             // Load track on startup
             loadTrack(currentTrack);
         </script>
-
 
 
         <div class="auth-buttons">
