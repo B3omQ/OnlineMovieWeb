@@ -11,9 +11,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.text.Normalizer;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -23,6 +28,11 @@ public class HomeController {
 
     @Autowired
     private GenreRepo genreRepo;
+
+    @GetMapping("/")
+    public String redirectToHome() {
+        return "redirect:/home";
+    }
 
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
@@ -47,28 +57,71 @@ public class HomeController {
 
     // HomeController.java
     @GetMapping("/lastestrelease")
-    public String showAllRelease(Model model) {
+    public String showAllRelease(Model model, HttpSession session) {
         List<Media> allMedia = mediaRepository.findAll();
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
-        return "lastestrelease";
+        model.addAttribute("pageTitle", "Latest Release");
+        model.addAttribute("sectionTitle", "Latest Release");
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "seperated_film";
     }
 
-    // HomeController.java
     @GetMapping("/movies")
-    public String showAllMovies(Model model) {
+    public String showAllMovies(Model model, HttpSession session) {
         List<Media> allMedia = mediaRepository.findAllByType("movie");
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
-        return "movies";
+        model.addAttribute("pageTitle", "All Movies");
+        model.addAttribute("sectionTitle", "All Movies");
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "seperated_film";
     }
 
     @GetMapping("/series")
-    public String showAllSeries(Model model) {
+    public String showAllSeries(Model model, HttpSession session) {
         List<Media> allMedia = mediaRepository.findAllByType("Tv Show");
         allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
         model.addAttribute("allMedia", allMedia);
-        return "series";
+        model.addAttribute("pageTitle", "All Series");
+        model.addAttribute("sectionTitle", "All Series");
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "seperated_film";
     }
+
+    @GetMapping("/api/suggestions")
+    @ResponseBody
+    public List<Map<String, String>> getSuggestions(@RequestParam("q") String query) {
+        String normalizedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        List<Media> suggestions = mediaRepository.findTop5ByTitleContainingIgnoreCase(normalizedQuery);
+
+        return suggestions.stream()
+                .map(media -> Map.of(
+                        "title", media.getTitle(),
+                        "poster", media.getPoster() != null ? media.getPoster() : ""
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    @GetMapping("/search")
+    public String search(@RequestParam("q") String query, Model model, HttpSession session) {
+        List<Media> results = mediaRepository.findByTitleContainingIgnoreCase(query);
+
+        model.addAttribute("allMedia", results); // Match expected attribute in seperated_film.html
+        model.addAttribute("sectionTitle", "Search results for \"" + query + "\"");
+        model.addAttribute("pageTitle", "Search");
+
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+
+        return "seperated_film";
+    }
+
 
 }

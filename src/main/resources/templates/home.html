@@ -102,7 +102,7 @@
 
     <!--Lastest Movies -->
     <div class="container mb-5">
-        <h2 class="text-white mb-4">Latest Movie</h2>
+        <h2 class="text-white mb-4">Latest Release</h2>
 
         <div class="row row-cols-5 gx-4 gy-4">
             <div class="col" th:each="media : ${latestMedia}">
@@ -136,7 +136,7 @@
 
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 gx-4 gy-4">
             <div class="col" th:each="genre, iterStat : ${genres}">
-                <a th:href="@{'/genre/' + ${genre.id}}" style="text-decoration: none; color: inherit;">
+                <a th:href="@{'/genres/' + ${genre.id}}" style="text-decoration: none; color: inherit;">
                     <div class="card text-white text-start border-0 p-4 h-100 genre-card"
                          th:classappend="' genre-bg-' + ${iterStat.index % 6}">
                         <h5 class="mb-3 fw-bold" th:text="${genre.name}">Genre Name</h5>

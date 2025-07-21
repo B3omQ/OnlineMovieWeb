@@ -11,13 +11,71 @@
                 </div>
             </a>
         </div>
-
-        <div class="search-bar" style="width: 400px;">
-            <form action="/search" method="get" class="d-flex" role="search">
-                <input class="form-control rounded w-100" type="search" name="q" placeholder="Search..."
-                       aria-label="Search">
+        <!-- Search-->
+        <div class="search-bar position-relative" style="width: 400px;">
+            <form action="/search" method="get" class="d-flex flex-column gap-1" role="search" autocomplete="off">
+                <input id="searchInput" class="form-control rounded w-100" type="search" name="q"
+                       placeholder="Search..." aria-label="Search">
+                <ul id="suggestionsList"
+                    class="list-group bg-white shadow rounded"
+                    style="z-index: 1000; max-height: 300px; overflow-y: auto; position: absolute; top: 100%; left: 0; right: 0; margin-top: 0.25rem;">
+                </ul>
             </form>
         </div>
+
+
+        <script>
+            const input = document.getElementById("searchInput");
+            const suggestionsList = document.getElementById("suggestionsList");
+
+            input.addEventListener("input", async () => {
+                let query = input.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                suggestionsList.innerHTML = "";
+
+                if (query.length < 1) return;
+
+                try {
+                    const response = await fetch(`/api/suggestions?q=${encodeURIComponent(query)}`);
+                    const suggestions = await response.json();
+
+                    suggestions.forEach(item => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-action d-flex align-items-center";
+                        li.style.cursor = "pointer";
+
+                        const img = document.createElement("img");
+                        img.src = item.poster || "/assets/placeholder.jpg";
+                        img.alt = item.title;
+                        img.style.width = "40px";
+                        img.style.height = "60px";
+                        img.style.objectFit = "cover";
+                        img.className = "me-2 rounded";
+
+                        const span = document.createElement("span");
+                        span.textContent = item.title;
+
+                        li.appendChild(img);
+                        li.appendChild(span);
+
+                        li.onclick = () => {
+                            input.value = item.title;
+                            suggestionsList.innerHTML = "";
+                            input.form.submit(); // Submit on click
+                        };
+
+                        suggestionsList.appendChild(li);
+                    });
+                } catch (e) {
+                    console.error("Suggestion fetch failed", e);
+                }
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!input.contains(e.target) && !suggestionsList.contains(e.target)) {
+                    suggestionsList.innerHTML = "";
+                }
+            });
+        </script>
 
 
         <nav class="navbar-menu">
@@ -26,6 +84,163 @@
             <a href="/genres">Genres</a>
             <a href="/lastestrelease">Latest Release</a>
         </nav>
+        <div class="dropdown" style="margin-left: 5px; position: relative;">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="musicDropdownBtn">
+                🎵
+            </button>
+
+            <div id="musicDropdownMenu" class="dropdown-menu p-3"
+                 style="display: none; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+                z-index: 1000; background-color: #222; border-radius: 8px; width: 250px; color: white;">
+
+                <div id="nowPlaying" class="mb-2" style="font-size: 14px;">Now Playing: 🎵 Phep Mau</div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <button id="prevSong" class="btn btn-sm btn-outline-light">⏮️</button>
+                    <button id="playPause" class="btn btn-sm btn-outline-light">▶️</button>
+                    <button id="nextSong" class="btn btn-sm btn-outline-light">⏭️</button>
+                </div>
+
+                <select id="trackSelect" class="form-select form-select-sm mb-2">
+                    <option value="0">🎵 Phep Mau</option>
+                    <option value="1">🎵 Haru Haru</option>
+                    <option value="2">🎵 Flower</option>
+                    <option value="3">🎵 Feel It</option>
+                    <option value="4">🎵 Death Bed</option>
+                    <option value="5">🎵 Let Down</option>
+                    <option value="6">🎵 No Surprise</option>
+                </select>
+
+                <input type="range" id="volumeControl" class="form-range" min="0" max="1" step="0.01" value="1">
+
+                <audio id="audioPlayer" hidden></audio>
+            </div>
+        </div>
+
+        <script>
+            const musicTracks = [
+                "/assets/music/phep_mau.mp3",
+                "/assets/music/haru_haru.mp3",    
+                "/assets/music/flower.mp3",
+                "/assets/music/feel_it.mp3",
+                "/assets/music/death_bed.mp3",
+                "/assets/music/let_down.mp3",
+                "/assets/music/no_surprise.mp3"
+            ];
+
+            const trackNames = [
+                "🎵 Phep Mau",
+                "🎵 Haru Haru",
+                "🎵 Flower",
+                "🎵 Feel It",
+                "🎵 Death Bed",
+                "🎵 Let Down",
+                "🎵 No Surprise"
+            ];
+
+            const audioPlayer = document.getElementById("audioPlayer");
+            const dropdownBtn = document.getElementById("musicDropdownBtn");
+            const dropdownMenu = document.getElementById("musicDropdownMenu");
+            const playPauseBtn = document.getElementById("playPause");
+            const nextBtn = document.getElementById("nextSong");
+            const prevBtn = document.getElementById("prevSong");
+            const trackSelect = document.getElementById("trackSelect");
+            const nowPlayingText = document.getElementById("nowPlaying");
+            const volumeControl = document.getElementById("volumeControl");
+
+            let currentTrack = parseInt(localStorage.getItem("currentTrack") || "0", 10);
+            let isPlaying = localStorage.getItem("isPlaying") === "true";
+            let savedTime = parseFloat(localStorage.getItem("currentTime") || "0");
+
+            function updateNowPlaying() {
+                nowPlayingText.textContent = "Now Playing: " + trackNames[currentTrack];
+            }
+
+            function loadTrack(index) {
+                if (index >= musicTracks.length) index = 0;
+                if (index < 0) index = musicTracks.length - 1;
+
+                currentTrack = index;
+                localStorage.setItem("currentTrack", currentTrack);
+                localStorage.setItem("currentTime", savedTime);
+
+                audioPlayer.src = musicTracks[currentTrack];
+                trackSelect.value = currentTrack;
+                updateNowPlaying();
+
+                audioPlayer.onloadedmetadata = () => {
+                    audioPlayer.currentTime = savedTime;
+                    if (isPlaying) {
+                        audioPlayer.play().catch(() => {});
+                        playPauseBtn.textContent = "⏸️";
+                    } else {
+                        playPauseBtn.textContent = "▶️";
+                    }
+                };
+            }
+
+            dropdownBtn.addEventListener("click", () => {
+                dropdownMenu.style.display = dropdownMenu.style.display === "none" ? "block" : "none";
+            });
+
+            playPauseBtn.addEventListener("click", () => {
+                if (!isPlaying) {
+                    audioPlayer.play().catch(() => {});
+                    playPauseBtn.textContent = "⏸️";
+                    isPlaying = true;
+                } else {
+                    audioPlayer.pause();
+                    playPauseBtn.textContent = "▶️";
+                    isPlaying = false;
+                }
+                localStorage.setItem("isPlaying", isPlaying);
+            });
+
+            nextBtn.addEventListener("click", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack((currentTrack + 1) % musicTracks.length);
+            });
+
+            prevBtn.addEventListener("click", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack((currentTrack - 1 + musicTracks.length) % musicTracks.length);
+            });
+
+            trackSelect.addEventListener("change", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack(parseInt(trackSelect.value, 10));
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                savedTime = 0;
+                localStorage.setItem("currentTime", 0);
+                loadTrack((currentTrack + 1) % musicTracks.length);
+            });
+
+            // Save playback position
+            setInterval(() => {
+                if (!isNaN(audioPlayer.currentTime)) {
+                    localStorage.setItem("currentTime", audioPlayer.currentTime);
+                }
+            }, 1000);
+
+            // Volume setup
+            audioPlayer.volume = parseFloat(localStorage.getItem("volume") || "1");
+            volumeControl.value = audioPlayer.volume;
+
+            volumeControl.addEventListener("input", () => {
+                audioPlayer.volume = volumeControl.value;
+                localStorage.setItem("volume", audioPlayer.volume);
+            });
+
+            // Load track on startup
+            loadTrack(currentTrack);
+        </script>
+
+
 
         <div class="auth-buttons">
             <span th:if="${user != null and user.username != null}" style="margin-right: 10px; color: #fff;">
@@ -34,8 +249,10 @@
 
             <a th:if="${user != null and user.username != null}" href="/profile" class="profile-link"
                style="margin-right: 10px;">
-                <img th:if="${user.avatar != null}" src="${user.avatar}" class="profile-icon" alt="Profile"/>
-                <img th:if="${user.avatar == null}" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s" class="profile-icon" alt="Profile"/>
+                <img th:if="${user.avatar != null}" th:src="@{${user.avatar}}" class="profile-icon" alt="Profile"/>
+                <img th:if="${user.avatar == null}"
+                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s"
+                     class="profile-icon" alt="Profile"/>
             </a>
 
             <a th:if="${user != null and user.username != null}" href="/logout" class="btn logout">Logout</a>
