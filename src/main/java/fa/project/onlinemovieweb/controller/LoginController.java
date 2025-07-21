@@ -1,8 +1,12 @@
 package fa.project.onlinemovieweb.controller;
 
+import fa.project.onlinemovieweb.dto.UserRegistrationDto;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LoginController {
-
+	
 	@Autowired
     private UserRepo userRepo;
 	
@@ -33,13 +37,23 @@ public class LoginController {
     
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
-        User user = userRepo.findByUsername(username);
-        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            model.addAttribute("error", "Invalid username or password");
-            return "login";
-        }
+    	List<User> matches = userRepo.findByUsername(username);
+    	User exactMatch = matches.stream()
+    		    .filter(u -> u.getUsername().equals(username))
+    		    .findFirst()
+    		    .orElse(null);
+    	
+    		if (exactMatch != null && exactMatch.isOauthUser()) {
+    			model.addAttribute("error", "This account was signed up using Google, please use Google to login.");
+    			return "login";
+    		}
 
-        session.setAttribute("user", user);
+    		if (exactMatch == null || !passwordEncoder.matches(password, exactMatch.getPassword())) {
+    		    model.addAttribute("error", "Invalid username or password");
+    		    return "login";
+    		}
+
+        session.setAttribute("user", exactMatch);
         return "redirect:/home";
     }
 
