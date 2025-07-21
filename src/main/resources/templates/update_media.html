@@ -9,88 +9,104 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
 <body>
+<div class="container-fluid">
     <div class="row">
         <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
         <div class="col">
-            <form th:action="@{${isUpdate} ? '/admin/medias/update' : '/admin/medias/create'}" th:object="${media}" method="post">
+            <form th:action="@{${isUpdate} ? '/admin/medias/update' : '/admin/medias/create'}" th:object="${media}"
+                  method="post">
                 <input th:if="${isUpdate}" type="hidden" th:field="*{id}">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="row">
+                <div class="row" style="border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <div class="col-6" style="padding-right: 20px;">
+                        <div class="row" style="padding-bottom: 15px;">
                             <div class="col-8">
                                 <label for="title">Title</label>
                                 <input class="form-control" id="title" th:field="*{title}" required>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="padding-bottom: 15px;">
                             <div class="col">
                                 <label for="language">Language</label>
                                 <input class="form-control" id="language" th:field="*{language}" required>
                             </div>
                             <div class="col">
                                 <label for="year">Release year</label>
-                                <input class="form-control" id="year" th:field="*{releaseYear}" required oninput="validateDigits(this)">
+                                <input class="form-control" id="year" th:field="*{releaseYear}" required
+                                       oninput="validateDigits(this)">
                             </div>
                             <div class="col">
                                 <label for="type">Type</label>
                                 <input class="form-control" id="type" th:field="*{type}" required>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="padding-bottom: 15px;">
                             <label>Genres</label>
                             <div class="d-flex flex-wrap">
                                 <span
-                                    th:each="genre : ${genres}"
-                                    th:text="${genre.name}"
-                                    class="btn mb-2 me-2 badge"
-                                    th:classappend="${isUpdate and media.genres!=null and media.genres.contains(genre) ? 'bg-primary' : 'bg-secondary'}"
-                                    th:attr="data-genre-id=${genre.id}"
-                                    onclick="toggleGenre(this)">
+                                        th:each="genre : ${genres}"
+                                        th:text="${genre.name}"
+                                        class="btn mb-2 me-2 badge"
+                                        th:classappend="${isUpdate and media.genres!=null and media.genres.contains(genre) ? 'bg-primary' : 'bg-secondary'}"
+                                        th:attr="data-genre-id=${genre.id}"
+                                        onclick="toggleGenre(this)">
                                 </span>
                                 <div id="genreInputsContainer"></div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="padding-bottom: 15px;">
                             <div class="col-auto">
                                 <label for="video">Video</label>
                             </div>
                             <div class="col">
-                                <input class="form-control" th:field="*{videoUrl}" required oninput="updateVideo()" placeholder="embedded https video link here">
+                                <input class="form-control" th:field="*{videoUrl}" required oninput="updateVideo()"
+                                       placeholder="embedded https video link here">
                             </div>
                             <div style="aspect-ratio: 16/9; width: 100%">
-                                <iframe id="video" th:src="*{videoUrl}" width="100%" height="100%" style="display: block" allowfullscreen></iframe>
+                                <iframe id="video" th:src="*{videoUrl}" width="100%" height="100%"
+                                        style="display: block" allowfullscreen></iframe>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="padding-bottom: 15px;">
                             <div class="col-auto">
                                 <label for="bannerUrl">Banner</label>
                             </div>
                             <div class="col">
-                                <input id="bannerUrl" class="form-control" th:field="*{banner}" required oninput="updateBanner()" placeholder="https image link here">
+                                <input id="bannerUrl" class="form-control" th:field="*{banner}" required
+                                       oninput="updateBanner()" placeholder="https image link here">
                             </div>
-                            <img id="banner" th:src="*{banner}">
+                            <img id="banner" th:src="*{banner}" width="=100%">
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="row">
+                    <div class="col" style="padding-left: 20px;">
+                        <div class="mb-3">
                             <label for="description">Description</label>
                             <textarea class="form-control" id="description" th:field="*{description}"></textarea>
                         </div>
-                        <div class="col-auto">
-                            <label for="posterUrl">Poster</label>
+                        <div class="row" style="padding-bottom: 15px;">
+                            <div class="col-auto">
+                                <label for="posterUrl">Poster</label>
+                            </div>
+                            <div class="col">
+                                <input id="posterUrl"
+                                       class="form-control"
+                                       th:field="*{poster}"
+                                       required
+                                       oninput="updatePoster()"
+                                       placeholder="https image link here">
+                            </div>
+                            <img id="poster" th:src="*{poster}" width="100%">
                         </div>
-                        <div class="col">
-                            <input id="posterUrl" class="form-control" th:field="*{poster}" required oninput="updatePoster()" placeholder="https image link here">
-                        </div>
-                        <img id="poster" th:src="*{poster}" width="95%">
                     </div>
                 </div>
-                <div class="row">
-                    <button type="submit" class="col-auto btn btn-success">Save</button>
+                <div class="row" style="padding-top: 15px; padding-bottom: 15px;">
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
+</div>
 </body>
 <style>
     label{
