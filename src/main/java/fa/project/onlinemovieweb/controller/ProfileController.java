@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -50,7 +51,7 @@ public class ProfileController {
             @RequestParam("gender") String gender,
             HttpSession session,
             Model model) {
-
+        List<User> users = userRepo.findAllByUsernameIgnoreCase(name);
         User currentUser = (User) session.getAttribute("user");
 
         if (currentUser == null) {
@@ -64,18 +65,18 @@ public class ProfileController {
             return "member_profile";
         }
 
-//        if (!name.matches("^[a-zA-ZÀ-ỹ](?:[a-zA-ZÀ-ỹ\\s]{0,48}[a-zA-ZÀ-ỹ])?$")) {
-//            model.addAttribute("error", "Name must be 2-50 characters, letters only, no leading/trailing spaces.");
-//            model.addAttribute("user", currentUser);
-//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
-//            return "member_profile";
-//        }
-
 
         if (!gender.equalsIgnoreCase("male") &&
                 !gender.equalsIgnoreCase("female") &&
                 !gender.equalsIgnoreCase("other")) {
             model.addAttribute("error", "Invalid gender selected.");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
+        if(users.stream().anyMatch(u -> u.getUsername().equals(name))){
+            model.addAttribute("error", "This username is already taken.");
             model.addAttribute("user", currentUser);
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
@@ -111,11 +112,13 @@ public class ProfileController {
         String newPassword = userDtoCp.getNewPassword();
         String confirmPassword = userDtoCp.getConfirmPassword();
 
-        if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
-            model.addAttribute("error", "Old password is incorrect.");
+        if (newPassword.length() < 6) {
+            model.addAttribute("error", "Password must be at least 6 characters long.");
+            model.addAttribute("user", currentUser);
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
+
 
         if (newPassword.contains(" ")) {
             model.addAttribute("error", "Password must not contain spaces.");
@@ -123,19 +126,19 @@ public class ProfileController {
             return "member_profile";
         }
 
+        if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
+            model.addAttribute("error", "Old password is incorrect.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
+
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match.");
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
 
-//        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9])\\S{8,}$";
-//        if (!newPassword.matches(passwordRegex)) {
-//            model.addAttribute("error",
-//                    "Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character. Spaces are not allowed.");
-//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
-//            return "member_profile";
-//        }
 
         currentUser.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(currentUser);
