@@ -51,6 +51,8 @@
 <script>
     function filterMedias(){
         const query = document.getElementById("search").value.toLowerCase();
+        const keywords = query.split(/\s+/).filter(w => w.length>0);
+
         const tableRows = document.querySelectorAll("tbody tr");
         tableRows.forEach(row=>{
             const titleCell = row.querySelector("td:first-child");
@@ -60,12 +62,10 @@
             const genreBadges = genreCell ? genreCell.querySelectorAll(".badge") : [];
             const genres = Array.from(genreBadges).map(b => b.textContent.toLowerCase()).join(" ");
 
-            if(query === "" || title.includes(query) || genres.includes(query)){
-                row.style.display = "";
-            }
-            else{
-                row.style.display = "none";
-            }
+            const values = `${title} ${genres}`;
+            const matchesAll = keywords.every(w => values.includes(w));
+
+            row.style.display = matchesAll ? '' : 'none';
         });
     }
 

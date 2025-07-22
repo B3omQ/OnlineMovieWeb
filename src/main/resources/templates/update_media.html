@@ -36,7 +36,10 @@
                             </div>
                             <div class="col">
                                 <label for="type">Type</label>
-                                <input class="form-control" id="type" th:field="*{type}" required>
+                                <select class="form-control" id="type" th:field="*{type}" required>
+                                    <option value="Movie">Movie</option>
+                                    <option value="TV Show">Tv Show</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row" style="padding-bottom: 15px;">

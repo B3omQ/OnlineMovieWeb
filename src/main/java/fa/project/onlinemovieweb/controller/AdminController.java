@@ -2,6 +2,7 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.Genre;
 import fa.project.onlinemovieweb.entities.Media;
+import fa.project.onlinemovieweb.entities.Role;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
@@ -112,5 +113,25 @@ public class AdminController {
         return "admin_users";
     }
 
+    @GetMapping("/admin/users/delete/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        User u = userRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        userRepo.delete(u);
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/admin/users/updateRole/{id}")
+    public String updateRole(@PathVariable Long id, RedirectAttributes redirectAttributes){
+        User u = userRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if(u.getRole().equals(Role.USER)){
+            u.setRole(Role.ADMIN);
+        }
+        else{
+            u.setRole(Role.USER);
+        }
+        userRepo.save(u);
+        redirectAttributes.addAttribute("query", u.getUsername());
+        return "redirect:/admin/users";
+    }
 
 }
