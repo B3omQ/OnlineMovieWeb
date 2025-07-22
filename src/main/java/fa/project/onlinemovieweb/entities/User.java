@@ -111,4 +111,16 @@ public class User {
 	public void setOauthUser(Boolean oauthUser) {
 		this.oauthUser = oauthUser;
 	}
+
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Favorite> favorites;
+
+	public List<Favorite> getFavorites() {
+		return favorites;
+	}
+
+	public void setFavorites(List<Favorite> favorites) {
+		this.favorites = favorites;
+	}
 }
