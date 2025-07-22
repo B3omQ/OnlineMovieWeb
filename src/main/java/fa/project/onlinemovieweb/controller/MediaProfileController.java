@@ -4,6 +4,7 @@ import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.CommentRepo;
 import fa.project.onlinemovieweb.repo.FavoriteRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
+import fa.project.onlinemovieweb.repo.ReviewRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -84,6 +85,14 @@ public class MediaProfileController {
             isFavorite = favoriteRepo.findByUserAndMedia(user, media).isPresent();
         }
         model.addAttribute("isFavorite", isFavorite);
+
+        List<Review> reviews = reviewRepo.findByMedia(media);
+        double averageRating = reviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0);
+
+        model.addAttribute("averageRating", Math.round(averageRating * 10.0) / 10.0);
         return "media_profile";
     }
 
@@ -153,6 +162,42 @@ public class MediaProfileController {
                 "favorited", favorited,
                 "message", favorited ? "Added to favorites" : "Removed from favorites"
         ));
+    }
+
+    @Autowired
+    private ReviewRepo reviewRepo;
+
+    @PostMapping("/media/{id}/review")
+    @ResponseBody
+    public Map<String, Object> postReview(@PathVariable Long id,
+                                          @RequestBody Map<String, String> payload,
+                                          HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Map<String, Object> response = new HashMap<>();
+
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "You must be logged in.");
+            return response;
+        }
+
+        Media media = mediaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        int rating = Integer.parseInt(payload.get("rating"));
+        String content = payload.get("content");
+
+        Review review = new Review();
+        review.setUser(user);
+        review.setMedia(media);
+        review.setRating(rating);
+        review.setContent(content);
+        review.setCreatedAt(LocalDateTime.now());
+
+        reviewRepo.save(review);
+
+        response.put("success", true);
+        return response;
     }
 
 }
