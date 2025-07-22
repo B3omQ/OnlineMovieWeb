@@ -4,7 +4,6 @@ import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.entities.WatchHistory;
 import fa.project.onlinemovieweb.repo.HistoryRepo;
-import fa.project.onlinemovieweb.repo.MediaRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
