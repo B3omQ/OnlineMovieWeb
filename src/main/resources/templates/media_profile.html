@@ -32,7 +32,15 @@
       <p class="summary" th:text="${media.description}"></p>
       <div class="buttons d-flex flex-wrap gap-2 mt-3">
         <a th:href="@{|/mediaVideo/${#strings.replace(media.title.toLowerCase(), ' ', '-')}.${media.id}?ep=1|}" class="btn btn-danger btn-lg"><i class="bi bi-play-fill"></i> Watch Now</a>
-        <a href="#" class="btn btn-outline-light btn-lg"><i class="bi bi-heart"></i> Favorite</a>
+        <button
+                id="favoriteBtn"
+                type="button"
+                class="btn btn-lg"
+                th:classappend="${isFavorite} ? 'btn-warning' : 'btn-outline-light'"
+                th:data-id="${media.id}">
+          <i th:class="${isFavorite} ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+          <span th:text="${isFavorite} ? 'Favorited' : 'Favorite'"></span>
+        </button>
         <a href="#" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Comment</a>
         <span class="rating badge bg-success fs-5 ms-3"><i class="bi bi-star-fill"></i> 4.5/5</span>
       </div>
@@ -107,6 +115,45 @@
 </section>
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("favoriteBtn");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        const mediaId = btn.getAttribute("data-id");
+
+        fetch(`/media/${mediaId}/favorite`, {
+          method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const icon = btn.querySelector("i");
+            const span = btn.querySelector("span");
+
+            if (data.favorited) {
+              btn.classList.remove("btn-outline-light");
+              btn.classList.add("btn-warning");
+              icon.className = "bi bi-heart-fill";
+              span.textContent = "Favorited";
+            } else {
+              btn.classList.remove("btn-warning");
+              btn.classList.add("btn-outline-light");
+              icon.className = "bi bi-heart";
+              span.textContent = "Favorite";
+            }
+
+            alert(data.message);
+          } else {
+            alert("Failed: " + data.message);
+          }
+        });
+      });
+    }
+  });
+</script>
+
 
 </body>
 
