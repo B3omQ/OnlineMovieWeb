@@ -81,7 +81,20 @@ public class ProfileController {
             return "member_profile";
         }
 
-        if(users.stream().anyMatch(u -> u.getUsername().equals(name))){
+        if (currentUser.getUsername().equals(name)) {
+            currentUser.setUsername(name.trim());
+            currentUser.setGender(gender.toLowerCase());
+            userRepo.save(currentUser);
+            session.setAttribute("user", currentUser);
+
+            model.addAttribute("success", "Profile updated successfully.");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
+
+        if (users.stream().anyMatch(u -> u.getUsername().equals(name))) {
             model.addAttribute("error", "This username is already taken.");
             model.addAttribute("user", currentUser);
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
@@ -153,7 +166,6 @@ public class ProfileController {
         model.addAttribute("userDtoCp", new UserChangePasswordDto());
         return "member_profile";
     }
-
 
 
     @PostMapping("/upload_avatar")
