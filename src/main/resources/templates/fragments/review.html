@@ -1,0 +1,13 @@
+<div class="comment-box" th:fragment="review" th:object="${r}">
+    <img th:src="*{user.avatar}" alt="avatar">
+    <div>
+        <div class="comment-header">
+            <strong th:text="*{user.username}">Username</strong>
+            <span th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+            <span class="text-warning" style="margin-left: 10px;">
+                ★ <span th:text="*{rating}">5</span>/5
+            </span>
+        </div>
+        <div class="comment-content" th:text="*{content}">Review content</div>
+    </div>
+</div>

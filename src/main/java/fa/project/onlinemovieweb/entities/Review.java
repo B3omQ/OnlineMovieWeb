@@ -16,6 +16,9 @@ public class Review {
     @ManyToOne
     private Media media;
 
+    @ManyToOne
+    private Episode episode;
+
     private int rating;
 
     @Column(length = 1000)
@@ -69,6 +72,14 @@ public class Review {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Episode getEpisode() {
+        return episode;
+    }
+
+    public void setEpisode(Episode episode) {
+        this.episode = episode;
     }
 }
 
