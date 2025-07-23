@@ -44,6 +44,14 @@ public class RegisterController {
             model.addAttribute("error", "Passwords do not match");
             return "register";
         }
+        if(userDto.getPassword().contains(" ")) {
+        	model.addAttribute("error", "Passwords can not contain white space");
+        	return "register";
+        }
+        if(userDto.getConfirmPassword().contains(" ")) {
+        	model.addAttribute("error", "Passwords can not contain white space");
+        	return "register";
+        }
         if(userDto.getPassword().length() < 6) {
         	model.addAttribute("error","Password need to be at least 6 characters long");
         	return "register";

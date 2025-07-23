@@ -47,6 +47,11 @@ public class LoginController {
     			model.addAttribute("error", "This account was signed up using Google, please use Google to login.");
     			return "login";
     		}
+    		
+    		if(password.contains(" ")) {
+    			model.addAttribute("error", "Password can not contain white space");
+    			return "login";
+    		}
 
     		if (exactMatch == null || !passwordEncoder.matches(password, exactMatch.getPassword())) {
     		    model.addAttribute("error", "Invalid username or password");
