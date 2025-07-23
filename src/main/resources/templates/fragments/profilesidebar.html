@@ -16,18 +16,18 @@
                     </div>
                 </a>
 
-                <div th:if="${user.Role == 'ADMIN'}">
-                    <a class="item" href="/admin/media">
+                <div th:if="${user.getRole == T(fa.project.onlinemovieweb.entities.Role).ADMIN}">
+                    <a class="item" href="/admin/medias">
                         <div class="line-center flex">
                             <i class="fa-solid fa-plus"></i>
-                            <span>Media Manage</span>
+                            <span>Media Management</span>
                         </div>
                     </a>
 
-                    <a class="item" href="/admin/user">
+                    <a class="item" href="/admin/users">
                         <div class="line-center flex">
                             <i class="fa-solid fa-plus"></i>
-                            <span>User Manage</span>
+                            <span>User Management</span>
                         </div>
                     </a>
                 </div>
