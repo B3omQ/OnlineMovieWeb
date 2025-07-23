@@ -28,7 +28,7 @@ public class VideoConvert {
 
     // Optional: Test the class
     public static void main(String[] args) {
-        String shareLink = " ";
+        String shareLink = "  ";
         System.out.println("Embed Link: " + toEmbedLink(shareLink));
         System.out.println("Download Link: " + toDownloadLink(shareLink));
     }

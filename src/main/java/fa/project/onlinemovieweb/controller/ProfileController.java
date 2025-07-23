@@ -2,7 +2,12 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.dto.UserChangePasswordDto;
 import fa.project.onlinemovieweb.dto.UserRegistrationDto;
+import fa.project.onlinemovieweb.entities.Favorite;
+import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.entities.WatchHistory;
+import fa.project.onlinemovieweb.repo.FavoriteRepo;
+import fa.project.onlinemovieweb.repo.HistoryRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProfileController {
@@ -204,5 +210,26 @@ public class ProfileController {
         return "member_profile";
     }
 
+    @Autowired
+    private FavoriteRepo favoriteRepo;
 
+    @GetMapping("/user/favorite")
+    public String viewFavorite(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+
+
+        List<Favorite> favoriteList = favoriteRepo.findByUser(user);
+
+        List<Media> mediaList = favoriteList.stream()
+                .map(Favorite::getMedia)
+                .collect(Collectors.toList());
+
+        model.addAttribute("mediaList", mediaList);
+        return "favorite";
+    }
 }

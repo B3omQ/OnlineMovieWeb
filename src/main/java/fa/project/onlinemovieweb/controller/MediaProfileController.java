@@ -1,29 +1,23 @@
 package fa.project.onlinemovieweb.controller;
 
-import fa.project.onlinemovieweb.entities.Comment;
-import fa.project.onlinemovieweb.entities.Episode;
-import fa.project.onlinemovieweb.entities.Media;
-import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.CommentRepo;
+import fa.project.onlinemovieweb.repo.FavoriteRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
+import fa.project.onlinemovieweb.repo.ReviewRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class MediaProfileController {
@@ -86,6 +80,19 @@ public class MediaProfileController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", commentPage.getTotalPages());
 
+        boolean isFavorite = false;
+        if (user != null) {
+            isFavorite = favoriteRepo.findByUserAndMedia(user, media).isPresent();
+        }
+        model.addAttribute("isFavorite", isFavorite);
+
+        List<Review> reviews = reviewRepo.findByMedia(media);
+        double averageRating = reviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0);
+
+        model.addAttribute("averageRating", Math.round(averageRating * 10.0) / 10.0);
         return "media_profile";
     }
 
@@ -117,6 +124,80 @@ public class MediaProfileController {
         String redirectUrl = "/media/" + id;
 
         return "redirect:" + redirectUrl;
+    }
+
+    @Autowired
+    private FavoriteRepo favoriteRepo;
+
+    @PostMapping("/media/{id}/favorite")
+    @ResponseBody
+    public ResponseEntity<?> toggleFavorite(@PathVariable Long id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "Please log in first"));
+        }
+
+        Media media = mediaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Optional<Favorite> existing = favoriteRepo.findByUserAndMedia(user, media);
+
+        boolean favorited;
+
+        if (existing.isPresent()) {
+            favoriteRepo.delete(existing.get());
+            favorited = false;
+        } else {
+            Favorite favorite = new Favorite();
+            favorite.setUser(user);
+            favorite.setMedia(media);
+            favorite.setAddedAt(LocalDateTime.now());
+            favoriteRepo.save(favorite);
+            favorited = true;
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "favorited", favorited,
+                "message", favorited ? "Added to favorites" : "Removed from favorites"
+        ));
+    }
+
+    @Autowired
+    private ReviewRepo reviewRepo;
+
+    @PostMapping("/media/{id}/review")
+    @ResponseBody
+    public Map<String, Object> postReview(@PathVariable Long id,
+                                          @RequestBody Map<String, String> payload,
+                                          HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Map<String, Object> response = new HashMap<>();
+
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "You must be logged in.");
+            return response;
+        }
+
+        Media media = mediaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        int rating = Integer.parseInt(payload.get("rating"));
+        String content = payload.get("content");
+
+        Review review = new Review();
+        review.setUser(user);
+        review.setMedia(media);
+        review.setRating(rating);
+        review.setContent(content);
+        review.setCreatedAt(LocalDateTime.now());
+
+        reviewRepo.save(review);
+
+        response.put("success", true);
+        return response;
     }
 
 }
