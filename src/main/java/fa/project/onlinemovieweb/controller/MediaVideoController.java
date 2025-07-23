@@ -1,12 +1,10 @@
 package fa.project.onlinemovieweb.controller;
 
 
-import fa.project.onlinemovieweb.entities.Comment;
-import fa.project.onlinemovieweb.entities.Episode;
-import fa.project.onlinemovieweb.entities.Media;
-import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.CommentRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
+import fa.project.onlinemovieweb.repo.ReviewRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +32,9 @@ public class MediaVideoController {
 
     @Autowired
     CommentRepo commentRepo;
+
+    @Autowired
+    ReviewRepo reviewRepo;
 
     @GetMapping("/mediaVideo/{slug}.{id}")
     public String viewMediaVideo(HttpSession session, Model model,
@@ -90,6 +92,16 @@ public class MediaVideoController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", commentPage.getTotalPages());
 
+
+        List<Review> reviews;
+
+        if (selectedEpisode != null) {
+            reviews = reviewRepo.findByMediaIdAndEpisode_Id(media.getId(), selectedEpisode.getId());
+        } else {
+            reviews = reviewRepo.findByMediaId(media.getId());
+        }
+
+        model.addAttribute("reviews", reviews);
         return "mediaVideo";
     }
 
@@ -129,9 +141,47 @@ public class MediaVideoController {
 
         commentRepo.save(comment);
 
-       model.addAttribute("c", comment); // dùng để hiển thị trong fragment
-       return "fragments/comment :: comment"; // Trả về đoạn HTML comment nhỏ
+       model.addAttribute("c", comment);
+       return "fragments/comment :: comment";
     }
 
+    @PostMapping("/mediaVideo/{slug}.{id}/rate")
+    public String postRating(@PathVariable Long id,
+                             @RequestParam(name = "ep", required = false) Integer episodeNumber,
+                             @RequestParam("rating") int rating,
+                             @RequestParam("content") String content,
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes,
+                             Model model) {
 
+        User user = (User) session.getAttribute("user");
+        if (user == null || content == null || content.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Please log in and write something.");
+            return "redirect:/mediaVideo/slug." + id + (episodeNumber != null ? "?ep=" + episodeNumber : "");
+        }
+
+        Media media = mediaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Review review = new Review();
+        review.setUser(user);
+        review.setContent(content);
+        review.setRating(rating);
+        review.setMedia(media);
+
+        if (episodeNumber != null && "TV Show".equalsIgnoreCase(media.getType())) {
+            Episode episode = media.getEpisodes().stream()
+                    .filter(ep -> ep.getEpisodeNumber() == episodeNumber)
+                    .findFirst()
+                    .orElse(null);
+            if (episode != null) {
+                review.setEpisode(episode);
+            }
+        }
+
+        reviewRepo.save(review);
+
+        model.addAttribute("r", review);
+        return "fragments/review :: review";
+    }
 }
