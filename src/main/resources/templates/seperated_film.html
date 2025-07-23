@@ -39,6 +39,76 @@
         </div>
     </div>
 </div>
+<div class="d-flex justify-content-center align-items-center mt-4" th:if="${totalPages > 1}">
+
+    <!-- Previous Button -->
+    <div th:if="${currentPage > 1}">
+        <!-- Latest Release -->
+        <a th:if="${pageTitle == 'Latest Release'}"
+           th:href="@{/lastestrelease(page=${currentPage - 1})}"
+           class="btn btn-dark rounded-circle me-2">←</a>
+
+        <!-- All Movies -->
+        <a th:if="${pageTitle == 'All Movies'}"
+           th:href="@{/movies(page=${currentPage - 1})}"
+           class="btn btn-dark rounded-circle me-2">←</a>
+
+        <!-- All Series -->
+        <a th:if="${pageTitle == 'All Series'}"
+           th:href="@{/series(page=${currentPage - 1})}"
+           class="btn btn-dark rounded-circle me-2">←</a>
+
+        <!-- Search -->
+        <a th:if="${pageTitle == 'Search'}"
+           th:href="@{/search(q=${searchQuery}, page=${currentPage - 1})}"
+           class="btn btn-dark rounded-circle me-2">←</a>
+
+        <!-- Genre -->
+        <a th:if="${genre != null}"
+           th:href="@{/genres/{id}(id=${genre.id}, page=${currentPage - 1})}"
+           class="btn btn-dark rounded-circle me-2">←</a>
+    </div>
+
+    <!-- Page Info -->
+    <div class="bg-secondary px-3 py-1 rounded-pill text-white">
+        Page
+        <input type="text" th:value="${currentPage}" class="bg-dark text-white border-0 text-center"
+               style="width: 40px;" readonly />
+        / <span th:text="${totalPages}">0</span>
+    </div>
+
+    <!-- Next Button -->
+    <div th:if="${currentPage < totalPages}">
+        <!-- Latest Release -->
+        <a th:if="${pageTitle == 'Latest Release'}"
+           th:href="@{/lastestrelease(page=${currentPage + 1})}"
+           class="btn btn-dark rounded-circle ms-2">→</a>
+
+        <!-- All Movies -->
+        <a th:if="${pageTitle == 'All Movies'}"
+           th:href="@{/movies(page=${currentPage + 1})}"
+           class="btn btn-dark rounded-circle ms-2">→</a>
+
+        <!-- All Series -->
+        <a th:if="${pageTitle == 'All Series'}"
+           th:href="@{/series(page=${currentPage + 1})}"
+           class="btn btn-dark rounded-circle ms-2">→</a>
+
+        <!-- Search -->
+        <a th:if="${pageTitle == 'Search'}"
+           th:href="@{/search(q=${searchQuery}, page=${currentPage + 1})}"
+           class="btn btn-dark rounded-circle ms-2">→</a>
+
+        <!-- Genre -->
+        <a th:if="${genre != null}"
+           th:href="@{/genres/{id}(id=${genre.id}, page=${currentPage + 1})}"
+           class="btn btn-dark rounded-circle ms-2">→</a>
+    </div>
+
+</div>
+
+
+
 
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>
