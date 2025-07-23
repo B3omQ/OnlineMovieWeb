@@ -16,13 +16,21 @@
                     </div>
                 </a>
 
-<!--                <a class="item" href="/user/playlist">-->
-<!--                    <div class="line-center flex">-->
-<!--                        <i class="fa-solid fa-plus"></i>-->
-<!--                        <span>Playlist</span>-->
-<!--                    </div>-->
-<!--                </a>-->
+                <div th:if="${user.Role == 'ADMIN'}">
+                    <a class="item" href="/admin/media">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Media Manage</span>
+                        </div>
+                    </a>
 
+                    <a class="item" href="/admin/user">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>User Manage</span>
+                        </div>
+                    </a>
+                </div>
                 <a class="item" href="/history">
                     <div class="line-center flex">
                         <i class="fa-solid fa-history"></i>
