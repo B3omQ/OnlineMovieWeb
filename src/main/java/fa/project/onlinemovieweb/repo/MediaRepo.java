@@ -15,18 +15,7 @@ public interface MediaRepo extends JpaRepository<Media, Long> {
 
     List<Media> findTop5ByOrderByReleaseYearDesc();
 
-    List<Media> findAllByType(String type);
-
-    List<Media> findByGenresContaining(Genre genre);
-
-    List<Media> findByTitleContainingIgnoreCase(String title);
-
     List<Media> findTop5ByTitleContainingIgnoreCase(String title);
-
-    List<Media> findByReleaseYear(int year);
-
-    @Query("SELECT DISTINCT m.releaseYear FROM Media m ORDER BY m.releaseYear DESC")
-    List<Integer> findDistinctYears();
 
     Page<Media> findByReleaseYear(Integer year, Pageable pageable);
 
