@@ -15,7 +15,9 @@
         <div class="col">
             <input class="form-control" id="search" name="search" th:value="${query}" placeholder="Search medias..." oninput="filterMedias()">
             <div class="row">
-                <a th:href="@{/admin/medias/create}" class="col-auto text-end btn btn-success">New</a>
+                <div class="text-end">
+                    <a th:href="@{/admin/medias/create}" class="btn btn-success">New media</a>
+                </div>
             </div>
             <br/>
             <table class="table table-striped">
@@ -33,7 +35,7 @@
                     <td><span class="badge bg-primary me-1" th:each="genre : ${media.genres}" th:text="${genre.name} "></span></td>
                     <td class="col-2"><img th:src="${media.poster}" width="200px"></td>
                     <td>
-                        <a th:href="@{/admin/medias/update/{id}(id=${media.id})}" class="btn btn-warning">Change</a>
+                        <a th:href="@{/admin/medias/update/{id}(id=${media.id})}" class="btn btn-warning">Update</a>
                         <a th:href="@{/admin/medias/delete/{id}(id=${media.id})}" class="btn btn-danger"
                             onclick="return confirm('Are you sure you want to delete this media?')"
                         >Delete</a>
@@ -49,6 +51,8 @@
 <script>
     function filterMedias(){
         const query = document.getElementById("search").value.toLowerCase();
+        const keywords = query.split(/\s+/).filter(w => w.length>0);
+
         const tableRows = document.querySelectorAll("tbody tr");
         tableRows.forEach(row=>{
             const titleCell = row.querySelector("td:first-child");
@@ -58,12 +62,10 @@
             const genreBadges = genreCell ? genreCell.querySelectorAll(".badge") : [];
             const genres = Array.from(genreBadges).map(b => b.textContent.toLowerCase()).join(" ");
 
-            if(query === "" || title.includes(query) || genres.includes(query)){
-                row.style.display = "";
-            }
-            else{
-                row.style.display = "none";
-            }
+            const values = `${title} ${genres}`;
+            const matchesAll = keywords.every(w => values.includes(w));
+
+            row.style.display = matchesAll ? '' : 'none';
         });
     }
 

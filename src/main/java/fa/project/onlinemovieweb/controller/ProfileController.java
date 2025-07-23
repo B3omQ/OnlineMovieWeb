@@ -2,7 +2,12 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.dto.UserChangePasswordDto;
 import fa.project.onlinemovieweb.dto.UserRegistrationDto;
+import fa.project.onlinemovieweb.entities.Favorite;
+import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.entities.WatchHistory;
+import fa.project.onlinemovieweb.repo.FavoriteRepo;
+import fa.project.onlinemovieweb.repo.HistoryRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProfileController {
@@ -50,7 +57,7 @@ public class ProfileController {
             @RequestParam("gender") String gender,
             HttpSession session,
             Model model) {
-
+        List<User> users = userRepo.findAllByUsernameIgnoreCase(name);
         User currentUser = (User) session.getAttribute("user");
 
         if (currentUser == null) {
@@ -64,18 +71,31 @@ public class ProfileController {
             return "member_profile";
         }
 
-//        if (!name.matches("^[a-zA-ZÀ-ỹ](?:[a-zA-ZÀ-ỹ\\s]{0,48}[a-zA-ZÀ-ỹ])?$")) {
-//            model.addAttribute("error", "Name must be 2-50 characters, letters only, no leading/trailing spaces.");
-//            model.addAttribute("user", currentUser);
-//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
-//            return "member_profile";
-//        }
-
 
         if (!gender.equalsIgnoreCase("male") &&
                 !gender.equalsIgnoreCase("female") &&
                 !gender.equalsIgnoreCase("other")) {
             model.addAttribute("error", "Invalid gender selected.");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
+        if (currentUser.getUsername().equals(name)) {
+            currentUser.setUsername(name.trim());
+            currentUser.setGender(gender.toLowerCase());
+            userRepo.save(currentUser);
+            session.setAttribute("user", currentUser);
+
+            model.addAttribute("success", "Profile updated successfully.");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
+
+        if (users.stream().anyMatch(u -> u.getUsername().equals(name))) {
+            model.addAttribute("error", "This username is already taken.");
             model.addAttribute("user", currentUser);
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
@@ -111,11 +131,26 @@ public class ProfileController {
         String newPassword = userDtoCp.getNewPassword();
         String confirmPassword = userDtoCp.getConfirmPassword();
 
+        if (newPassword.length() < 6) {
+            model.addAttribute("error", "Password must be at least 6 characters long.");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
+
+        if (newPassword.contains(" ")) {
+            model.addAttribute("error", "Password must not contain spaces.");
+            model.addAttribute("userDtoCp", new UserChangePasswordDto());
+            return "member_profile";
+        }
+
         if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
             model.addAttribute("error", "Old password is incorrect.");
             model.addAttribute("userDtoCp", new UserChangePasswordDto());
             return "member_profile";
         }
+
 
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match.");
@@ -123,13 +158,6 @@ public class ProfileController {
             return "member_profile";
         }
 
-//        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9])\\S{8,}$";
-//        if (!newPassword.matches(passwordRegex)) {
-//            model.addAttribute("error",
-//                    "Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character. Spaces are not allowed.");
-//            model.addAttribute("userDtoCp", new UserChangePasswordDto());
-//            return "member_profile";
-//        }
 
         currentUser.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(currentUser);
@@ -138,7 +166,6 @@ public class ProfileController {
         model.addAttribute("userDtoCp", new UserChangePasswordDto());
         return "member_profile";
     }
-
 
 
     @PostMapping("/upload_avatar")
@@ -195,5 +222,26 @@ public class ProfileController {
         return "member_profile";
     }
 
+    @Autowired
+    private FavoriteRepo favoriteRepo;
 
+    @GetMapping("/user/favorite")
+    public String viewFavorite(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+
+
+        List<Favorite> favoriteList = favoriteRepo.findByUser(user);
+
+        List<Media> mediaList = favoriteList.stream()
+                .map(Favorite::getMedia)
+                .collect(Collectors.toList());
+
+        model.addAttribute("mediaList", mediaList);
+        return "favorite";
+    }
 }

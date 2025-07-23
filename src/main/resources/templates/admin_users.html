@@ -9,11 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
         <div class="col">
-            <input class="form-control" id="search" name="search" placeholder="Search users..." oninput="filterUsers()"><br/>
+            <input class="form-control" id="search" name="search" th:value="${query}" placeholder="Search users..." oninput="filterUsers()"><br/>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -22,15 +22,22 @@
                     <th>Gender</th>
                     <th>Role</th>
                     <th>Created at</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="user : ${users}">
                     <td th:text="${user.username}">Username</td>
                     <td th:text="${user.email}">Email</td>
-                    <td th:text="${user.gender}"></td>
+                    <td th:text="${user.gender ?: 'Other'}"></td>
                     <td th:text="${user.role}"></td>
-                    <td th:text="${user.createdAt}"></td>
+                    <td th:text="${#temporals.format(user.createdAt, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                    <td>
+                        <input type="hidden" th:value="${user.id}">
+                        <a th:href="@{/admin/users/updateRole/{id}(id=${user.id})}" class="btn btn-warning">Update role</a>
+                        <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="btn btn-danger"
+                           onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -42,5 +49,33 @@
 <script>
     function filterUsers(){
         const query = document.getElementById("search").value.toLowerCase();
+        const keywords = query.split(/\s+/).filter(w => w.length>0);
+
+        const tableRows = document.querySelectorAll("tbody tr");
+        tableRows.forEach(row=>{
+            const usernameCell = row.querySelector("td:first-child");
+            const username = usernameCell ? usernameCell.textContent.toLowerCase() : "";
+
+            const emailCell = row.querySelector("td:nth-child(2)");
+            const email = emailCell ? emailCell.textContent.toLowerCase() : "";
+            
+            const genderCell = row.querySelector("td:nth-child(3)");
+            const gender = genderCell ? genderCell.textContent.toLowerCase() : "";
+            
+            const roleCell = row.querySelector("td:nth-child(4)");
+            const role = roleCell ? roleCell.textContent.toLowerCase() : "";
+
+            const values = `${username} ${email} ${role}`;
+            const matchesAll = keywords.every(w => values.includes(w) || w===gender);
+
+            row.style.display = matchesAll ? '' : 'none';
+        });
     }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        const searchField = document.getElementById('search');
+        if(searchField.value.trim('') !== ''){
+            filterUsers();
+        }
+    });
 </script>

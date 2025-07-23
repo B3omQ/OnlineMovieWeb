@@ -7,10 +7,13 @@ import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -57,40 +60,63 @@ public class HomeController {
 
     // HomeController.java
     @GetMapping("/lastestrelease")
-    public String showAllRelease(Model model, HttpSession session) {
-        List<Media> allMedia = mediaRepository.findAll();
-        allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
-        model.addAttribute("allMedia", allMedia);
+    public String showAllRelease(@RequestParam(required = false) Integer year,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 Model model, HttpSession session) {
+        int pageSize = 10;
+        Page<Media> mediaPage;
+
+        if (year != null && year != 0) {
+            mediaPage = mediaRepository.findByReleaseYear(year, PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending()));
+        } else {
+            mediaPage = mediaRepository.findAll(PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending()));
+        }
+
+        model.addAttribute("allMedia", mediaPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", mediaPage.getTotalPages());
         model.addAttribute("pageTitle", "Latest Release");
-        model.addAttribute("sectionTitle", "Latest Release");
+        model.addAttribute("sectionTitle", (year != null && year != 0) ? "Latest Release: " + year : "Latest Release");
+
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
         return "seperated_film";
     }
 
     @GetMapping("/movies")
-    public String showAllMovies(Model model, HttpSession session) {
-        List<Media> allMedia = mediaRepository.findAllByType("movie");
-        allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
-        model.addAttribute("allMedia", allMedia);
+    public String showAllMovies(@RequestParam(defaultValue = "1") int page,
+                                Model model, HttpSession session) {
+        int pageSize = 10;
+        Page<Media> mediaPage = mediaRepository.findByType("movie", PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending()));
+
+        model.addAttribute("allMedia", mediaPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", mediaPage.getTotalPages());
         model.addAttribute("pageTitle", "All Movies");
         model.addAttribute("sectionTitle", "All Movies");
+
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
         return "seperated_film";
     }
 
     @GetMapping("/series")
-    public String showAllSeries(Model model, HttpSession session) {
-        List<Media> allMedia = mediaRepository.findAllByType("Tv Show");
-        allMedia.sort(Comparator.comparing(Media::getReleaseYear).reversed());
-        model.addAttribute("allMedia", allMedia);
+    public String showAllSeries(@RequestParam(defaultValue = "1") int page,
+                                Model model, HttpSession session) {
+        int pageSize = 10;
+        Page<Media> mediaPage = mediaRepository.findByType("Tv Show", PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending()));
+
+        model.addAttribute("allMedia", mediaPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", mediaPage.getTotalPages());
         model.addAttribute("pageTitle", "All Series");
         model.addAttribute("sectionTitle", "All Series");
+
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
         return "seperated_film";
     }
+
 
     @GetMapping("/api/suggestions")
     @ResponseBody
@@ -110,17 +136,31 @@ public class HomeController {
 
 
     @GetMapping("/search")
-    public String search(@RequestParam("q") String query, Model model, HttpSession session) {
-        List<Media> results = mediaRepository.findByTitleContainingIgnoreCase(query);
+    public String search(@RequestParam("q") String query,
+                         @RequestParam(defaultValue = "1") int page,
+                         Model model, HttpSession session) {
 
-        model.addAttribute("allMedia", results); // Match expected attribute in seperated_film.html
+        int pageSize = 10;
+        PageRequest pageable = PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending());
+        Page<Media> resultsPage = mediaRepository.findByTitleContainingIgnoreCase(query, pageable);
+
+        model.addAttribute("allMedia", resultsPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", resultsPage.getTotalPages());
         model.addAttribute("sectionTitle", "Search results for \"" + query + "\"");
         model.addAttribute("pageTitle", "Search");
+        model.addAttribute("searchQuery", query); // Needed for pagination links
 
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
 
         return "seperated_film";
+    }
+
+
+    @ModelAttribute("availableYears")
+    public List<Integer> populateAvailableYears() {
+        return mediaRepository.findDistinctYears(); // must return List<Integer>
     }
 
 

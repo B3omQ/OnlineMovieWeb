@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 
-public interface GenreRepo extends JpaRepository<Genre, Integer> {
+public interface GenreRepo extends JpaRepository<Genre, Long> {
     Genre findByName(String name);
 
     @Query("SELECT g FROM Genre g JOIN g.mediaList m GROUP BY g ORDER BY COUNT(m.id) DESC")

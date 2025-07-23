@@ -1,0 +1,378 @@
+/* ==== Reset & Base ==== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #191b24;
+    color: #ffffff;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+input,
+button {
+    font-family: inherit;
+}
+
+/* ==== Layout ==== */
+.account-wrap {
+    padding: 30px;
+}
+
+.dashboard-container {
+    display: flex;
+    background-color: transparent;
+    gap: 30px;
+}
+
+/* ==== Sidebar ==== */
+.dcc-side {
+    width: 280px;
+    background-color: #25272f;
+    border-radius: 16px;
+    padding: 30px 20px;
+}
+
+.heading-sm {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.menu-user .item {
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px solid #2b2f3a;
+    color: #e5e7eb;
+    transition: 0.2s;
+}
+
+.menu-user .item:last-child {
+    border-bottom: none;
+}
+
+.menu-user .item:hover {
+    color: #facc15;
+}
+
+.menu-user .item.active {
+    color: #facc15;
+    font-weight: bold;
+}
+
+.line-center {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ==== Sidebar Avatar ==== */
+.side-user {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.user-avatar img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2b2f3a;
+    margin-bottom: 12px;
+}
+
+.alias-name {
+    font-size: 13px;
+    color: #cbd5e1;
+}
+
+/* ==== Main Section ==== */
+.dcc-main {
+    flex: 1;
+}
+
+.cg-body-box {
+    background-color: transparent;
+}
+
+.box-header {
+    margin-bottom: 25px;
+}
+
+.box-header .heading-sm {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.box-header p {
+    font-size: 14px;
+    color: #a0aec0;
+}
+
+/* ==== Form Section ==== */
+.box-body {
+    background-color: transparent;
+}
+
+.dash-form {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.v-avatar {
+    width: 150px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.v-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffffff;
+    margin-bottom: 10px;
+}
+
+.v-avatar span {
+    display: block;
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+
+/* ==== Input Fields ==== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-control {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 10px 12px;
+    width: 100%;
+    color: #f9fafb;
+    font-size: 15px;
+    max-width: 300px;
+}
+
+.form-control:disabled {
+    color: #9ca3af;
+    background-color: #1f2937;
+}
+
+/* ==== Radio Buttons ==== */
+.form-check-inline {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.form-check-input[type="radio"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #9ca3af;
+    margin-right: 6px;
+    cursor: pointer;
+    position: relative;
+}
+
+.form-check-input:checked {
+    border-color: #facc15;
+    background-color: #facc15;
+}
+
+.form-check-label {
+    font-size: 14px;
+    color: #e5e7eb;
+    cursor: pointer;
+}
+
+/* ==== Button ==== */
+.button-group {
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #facc15;
+    color: #000000;
+}
+
+.btn-primary:hover {
+    background-color: #eab308;
+}
+
+/* ==== Link === */
+.text-primary {
+    color: #facc15;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ==== Margin Top ==== */
+.mt-5 {
+    margin-top: 30px;
+}
+
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #141414;
+    padding: 10px 30px;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo img {
+    height: 50px;
+    margin-left: 10px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-text .title {
+    font-weight: bold;
+    font-size: 18px;
+    color: #fff;
+}
+
+.logo-text .tagline {
+    font-size: 12px;
+    color: #bbb;
+}
+
+.navbar-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.navbar-menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.navbar-menu a:hover {
+    color: #e50914;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+.auth-buttons span {
+    font-size: 14px;
+}
+
+.auth-buttons .btn.login,
+.auth-buttons .btn.logout {
+    padding: 6px 12px;
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+.auth-buttons .btn:hover {
+    background-color: #e50914;
+    border-color: #e50914;
+    color: #fff;
+}
+
+.profile-icon {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #1c1c1c;
+    color: #ccc;
+    font-size: 14px;
+    margin-top: 40px;
+}
+
+.footer a {
+    color: #e50914;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.v-form {
+    flex-grow: 0 !important;
+}
+
+
+
+
+
+
+
+
