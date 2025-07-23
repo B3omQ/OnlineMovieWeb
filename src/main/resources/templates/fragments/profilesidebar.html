@@ -9,20 +9,28 @@
                 Account Management
             </div>
             <div class="menu-user">
-                <a class="item" href="/user/favorite">
+                <a class="item" href="/favorite">
                     <div class="line-center flex">
                         <i class="fa-solid fa-heart"></i>
                         <span>Favorites</span>
                     </div>
                 </a>
 
-                <a class="item" href="/user/playlist">
-                    <div class="line-center flex">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Playlist</span>
-                    </div>
-                </a>
+                <div th:if="${user.Role == 'ADMIN'}">
+                    <a class="item" href="/admin/media">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Media Manage</span>
+                        </div>
+                    </a>
 
+                    <a class="item" href="/admin/user">
+                        <div class="line-center flex">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>User Manage</span>
+                        </div>
+                    </a>
+                </div>
                 <a class="item" href="/history">
                     <div class="line-center flex">
                         <i class="fa-solid fa-history"></i>
@@ -30,7 +38,7 @@
                     </div>
                 </a>
 
-                <a class="item" href="/user/thong-bao">
+                <a class="item" href="/notify">
                     <div class="line-center flex">
                         <i class="fa-solid fa-bell"></i>
                         <span>Notifications</span>
