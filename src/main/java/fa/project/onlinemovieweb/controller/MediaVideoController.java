@@ -168,6 +168,7 @@ public class MediaVideoController {
         review.setContent(content);
         review.setRating(rating);
         review.setMedia(media);
+        review.setCreatedAt(LocalDateTime.now());
 
         if (episodeNumber != null && "TV Show".equalsIgnoreCase(media.getType())) {
             Episode episode = media.getEpisodes().stream()

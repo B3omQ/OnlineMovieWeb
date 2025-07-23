@@ -133,7 +133,9 @@
         <div class="col-md-3 sidebar">
             <h6 class="text-warning">⭐ RECOMMEND FOR YOU</h6>
             <ul class="list-group">
-                <li th:each="media : ${mediaList}" class="list-group-item d-flex align-items-center">
+                <li th:each="media, iterStat : ${mediaList}"
+                    th:if="${iterStat.index < 12}"
+                    class="list-group-item d-flex align-items-center">
                     <a th:href="@{|/media/${media.id}}"
                        class="media-card d-flex align-items-center mb-3 p-2 rounded shadow-sm text-decoration-none text-light">
                         <img th:src="${media.poster}" class="media-thumb me-3 rounded" th:alt="${media.title + ' thumbnail'}">
