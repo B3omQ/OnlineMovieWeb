@@ -76,7 +76,7 @@ public class HomeController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", mediaPage.getTotalPages());
         model.addAttribute("pageTitle", "Latest Release");
-        model.addAttribute("sectionTitle", (year != null && year != 0) ? "Latest Release: " + year : "Latest Release");
+        model.addAttribute("sectionTitle", "Latest Release");
 
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
@@ -149,19 +149,12 @@ public class HomeController {
         model.addAttribute("totalPages", resultsPage.getTotalPages());
         model.addAttribute("sectionTitle", "Search results for \"" + query + "\"");
         model.addAttribute("pageTitle", "Search");
-        model.addAttribute("searchQuery", query); // Needed for pagination links
+        model.addAttribute("searchQuery", query);
 
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
 
         return "seperated_film";
     }
-
-
-    @ModelAttribute("availableYears")
-    public List<Integer> populateAvailableYears() {
-        return mediaRepository.findDistinctYears(); // must return List<Integer>
-    }
-
 
 }

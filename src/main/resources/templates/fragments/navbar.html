@@ -83,25 +83,6 @@
             <a href="/series">Series</a>
             <a href="/genres">Genres</a>
             <a href="/lastestrelease">Latest Release</a>
-            <form action="/lastestrelease" method="get" style="margin-left: 10px;">
-                <select name="year" class="form-select bg-dark text-white border-white"
-                        onchange="this.form.submit()" style="width: auto; min-width: 120px;">
-
-                    <!-- All Years Option with value 0 -->
-                    <option value="0"
-                            th:selected="${param.year == null or param.year == '0'}">All Years
-                    </option>
-
-                    <!-- Loop through availableYears -->
-                    <option th:each="year : ${availableYears}"
-                            th:value="${year}"
-                            th:text="${year}"
-                            th:selected="${param.year == year}"> <!-- Highlight selected -->
-                    </option>
-                </select>
-            </form>
-
-
         </nav>
 
         <div class="auth-buttons">
