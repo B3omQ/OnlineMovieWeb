@@ -36,9 +36,9 @@
 
                     <!-- Genres -->
                     <div class="mb-3">
-                    <span class="badge bg-secondary me-1"
+                    <a class="badge bg-secondary me-1" th:href="@{'/genres/' + ${genre.id}}" style="text-decoration: none;"
                           th:each="genre : ${media.genres}"
-                          th:text="${genre.name}">Genre</span>
+                          th:text="${genre.name}">Genre</a>
                     </div>
 
                     <!-- Buttons -->
