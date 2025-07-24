@@ -31,22 +31,24 @@
                                          style="height: 350px; object-fit: cover; border-radius: 8px;">
                                     <div class="card-body p-2">
                                         <h6 class="card-title mb-1" th:text="${history.media.title}">Movie Title</h6>
-                                        <small class="text"
-                                               th:text="${#lists.size(history.media.genres) >= 2
-                    ? history.media.genres[0].name + ', ' + history.media.genres[1].name + ' | ' + history.media.releaseYear
-                    : #lists.size(history.media.genres) == 1
-                    ? history.media.genres[0].name + ' | ' + history.media.releaseYear
-                    : 'Unknown | ' + history.media.releaseYear}">
-                                            Genre | Year
+                                        <!--                                        <small class="text"-->
+                                        <!--                                               th:text="${#lists.size(history.media.genres) >= 2-->
+                                        <!--                    ? history.media.genres[0].name + ', ' + history.media.genres[1].name + ' | ' + history.media.releaseYear-->
+                                        <!--                    : #lists.size(history.media.genres) == 1-->
+                                        <!--                    ? history.media.genres[0].name + ' | ' + history.media.releaseYear-->
+                                        <!--                    : 'Unknown | ' + history.media.releaseYear}">-->
+                                        <!--                                            Genre | Year-->
+                                        <!--                                        </small>-->
+                                        <small class="episode-info"
+                                               th:text="${history.episode!= null ?'Episode ' + history.episode.id : 'Movies'}">
                                         </small>
 
-
                                         <br>
-                                        Watched at
-                                        <th:block
-                                                th:with="watchedDate=${T(java.util.Date).from(history.watchedAt.atZone(T(java.time.ZoneId).systemDefault()).toInstant())}">
-                                            <small th:text="${#dates.format(watchedDate, 'dd-MM-yyyy HH:mm')}"></small>
-                                        </th:block>
+<!--                                        Watched at-->
+<!--                                        <th:block-->
+<!--                                                th:with="watchedDate=${T(java.util.Date).from(history.watchedAt.atZone(T(java.time.ZoneId).systemDefault()).toInstant())}">-->
+<!--                                            <small th:text="${#dates.format(watchedDate, 'dd-MM-yyyy HH:mm')}"></small>-->
+<!--                                        </th:block>-->
 
                                     </div>
                                 </div>
