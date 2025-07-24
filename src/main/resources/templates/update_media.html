@@ -74,10 +74,20 @@
                                 <label for="bannerUrl">Banner</label>
                             </div>
                             <div class="col">
-                                <input type="file" id="bannerFile" name="bannerFile" class="form-control"
-                                       accept="image/*" onchange="updateBanner('file')">
-                                <input id="bannerUrl" name="bannerUrl" class="form-control" th:value="${media.banner}"
-                                       oninput="updateBanner('url')" placeholder="https image link here">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <select class="form-control" id="bannerType" onchange="toggleBanner()">
+                                            <option value="url">Enter url</option>
+                                            <option value="file">Choose file</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="file" id="bannerFile" name="bannerFile" class="form-control"
+                                               accept="image/*" onchange="updateBanner('file')" style="display: none">
+                                        <input id="bannerUrl" name="bannerUrl" class="form-control" th:value="${media.banner}"
+                                               oninput="updateBanner('url')" placeholder="https image link here">
+                                    </div>
+                                </div>
                             </div>
                             <img id="banner" th:src="*{banner}" width="100%">
                         </div>
@@ -92,10 +102,20 @@
                                 <label for="posterUrl">Poster</label>
                             </div>
                             <div class="col">
-                                <input type="file" id="posterFile" name="posterFile" class="form-control"
-                                       accept="image/*" onchange="updatePoster('file')">
-                                <input id="posterUrl" name="posterUrl" class="form-control" th:value="${media.poster}"
-                                       oninput="updatePoster('url')" placeholder="https image link here">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <select class="form-control" id="posterType" onchange="togglePoster()">
+                                            <option value="url">Enter url</option>
+                                            <option value="file">Choose file</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="file" id="posterFile" name="posterFile" class="form-control"
+                                               accept="image/*" onchange="updatePoster('file')" style="display: none">
+                                        <input id="posterUrl" name="posterUrl" class="form-control" th:value="${media.poster}"
+                                               oninput="updatePoster('url')" placeholder="https image link here">
+                                    </div>
+                                </div>
                             </div>
                             <img id="poster" th:src="*{poster}" width="100%">
                         </div>
@@ -157,7 +177,6 @@
                         posterFile.remove();
                     }
                 }
-
             });
         }
     });
@@ -247,6 +266,38 @@
         }
     }
 
+    function toggleBanner(){
+        const bannerType = document.getElementById('bannerType').value;
+        const bannerUrl = document.getElementById('bannerUrl');
+        const bannerFile = document.getElementById('bannerFile');
+        if(bannerType === 'file'){
+            bannerFile.style.display = 'block';
+            bannerUrl.style.display = 'none';
+            bannerUrl.value = '';
+        }
+        else{
+            bannerUrl.style.display = 'block';
+            bannerFile.style.display = 'none';
+            bannerFile.value = '';
+        }
+    }
+
+    function togglePoster(){
+        const posterType = document.getElementById('posterType').value;
+        const posterUrl = document.getElementById('posterUrl');
+        const posterFile = document.getElementById('posterFile');
+        if(posterType === 'file'){
+            posterFile.style.display = 'block';
+            posterUrl.style.display = 'none';
+            posterUrl.value = '';
+        }
+        else{
+            posterUrl.style.display = 'block';
+            posterFile.style.display = 'none';
+            posterFile.value = '';
+        }
+    }
+    
     function validateDigits(input){
         input.value = input.value.replace(/\D/g, '');
     }

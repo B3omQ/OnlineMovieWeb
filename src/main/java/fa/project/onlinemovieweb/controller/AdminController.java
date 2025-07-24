@@ -7,6 +7,7 @@ import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -186,15 +190,18 @@ public class AdminController {
     }
 
     public String uploadImage(MultipartFile image, String folder){
-        File dir = new File("assets/" + folder);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
-        String filename = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
         try{
-            File file = new File(dir, filename);
-            image.transferTo(file);
-            return "/assets/" + folder + "/" + filename;
+            String dir = "assets/" + folder + "/";
+            File dirFolder = new File(dir);
+
+            if(!dirFolder.exists()){
+                dirFolder.mkdirs();
+            }
+            String filename = UUID.randomUUID().toString().substring(0, 8) + "_" + image.getOriginalFilename();
+
+            Path path = Paths.get(dir, filename);
+            Files.copy(image.getInputStream(), path);
+            return "/" + dir + filename;
         }
         catch(IOException e){
             e.printStackTrace();
