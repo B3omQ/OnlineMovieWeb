@@ -3,6 +3,7 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.CommentRepo;
+import fa.project.onlinemovieweb.repo.HistoryRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import fa.project.onlinemovieweb.repo.ReviewRepo;
 import jakarta.servlet.http.HttpSession;
@@ -36,6 +37,9 @@ public class MediaVideoController {
     @Autowired
     ReviewRepo reviewRepo;
 
+    @Autowired
+    HistoryRepo historyRepo;
+
     @GetMapping("/mediaVideo/{slug}.{id}")
     public String viewMediaVideo(HttpSession session, Model model,
                                  @PathVariable Long id,
@@ -63,7 +67,6 @@ public class MediaVideoController {
                 season = selectedEpisode.getSeason();
             }
         }
-
         model.addAttribute("media", media);
         model.addAttribute("episodes", episodes);
         model.addAttribute("selectedEpisode", selectedEpisode);
@@ -102,6 +105,11 @@ public class MediaVideoController {
         }
 
         model.addAttribute("reviews", reviews);
+        WatchHistory watchHistory = new WatchHistory();
+        watchHistory.setMedia(media);
+        watchHistory.setEpisode(selectedEpisode);
+        watchHistory.setUser(user);
+        historyRepo.save(watchHistory);
         return "mediaVideo";
     }
 
