@@ -25,6 +25,10 @@ public class User {
 	private String gender;// "Male", "Female", "Other"
 
 	private String avatar;
+	
+    private boolean enabled = false;
+    
+    private String verificationToken;
 
 //	@Column(nullable = false)
 	private Boolean oauthUser;
@@ -111,6 +115,22 @@ public class User {
 	public void setOauthUser(Boolean oauthUser) {
 		this.oauthUser = oauthUser;
 	}
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
 
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

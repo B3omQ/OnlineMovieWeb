@@ -4,17 +4,22 @@ import fa.project.onlinemovieweb.dto.UserRegistrationDto;
 import fa.project.onlinemovieweb.entities.Role;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.UserRepo;
+import fa.project.onlinemovieweb.service.EmailService;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -25,6 +30,9 @@ public class RegisterController {
 	
 	@Autowired
     private BCryptPasswordEncoder passwordEncoder;
+	
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/register")
     public String register(Model model){
@@ -71,7 +79,28 @@ public class RegisterController {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRole(Role.USER);
         user.setOauthUser(false);
+		user.setEnabled(false);
+		user.setVerificationToken(UUID.randomUUID().toString());
         userRepo.save(user);
-        return "redirect:/login";
+		emailService.sendVerifyMessage(
+				userDto.getEmail(),
+	            "Please verify your email by clicking the link below",
+	            "Here is your link: " + "http://localhost:8080/api/verify?token=" + user.getVerificationToken() + " ."
+	        );
+		model.addAttribute("error", "A verification link has been sent to your email. Please access it to verify your email right away");
+        return "login";
+    }
+    public String verifyUser(@RequestParam String email, Model model) {
+    		User user = userRepo.findByEmail(email);
+    		user.setEnabled(false);
+    		user.setVerificationToken(UUID.randomUUID().toString());
+    		userRepo.save(user);
+    		emailService.sendVerifyMessage(
+    				email,
+    	            "Please verify your email by clicking the link below",
+    	            "Here is your link: " + "http://localhost:8080/api/verify?token=" + user.getVerificationToken() + " ."
+    	        );
+            model.addAttribute("message", "A verification link has been sent to your email.");
+            return "redirect:/login";
     }
 }
