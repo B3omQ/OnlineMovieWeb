@@ -65,6 +65,7 @@ public class RegisterController {
             return "register";
         }
         User user = new User();
+        user.setAvatar("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s");
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
