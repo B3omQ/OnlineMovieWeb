@@ -200,4 +200,15 @@
   text-decoration: underline;
 }
 
+.btn-rating {
+  opacity: 1 !important;
+  border: 2px solid #28a745;
+  color: #28a745;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+.btn-rating:hover {
+  background-color: #28a745;
+  color: white;
+}
 

@@ -32,7 +32,7 @@
                 <span class="badge bg-light text-dark me-2" th:text="${media.releaseYear}"></span>
             </div>
             <p class="summary" th:text="${media.description}"></p>
-            <div class="buttons d-flex flex-wrap gap-2 mt-3">
+            <div class="buttons d-flex flex-wrap gap-2 mt-3 w-100 align-items-center">
                 <a th:href="@{|/mediaVideo/${#strings.replace(media.title.toLowerCase(), ' ', '-')}.${media.id}?ep=1|}"
                    class="btn btn-danger btn-lg"><i class="bi bi-play-fill"></i> Watch Now</a>
                 <button
@@ -44,16 +44,17 @@
                     <i th:class="${isFavorite} ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
                     <span th:text="${isFavorite} ? 'Favorited' : 'Favorite'"></span>
                 </button>
+
                 <a href="#" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Comment</a>
-                <div class="d-flex align-items-center gap-2 ms-3">
-                    <span class="rating badge bg-success fs-5">
-                        <i class="bi bi-star-fill"></i>
-                        <span th:text="${averageRating != null ? averageRating : 'N/A'} + '/5'">4.5/5</span>
-                    </span>
-                    <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal">
-                        <i class="bi bi-pencil-square"></i> Review
-                    </button>
-                </div>
+
+                <button class="btn btn-success btn-lg d-flex align-items-center gap-2 ms-auto px-4 py-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reviewModal"
+                        title="Click to rate this movie">
+                    <i class="bi bi-star-fill"></i>
+                    <span th:text="${averageRating != null ? averageRating : '0.0'} + '/5'">0.0/5</span>
+                </button>
+
             </div>
         </div>
     </div>
@@ -134,14 +135,14 @@
         <div class="modal-content bg-dark text-white">
             <form id="reviewForm">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="reviewModalLabel">Write Your Review</h5>
+                    <h5 class="modal-title" id="reviewModalLabel">Review</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Rating</label>
                         <select class="form-select" name="rating" required>
-                            <option value="">Select stars</option>
+                            <option value="" disabled selected>Select a rating</option>
                             <option value="1">⭐</option>
                             <option value="2">⭐⭐</option>
                             <option value="3">⭐⭐⭐</option>
@@ -150,8 +151,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Your Comment</label>
-                        <textarea class="form-control" name="content" maxlength="1000" rows="3" required></textarea>
+                        <textarea class="form-control" name="content" maxlength="1000" rows="3" placeholder="Write your review..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
