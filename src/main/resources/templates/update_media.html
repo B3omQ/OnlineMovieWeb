@@ -14,7 +14,7 @@
         <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
         <div class="col">
             <form th:action="@{${isUpdate} ? '/admin/medias/update' : '/admin/medias/create'}" th:object="${media}"
-                  method="post">
+                  method="post" enctype="multipart/form-data">
                 <input th:if="${isUpdate}" type="hidden" th:field="*{id}">
                 <div class="row" style="border-bottom: 1px solid #333; padding-bottom: 15px;">
                     <div class="col-6" style="padding-right: 20px;">
@@ -74,10 +74,22 @@
                                 <label for="bannerUrl">Banner</label>
                             </div>
                             <div class="col">
-                                <input id="bannerUrl" class="form-control" th:field="*{banner}" required
-                                       oninput="updateBanner()" placeholder="https image link here">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <select class="form-control" id="bannerType" onchange="toggleBanner()">
+                                            <option value="url">Enter url</option>
+                                            <option value="file">Choose file</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="file" id="bannerFile" name="bannerFile" class="form-control"
+                                               accept="image/*" onchange="updateBanner('file')" style="display: none">
+                                        <input id="bannerUrl" name="bannerUrl" class="form-control" th:value="${media.banner}"
+                                               oninput="updateBanner('url')" placeholder="https image link here">
+                                    </div>
+                                </div>
                             </div>
-                            <img id="banner" th:src="*{banner}" width="=100%">
+                            <img id="banner" th:src="*{banner}" width="100%">
                         </div>
                     </div>
                     <div class="col" style="padding-left: 20px;">
@@ -90,12 +102,20 @@
                                 <label for="posterUrl">Poster</label>
                             </div>
                             <div class="col">
-                                <input id="posterUrl"
-                                       class="form-control"
-                                       th:field="*{poster}"
-                                       required
-                                       oninput="updatePoster()"
-                                       placeholder="https image link here">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <select class="form-control" id="posterType" onchange="togglePoster()">
+                                            <option value="url">Enter url</option>
+                                            <option value="file">Choose file</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="file" id="posterFile" name="posterFile" class="form-control"
+                                               accept="image/*" onchange="updatePoster('file')" style="display: none">
+                                        <input id="posterUrl" name="posterUrl" class="form-control" th:value="${media.poster}"
+                                               oninput="updatePoster('url')" placeholder="https image link here">
+                                    </div>
+                                </div>
                             </div>
                             <img id="poster" th:src="*{poster}" width="100%">
                         </div>
@@ -119,6 +139,7 @@
 <script th:inline="javascript">
     let selectedGenreIds = [];
     document.addEventListener('DOMContentLoaded', function() {
+        //genre
         const selectedBadges = document.querySelectorAll('.badge.bg-primary');
             selectedBadges.forEach(badge => {
                 const genreId = parseInt(badge.getAttribute('data-genre-id'));
@@ -126,7 +147,38 @@
             });
 
         updateGenreInputs();
-        console.log(selectedGenreIds);
+
+        //images
+        const form = document.querySelector('form');
+        if(form){
+            form.addEventListener('submit', function(e){
+                const bannerFile = document.getElementById('bannerFile');
+                const bannerUrl = document.getElementById('bannerUrl');
+                if(bannerFile && bannerFile.files && bannerFile.files.length>0){
+                    if(bannerUrl){
+                        bannerUrl.remove();
+                    }
+                }
+                else{
+                    if(bannerFile){
+                        bannerFile.remove();
+                    }
+                }
+
+                const posterFile = document.getElementById('posterFile');
+                const posterUrl = document.getElementById('posterUrl');
+                if(posterFile && posterFile.files && posterFile.files.length>0){
+                    if(posterUrl){
+                        posterUrl.remove();
+                    }
+                }
+                else{
+                    if(posterFile){
+                        posterFile.remove();
+                    }
+                }
+            });
+        }
     });
 
     function toggleGenre(element){
@@ -166,18 +218,86 @@
         videoPlayer.src = videoUrl.value;
     }
 
-    function updateBanner(){
+    function updateBanner(source){
         const bannerUrl = document.getElementById('bannerUrl');
+        const bannerFile = document.getElementById('bannerFile');
         const bannerImg = document.getElementById('banner');
-        bannerImg.src =  bannerUrl.value;
+
+        if(source === 'file'){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                bannerImg.src = e.target.result;
+                bannerImg.style.display = 'block';
+            };
+            reader.readAsDataURL(bannerFile.files[0]);
+            bannerUrl.value = '';
+        }
+        else if(source === 'url'){
+            bannerImg.src = bannerUrl.value;
+            bannerImg.style.display = 'block';
+            bannerFile.value = '';
+        }
+        else{
+            bannerImg.style.display = 'none';
+        }
     }
 
-    function updatePoster(){
+    function updatePoster(source){
         const posterUrl = document.getElementById('posterUrl');
+        const posterFile = document.getElementById('posterFile');
         const posterImg = document.getElementById('poster');
-        posterImg.src =  posterUrl.value;
+
+        if(source === 'file'){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                posterImg.src = e.target.result;
+                posterImg.style.display = 'block';
+            };
+            reader.readAsDataURL(posterFile.files[0]);
+            posterUrl.value = '';
+        }
+        else if(source === 'url'){
+            posterImg.src = posterUrl.value;
+            posterImg.style.display = 'block';
+            posterFile.value = '';
+        }
+        else{
+            posterImg.style.display = 'none';
+        }
     }
 
+    function toggleBanner(){
+        const bannerType = document.getElementById('bannerType').value;
+        const bannerUrl = document.getElementById('bannerUrl');
+        const bannerFile = document.getElementById('bannerFile');
+        if(bannerType === 'file'){
+            bannerFile.style.display = 'block';
+            bannerUrl.style.display = 'none';
+            bannerUrl.value = '';
+        }
+        else{
+            bannerUrl.style.display = 'block';
+            bannerFile.style.display = 'none';
+            bannerFile.value = '';
+        }
+    }
+
+    function togglePoster(){
+        const posterType = document.getElementById('posterType').value;
+        const posterUrl = document.getElementById('posterUrl');
+        const posterFile = document.getElementById('posterFile');
+        if(posterType === 'file'){
+            posterFile.style.display = 'block';
+            posterUrl.style.display = 'none';
+            posterUrl.value = '';
+        }
+        else{
+            posterUrl.style.display = 'block';
+            posterFile.style.display = 'none';
+            posterFile.value = '';
+        }
+    }
+    
     function validateDigits(input){
         input.value = input.value.replace(/\D/g, '');
     }

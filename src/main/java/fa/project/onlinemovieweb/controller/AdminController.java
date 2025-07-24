@@ -7,16 +7,24 @@ import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class AdminController {
@@ -53,7 +61,10 @@ public class AdminController {
     }
 
     @PostMapping("admin/medias/update")
-    public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds, RedirectAttributes redirectAttributes) {
+    public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds,
+                              @RequestParam(required = false) MultipartFile bannerFile, @RequestParam(required = false) MultipartFile posterFile,
+                              @RequestParam(required = false) String bannerUrl, @RequestParam(required = false) String posterUrl,
+                              RedirectAttributes redirectAttributes) {
         Media m = mediaRepo.findById(media.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         m.setTitle(media.getTitle());
         m.setDescription(media.getDescription());
@@ -61,14 +72,34 @@ public class AdminController {
         m.setLanguage(media.getLanguage());
         m.setType(media.getType());
         m.setVideoUrl(media.getVideoUrl());
-        m.setPoster(media.getPoster());
-        m.setBanner(media.getBanner());
+
         if (genreIds == null || genreIds.isEmpty()) {
             m.setGenres(new ArrayList<>());
         } else {
             List<Genre> genres = genreRepo.findAllById(genreIds);
             m.setGenres(genres);
         }
+
+        if(bannerFile != null && !bannerFile.isEmpty()){
+            String bannerPath = uploadImage(bannerFile, "banners");
+            if(bannerPath!= null){
+                m.setBanner(bannerPath);
+            }
+        }
+        else if(bannerUrl != null && !bannerUrl.trim().isEmpty()){
+            m.setBanner(bannerUrl.trim());
+        }
+
+        if(posterFile != null && !posterFile.isEmpty()){
+            String posterPath = uploadImage(posterFile, "posters");
+            if(posterPath!= null){
+                m.setPoster(posterPath);
+            }
+        }
+        else if(posterUrl != null && !posterUrl.trim().isEmpty()){
+            m.setPoster(posterUrl.trim());
+        }
+
         mediaRepo.save(m);
         redirectAttributes.addAttribute("query", m.getTitle());
         return "redirect:/admin/medias";
@@ -85,7 +116,10 @@ public class AdminController {
     }
 
     @PostMapping("/admin/medias/create")
-    public String createMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds, RedirectAttributes redirectAttributes) {
+    public String createMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds,
+                              @RequestParam(required = false) MultipartFile bannerFile, @RequestParam(required = false) MultipartFile posterFile,
+                              @RequestParam(required = false) String bannerUrl, @RequestParam(required = false) String posterUrl,
+                              RedirectAttributes redirectAttributes) {
         if (media != null) {
             if (genreIds == null || genreIds.isEmpty()) {
                 media.setGenres(new ArrayList<>());
@@ -93,6 +127,27 @@ public class AdminController {
                 List<Genre> genres = genreRepo.findAllById(genreIds);
                 media.setGenres(genres);
             }
+
+            if(bannerFile != null && !bannerFile.isEmpty()){
+                String bannerPath = uploadImage(bannerFile, "banners");
+                if(bannerPath != null){
+                    media.setBanner(bannerPath);
+                }
+            }
+            else if(bannerUrl != null && !bannerUrl.trim().isEmpty()){
+                media.setBanner(bannerUrl.trim());
+            }
+
+            if(posterFile != null && !posterFile.isEmpty()){
+                String posterPath = uploadImage(posterFile, "posters");
+                if(posterPath != null){
+                    media.setPoster(posterPath);
+                }
+            }
+            else if(posterUrl != null && !posterUrl.trim().isEmpty()){
+                media.setPoster(posterUrl.trim());
+            }
+
             mediaRepo.save(media);
             redirectAttributes.addAttribute("query", media.getTitle());
         }
@@ -134,4 +189,23 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+    public String uploadImage(MultipartFile image, String folder){
+        try{
+            String dir = "assets/" + folder + "/";
+            File dirFolder = new File(dir);
+
+            if(!dirFolder.exists()){
+                dirFolder.mkdirs();
+            }
+            String filename = UUID.randomUUID().toString().substring(0, 8) + "_" + image.getOriginalFilename();
+
+            Path path = Paths.get(dir, filename);
+            Files.copy(image.getInputStream(), path);
+            return "/" + dir + filename;
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
