@@ -80,13 +80,23 @@
 </section>
 
 <!-- Comments Section -->
-<section class="comments-section py-5 bg-dark text-white">
+<section class="comments-section pt-5 pb-5 bg-dark text-white" id="commentsSection">
     <div class="container">
-        <h2 class="mb-4">Comments</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 id="sectionTitle" class="mb-0">Comments</h2>
+            <div>
+                <button class="btn btn-warning btn-sm" id="btnComment">Comment</button>
+                <button class="btn btn-outline-light btn-sm" id="btnRate">Review</button>
+            </div>
+        </div>
 
+        <!-- Chỉ hiển thị nếu chưa đăng nhập -->
+        <p th:if="${user == null or user.username == null}">
+            Please <a href="/login" class="text-warning">Login</a> to leave a comment/review
+        </p>
         <!-- Comment Input -->
         <div class="comment-input mb-4">
-            <form th:action="@{/media/{id}/comment(id=${media.id})}" method="post">
+            <form th:action="@{/media/{id}/comment(id=${media.id})}" method="post" id="commentForm">
                 <textarea name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
                           placeholder="Write your comment..." required></textarea>
                 <div class="d-flex justify-content-between align-items-center">
@@ -130,6 +140,31 @@
         </div>
     </div>
 </section>
+
+<section class="reviews-section bg-dark text-white d-none" id="reviewsSection">
+    <div class="container">
+        <div class="review-list d-flex flex-column gap-4">
+            <div class="review-box d-flex gap-3" th:each="r : ${reviews}">
+                <img th:src="${r.user.avatar}" alt="avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong th:text="${r.user.username}">Username</strong>
+                            <span class="text-muted small ms-2" th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+            <span th:each="i : ${#numbers.sequence(1, r.rating)}">
+                <i class="bi bi-star-fill text-warning"></i>
+            </span>
+                    </div>
+                    <div th:text="${r.content}">Review content</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>
 
@@ -229,12 +264,115 @@
           alert("Thank you for your review!");
           form.reset();
           bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
-          location.reload(); // optional: reload để cập nhật điểm trung bình
+          location.reload();
         } else {
           alert("Failed: " + data.message);
         }
       });
     });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const commentForm = document.querySelector(".comment-input form");
+
+        if (!commentForm) return;
+
+        commentForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const textarea = commentForm.querySelector("textarea");
+            const content = textarea.value.trim();
+
+            if (!content) return;
+
+            const formData = new URLSearchParams();
+            formData.append("content", content);
+
+            try {
+                const response = await fetch(commentForm.action, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert("Please login to comment.");
+                    } else {
+                        alert("Server error");
+                    }
+                    return;
+                }
+
+                const newCommentHtml = await response.text();
+
+                const commentSection = document.getElementById("commentSection");
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = newCommentHtml;
+
+                const newComment = tempDiv.firstElementChild;
+
+                if (newComment && commentSection) {
+                    commentSection.prepend(newComment);
+                    textarea.value = ""; // reset
+                }
+
+            } catch (err) {
+                alert("Error submitting comment: " + err.message);
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const btnComment = document.getElementById("btnComment");
+    const btnReview = document.getElementById("btnRate");
+    const sectionTitle = document.getElementById("sectionTitle");
+    const commentForm = document.getElementById("commentForm");
+    const commentList = document.getElementById("commentSection");
+    const pagination = document.querySelector(".pagination");
+    const reviewsSection = document.getElementById("reviewsSection");
+
+    btnComment.addEventListener("click", function () {
+        // Update title
+        sectionTitle.textContent = "Comments";
+
+        // Toggle buttons
+        btnComment.classList.remove("btn-outline-light");
+        btnComment.classList.add("btn-warning");
+
+        btnReview.classList.remove("btn-warning");
+        btnReview.classList.add("btn-outline-light");
+
+        // Show comments, hide reviews
+        commentForm?.classList.remove("d-none");
+        commentList?.classList.remove("d-none");
+        pagination?.classList.remove("d-none");
+        reviewsSection?.classList.add("d-none");
+        commentsSection?.classList.add("pb-5");
+    });
+
+    btnReview.addEventListener("click", function () {
+        sectionTitle.textContent = "Reviews";
+
+        btnReview.classList.remove("btn-outline-light");
+        btnReview.classList.add("btn-warning");
+
+        btnComment.classList.remove("btn-warning");
+        btnComment.classList.add("btn-outline-light");
+
+        commentForm?.classList.add("d-none");
+        commentList?.classList.add("d-none");
+        pagination?.classList.add("d-none");
+        reviewsSection?.classList.remove("d-none");
+        commentsSection?.classList.remove("pb-5");
+    });
+});
+
 </script>
 
 </body>

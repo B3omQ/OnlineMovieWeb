@@ -87,7 +87,7 @@ public class MediaProfileController {
                 .mapToInt(Review::getRating)
                 .average()
                 .orElse(0);
-
+        model.addAttribute("reviews", reviews);
         model.addAttribute("averageRating", Math.round(averageRating * 10.0) / 10.0);
         return "media_profile";
     }
@@ -95,7 +95,7 @@ public class MediaProfileController {
     @PostMapping("/media/{id}/comment")
     public String postMediaComment(@PathVariable Long id,
                                    @RequestParam String content,
-                                   HttpSession session,
+                                   HttpSession session, Model model,
                                    @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber) {
         User user = (User) session.getAttribute("user");
 
@@ -118,8 +118,8 @@ public class MediaProfileController {
 
         // Redirect back to the same media page with appropriate episode param
         String redirectUrl = "/media/" + id;
-
-        return "redirect:" + redirectUrl;
+        model.addAttribute("c", comment);
+        return "fragments/comment :: comment";
     }
 
     @Autowired
