@@ -26,6 +26,7 @@ public class MediaProfileController {
 
     @Autowired
     CommentRepo commentRepo;
+
     @GetMapping("/media/{id}")
     public String getMedia(@PathVariable Long id, Model model, HttpSession session,
                            @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber,
@@ -67,13 +68,8 @@ public class MediaProfileController {
         int pageSize = 5;
         Page<Comment> commentPage;
 
-        if (selectedEpisode != null) {
-            commentPage = commentRepo.findByEpisodeIdOrderByCreatedAtDesc(
-                    selectedEpisode.getId(), PageRequest.of(page, pageSize));
-        } else {
-            commentPage = commentRepo.findByMediaIdOrderByCreatedAtDesc(
-                    media.getId(), PageRequest.of(page, pageSize));
-        }
+        commentPage = commentRepo.findByMediaIdOrderByCreatedAtDesc(
+                media.getId(), PageRequest.of(page, pageSize));
 
         model.addAttribute("commentPage", commentPage);
         model.addAttribute("comments", commentPage.getContent());

@@ -217,3 +217,10 @@ body {
         padding: 15px;
     }
 }
+
+.comment-episode {
+    color: #aaa !important;
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
