@@ -7,7 +7,6 @@ import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
-import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -37,12 +36,12 @@ public class AdminController {
     @Autowired
     private GenreRepo genreRepo;
 
-    @GetMapping("admin/")
+    @GetMapping("/admin")
     public String getAdmin() {
         return "redirect:/admin/medias";
     }
 
-    @GetMapping("admin/medias")
+    @GetMapping("/admin/medias")
     public String getMedias(Model model, @RequestParam(required = false) String query) {
         List<Media> medias = mediaRepo.findAll();
         model.addAttribute("medias", medias);
@@ -50,7 +49,7 @@ public class AdminController {
         return "admin_medias";
     }
 
-    @GetMapping("admin/medias/update/{id}")
+    @GetMapping("/admin/medias/update/{id}")
     public String getUpdate(@PathVariable Long id, Model model) {
         Media media = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("media", media);
@@ -60,7 +59,7 @@ public class AdminController {
         return "update_media";
     }
 
-    @PostMapping("admin/medias/update")
+    @PostMapping("/admin/medias/update")
     public String updateMedia(@ModelAttribute Media media, @RequestParam(required = false) List<Long> genreIds,
                               @RequestParam(required = false) MultipartFile bannerFile, @RequestParam(required = false) MultipartFile posterFile,
                               @RequestParam(required = false) String bannerUrl, @RequestParam(required = false) String posterUrl,
