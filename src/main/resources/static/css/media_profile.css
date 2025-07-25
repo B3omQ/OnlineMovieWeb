@@ -200,4 +200,41 @@
   text-decoration: underline;
 }
 
+.btn-rating {
+  opacity: 1 !important;
+  border: 2px solid #28a745;
+  color: #28a745;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+.btn-rating:hover {
+  background-color: #28a745;
+  color: white;
+}
+.review-box {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+}
+
+.review-box strong {
+  color: #fff;
+}
+
+.review-box span {
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+.review-box .bi-star-fill {
+  margin-right: 2px;
+}
+
+.review-box div[th\\:text] {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
 

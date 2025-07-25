@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepo extends JpaRepository<User,Long> {
     User findByEmail(String email);
+    User findByVerificationToken(String token);
     List<User> findAllByUsernameIgnoreCase(String username);
     List<User> findByUsername(String username);
     List<User> findByRole(Role role);

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +78,7 @@ public class HomeController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", mediaPage.getTotalPages());
         model.addAttribute("pageTitle", "Latest Release");
-        model.addAttribute("sectionTitle", (year != null && year != 0) ? "Latest Release: " + year : "Latest Release");
+        model.addAttribute("sectionTitle", "Latest Release");
 
         Object user = session.getAttribute("user");
         model.addAttribute("user", user);
@@ -135,32 +137,72 @@ public class HomeController {
     }
 
 
-    @GetMapping("/search")
-    public String search(@RequestParam("q") String query,
-                         @RequestParam(defaultValue = "1") int page,
-                         Model model, HttpSession session) {
+    @GetMapping("/advanced_search")
+    public String showAdvancedSearch(
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) List<Integer> year, // changed to List
+            @RequestParam(defaultValue = "newest") String sort,
+            @RequestParam(defaultValue = "1") int page,
+            Model model,
+            HttpSession session) {
 
         int pageSize = 10;
-        PageRequest pageable = PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending());
-        Page<Media> resultsPage = mediaRepository.findByTitleContainingIgnoreCase(query, pageable);
 
-        model.addAttribute("allMedia", resultsPage.getContent());
+        // Sorting logic
+        Sort sorting = switch (sort.toLowerCase()) {
+            case "oldest" -> Sort.by("releaseYear").ascending();
+            case "most" -> Sort.by("views").descending();
+            case "least" -> Sort.by("views").ascending();
+            default -> Sort.by("releaseYear").descending();
+        };
+
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sorting);
+
+        // Convert comma-separated strings to lists
+        List<String> languageList = (language != null && !language.isEmpty())
+                ? Arrays.asList(language.split(","))
+                : null;
+
+        List<String> typeList = (type != null && !type.isEmpty())
+                ? Arrays.asList(type.split(","))
+                : null;
+
+        List<String> genreList = (genre != null && !genre.isEmpty())
+                ? Arrays.asList(genre.split(","))
+                : null;
+
+        // Use 'year' directly since it's already a List<Integer>
+        List<Integer> yearList = (year != null && !year.isEmpty()) ? year : null;
+
+        // Query database
+        Page<Media> mediaPage = mediaRepository.findWithFilters(languageList, typeList, genreList, yearList, pageable);
+
+        // Model attributes
+        model.addAttribute("allMedia", mediaPage.getContent());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", resultsPage.getTotalPages());
-        model.addAttribute("sectionTitle", "Search results for \"" + query + "\"");
-        model.addAttribute("pageTitle", "Search");
-        model.addAttribute("searchQuery", query); // Needed for pagination links
+        model.addAttribute("totalPages", mediaPage.getTotalPages());
+        model.addAttribute("pageTitle", "Advanced Search");
+        model.addAttribute("sectionTitle", "Advanced Search");
 
-        Object user = session.getAttribute("user");
-        model.addAttribute("user", user);
+        // Filters
+        model.addAttribute("languages", mediaRepository.findDistinctLanguages());
+        model.addAttribute("types", List.of("Movie", "TV Show"));
+        model.addAttribute("genres", genreRepo.findAllGenreNames());
+        model.addAttribute("years", mediaRepository.findDistinctYears());
 
-        return "seperated_film";
-    }
+        // Preserve selection
+        model.addAttribute("selectedYear", year);
+        model.addAttribute("selectedLanguage", language);
+        model.addAttribute("selectedType", type);
+        model.addAttribute("selectedGenre", genre);
+        model.addAttribute("selectedSort", sort);
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("noResults", mediaPage.getContent().isEmpty());
 
-
-    @ModelAttribute("availableYears")
-    public List<Integer> populateAvailableYears() {
-        return mediaRepository.findDistinctYears(); // must return List<Integer>
+        return "advanced_search";
     }
 
 

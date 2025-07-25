@@ -26,6 +26,7 @@ public class MediaProfileController {
 
     @Autowired
     CommentRepo commentRepo;
+
     @GetMapping("/media/{id}")
     public String getMedia(@PathVariable Long id, Model model, HttpSession session,
                            @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber,
@@ -67,13 +68,8 @@ public class MediaProfileController {
         int pageSize = 5;
         Page<Comment> commentPage;
 
-        if (selectedEpisode != null) {
-            commentPage = commentRepo.findByEpisodeIdOrderByCreatedAtDesc(
-                    selectedEpisode.getId(), PageRequest.of(page, pageSize));
-        } else {
-            commentPage = commentRepo.findByMediaIdOrderByCreatedAtDesc(
-                    media.getId(), PageRequest.of(page, pageSize));
-        }
+        commentPage = commentRepo.findByMediaIdOrderByCreatedAtDesc(
+                media.getId(), PageRequest.of(page, pageSize));
 
         model.addAttribute("commentPage", commentPage);
         model.addAttribute("comments", commentPage.getContent());
@@ -91,7 +87,7 @@ public class MediaProfileController {
                 .mapToInt(Review::getRating)
                 .average()
                 .orElse(0);
-
+        model.addAttribute("reviews", reviews);
         model.addAttribute("averageRating", Math.round(averageRating * 10.0) / 10.0);
         return "media_profile";
     }
@@ -99,7 +95,7 @@ public class MediaProfileController {
     @PostMapping("/media/{id}/comment")
     public String postMediaComment(@PathVariable Long id,
                                    @RequestParam String content,
-                                   HttpSession session,
+                                   HttpSession session, Model model,
                                    @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber) {
         User user = (User) session.getAttribute("user");
 
@@ -122,8 +118,8 @@ public class MediaProfileController {
 
         // Redirect back to the same media page with appropriate episode param
         String redirectUrl = "/media/" + id;
-
-        return "redirect:" + redirectUrl;
+        model.addAttribute("c", comment);
+        return "fragments/comment :: comment";
     }
 
     @Autowired
