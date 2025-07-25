@@ -40,7 +40,6 @@ spring.datasource.url=jdbc:mysql://localhost:3306/MovieWebsite?useSSL=false&serv
 spring.datasource.username=YOUR_MYSQL_USERNAME
 spring.datasource.password=YOUR_MYSQL_PASSWORD
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-And remember to add dependency
 
 
 # JPA and Hibernate
