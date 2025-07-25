@@ -3,7 +3,6 @@ package fa.project.onlinemovieweb.controller;
 import fa.project.onlinemovieweb.entities.Favorite;
 import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.repo.FavoriteRepo;
-import fa.project.onlinemovieweb.repo.HistoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import fa.project.onlinemovieweb.entities.User;

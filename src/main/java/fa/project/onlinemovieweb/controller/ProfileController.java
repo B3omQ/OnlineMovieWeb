@@ -1,13 +1,10 @@
 package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.dto.UserChangePasswordDto;
-import fa.project.onlinemovieweb.dto.UserRegistrationDto;
 import fa.project.onlinemovieweb.entities.Favorite;
 import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
-import fa.project.onlinemovieweb.entities.WatchHistory;
 import fa.project.onlinemovieweb.repo.FavoriteRepo;
-import fa.project.onlinemovieweb.repo.HistoryRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;

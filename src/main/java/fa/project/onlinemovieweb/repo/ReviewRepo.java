@@ -1,6 +1,5 @@
 package fa.project.onlinemovieweb.repo;
 
-import fa.project.onlinemovieweb.entities.Episode;
 import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
