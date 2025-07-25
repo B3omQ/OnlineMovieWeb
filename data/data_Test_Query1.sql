@@ -3,7 +3,6 @@
 
 
 
-
 INSERT INTO Media (title, description, language, release_year, type, video_url, views, banner, poster) VALUES
 ('Breaking Bad', 'A chemistry teacher diagnosed with cancer turns to manufacturing drugs to secure his family future.', 'English', 2008, 'TV Show', 'https://www.youtube.com/embed/HhesaQXLuRY', 40, 'https://images4.alphacoders.com/111/1111277.jpg', 'https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_.jpg'),
 ('Spider-Man: No Way Home', 'Peter Parker must face multiverse chaos as old enemies return, forcing him to redefine what it means to be Spider-Man.', 'English', 2021, 'Movie', 'https://drive.google.com/file/d/13cDHUQpYfgYPBrPyp5Ek4w4a9sWbMFcY/preview', 200, 'https://images.alphacoders.com/132/1321602.jpeg', 'https://i.ebayimg.com/images/g/JZMAAOSwODlm6WX~/s-l1200.jpg'),
@@ -141,10 +140,13 @@ INSERT INTO Media_Genre (media_id, genre_id) VALUES (41, 6), (41, 38)
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (42, 8), (42, 13)
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (43, 23), (43, 1)
 
+insert into users(username, email, password, role, enabled) values('asdf', 'asdf@gmail.com', 'Asdf123!', '0', 1)
+insert into users(username, email, password, role, enabled) values('admin', 'admin@gmail.com', 'Admin123!', '1', 1)
+
 INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
-VALUES ('2025-07-20 21:00:00', 3600, 4, 10, NULL);
+VALUES ('2025-07-20 21:00:00', 3600, 2, 10, NULL);
 INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
-VALUES ('2025-07-18 15:30:00', 2400, 4, 12, NULL);
+VALUES ('2025-07-18 15:30:00', 2400, 2, 12, NULL);
 INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
-VALUES ('2025-07-16 10:05:00', 3200, 4, 8, NULL);
+VALUES ('2025-07-16 10:05:00', 3200, 2, 8, NULL);
 
