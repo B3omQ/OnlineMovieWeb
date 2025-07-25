@@ -6,13 +6,12 @@ import fa.project.onlinemovieweb.repo.HistoryRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -49,5 +48,17 @@ public class HistoryController {
         }
 
         return new ArrayList<>(latestMap.values());
+    }
+
+    @GetMapping("/history/delete/{id}")
+    @Transactional
+    public String deleteHistory(@PathVariable Long id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        historyRepo.deleteAllByMediaIdAndUserId(id, user.getId());
+        return "redirect:/history";
     }
 }
