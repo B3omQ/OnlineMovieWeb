@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,6 +25,26 @@ public interface MediaRepo extends JpaRepository<Media, Long> {
     Page<Media> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
     Page<Media> findByGenresContaining(Genre genre, Pageable pageable);
+
+    @Query("SELECT DISTINCT m.language FROM Media m WHERE m.language IS NOT NULL ORDER BY m.language")
+    List<String> findDistinctLanguages();
+
+    @Query("SELECT DISTINCT m.releaseYear FROM Media m ORDER BY m.releaseYear DESC")
+    List<Integer> findDistinctYears();
+
+    @Query("SELECT m FROM Media m WHERE "
+            + "(:language IS NULL OR m.language IN :language) AND "
+            + "(:type IS NULL OR m.type IN :type) AND "
+            + "(:genre IS NULL OR EXISTS (SELECT g FROM m.genres g WHERE g.name IN :genre)) AND "
+            + "(:year IS NULL OR m.releaseYear IN :year)")
+    Page<Media> findWithFilters(
+            @Param("language") List<String> language,
+            @Param("type") List<String> type,
+            @Param("genre") List<String> genre,
+            @Param("year") List<Integer> year,
+            Pageable pageable
+    );
+
 
 }
 
