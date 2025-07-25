@@ -45,7 +45,7 @@
                     <span th:text="${isFavorite} ? 'Favorited' : 'Favorite'"></span>
                 </button>
 
-                <a href="#" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Comment</a>
+                <a href="#" id="scrollToCommentBtn" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Comment</a>
 
                 <button class="btn btn-success btn-lg d-flex align-items-center gap-2 ms-auto px-4 py-2"
                         data-bs-toggle="modal"
@@ -372,7 +372,18 @@
         commentsSection?.classList.remove("pb-5");
     });
 });
+</script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const scrollToCommentBtn = document.getElementById("scrollToCommentBtn");
+      const commentsSection = document.getElementById("commentsSection");
+
+      scrollToCommentBtn?.addEventListener("click", function (e) {
+        e.preventDefault();
+        commentsSection?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
 </script>
 
 </body>
