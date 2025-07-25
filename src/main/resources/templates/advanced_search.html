@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">All Films</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+</head>
+<style>
+    /* Fix arrow centering */
+    .page-arrow {
+        background-color: #000;
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center; /* vertical centering */
+        justify-content: center; /* horizontal centering */
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        line-height: 1; /* FIX: avoids vertical misalignment */
+        padding-top: 5px; /* FIX: make sure padding doesn’t offset text */
+    }
+
+    /* Page info pill */
+    .page-info {
+        background-color: #5a5a5a; /* lighter than #444 for contrast */
+        color: #fff;
+        padding: 6px 18px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 600;
+        gap: 10px;
+    }
+
+    /* Fix current page black box */
+    .page-info input[type="text"] {
+        background-color: #1a1a1a; /* slightly lighter black */
+        color: #fff;
+        border: none;
+        width: 36px;
+        height: 28px;
+        text-align: center;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 0;
+        font-size: 15px;
+        line-height: 1;
+    }
+
+    .page-info input[type="text"] {
+        box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.1);
+        border: 1px solid #333;
+    }
+</style>
+
+<body style="background-color: #121212;">
+<!-- Navbar -->
+<div th:insert="fragments/navbar :: navbar"></div>
+
+<!-- Main Content -->
+<div class="container mb-5">
+    <!-- Filter Toggle Button -->
+    <div class="container mt-4">
+        <button class="btn btn-outline-light" id="showFilterBtn" onclick="toggleFilter(true)">
+            <i class="bi bi-funnel"></i>
+        </button>
+    </div>
+
+    <!-- Filter Panel -->
+    <div class="container bg-dark text-white p-4 rounded mt-3 d-none" id="filterPanel">
+        <form id="filterForm" action="/advanced_search" method="get">
+            <h5 class="mb-3">Filter</h5>
+
+            <!-- Language -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Language:</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-light btn-sm active"
+                            data-group="language" data-value="All"
+                            onclick="toggleFilterSelection(this)">All
+                    </button>
+                    <button type="button" class="btn btn-outline-light btn-sm"
+                            th:each="language : ${languages}"
+                            th:text="${language}"
+                            th:attr="data-value=${language}"
+                            data-group="language"
+                            onclick="toggleFilterSelection(this)"></button>
+                </div>
+            </div>
+
+            <!-- Type -->
+            <!-- Type -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Type:</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-warning btn-sm active"
+                            data-group="type" data-value="All"
+                            onclick="toggleFilterSelection(this)">All
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-sm"
+                            data-group="type" data-value="Movie"
+                            onclick="toggleFilterSelection(this)">Movie
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-sm"
+                            data-group="type" data-value="TV Show"
+                            onclick="toggleFilterSelection(this)">TV Show
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Genre -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Genre:</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-info btn-sm active"
+                            data-group="genre" data-value="All"
+                            onclick="toggleFilterSelection(this)">All
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm"
+                            th:each="genre : ${genres}"
+                            th:text="${genre}"
+                            th:attr="data-value=${genre}"
+                            data-group="genre"
+                            onclick="toggleFilterSelection(this)"></button>
+                </div>
+            </div>
+
+            <!-- Release Year -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Release Year:</label>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-light btn-sm active"
+                            data-group="year" data-value="All"
+                            onclick="toggleFilterSelection(this)">All
+                    </button>
+                    <button type="button" class="btn btn-outline-light btn-sm"
+                            th:each="year : ${years}"
+                            th:text="${year}"
+                            th:attr="data-value=${year}"
+                            data-group="year"
+                            onclick="toggleFilterSelection(this)"></button>
+                </div>
+            </div>
+
+            <!-- Sort By -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Sort by:</label>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary btn-sm active"
+                            data-group="sort" data-value="Newest"
+                            onclick="toggleFilterSelection(this)">Newest
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            data-group="sort" data-value="Oldest"
+                            onclick="toggleFilterSelection(this)">Oldest
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            data-group="sort" data-value="most"
+                            onclick="toggleFilterSelection(this)">Most Viewed
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            data-group="sort" data-value="least"
+                            onclick="toggleFilterSelection(this)">Least Viewed
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hidden inputs -->
+            <input type="hidden" name="language">
+            <input type="hidden" name="type">
+            <input type="hidden" name="genre">
+            <input type="hidden" name="year">
+            <input type="hidden" name="sort">
+
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-warning" onclick="submitFilters()">Apply Filters →</button>
+                    <button type="button" class="btn btn-outline-light" onclick="resetFilters()">Reset</button>
+                </div>
+                <button type="button" class="btn btn-outline-light" onclick="toggleFilter(false)">Close</button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Filter Script -->
+    <script>
+        function toggleFilter(show) {
+            const panel = document.getElementById("filterPanel");
+            const showBtn = document.getElementById("showFilterBtn");
+            if (show) {
+                panel.classList.remove("d-none");
+                showBtn.classList.add("d-none");
+            } else {
+                panel.classList.add("d-none");
+                showBtn.classList.remove("d-none");
+            }
+        }
+
+        function toggleFilterSelection(button) {
+            const group = button.getAttribute("data-group");
+            const value = button.getAttribute("data-value");
+
+            if (group === "sort") {
+                deselectGroup(group);
+                setButtonSelected(button);
+                return;
+            }
+
+            if (value === "All") {
+                deselectGroup(group);
+                setButtonSelected(button);
+                return;
+            }
+
+            document.querySelectorAll(`button[data-group="${group}"][data-value="All"]`)
+                .forEach(clearButtonSelected);
+
+            if (button.classList.contains("active")) {
+                clearButtonSelected(button);
+            } else {
+                setButtonSelected(button);
+            }
+        }
+
+        function setButtonSelected(button) {
+            button.classList.add("active");
+
+            if (button.classList.contains("btn-outline-light")) button.classList.replace("btn-outline-light", "btn-light");
+            if (button.classList.contains("btn-outline-warning")) button.classList.replace("btn-outline-warning", "btn-warning");
+            if (button.classList.contains("btn-outline-info")) button.classList.replace("btn-outline-info", "btn-info");
+            if (button.classList.contains("btn-outline-secondary")) button.classList.replace("btn-outline-secondary", "btn-secondary");
+        }
+
+        function clearButtonSelected(button) {
+            button.classList.remove("active");
+
+            if (button.classList.contains("btn-light")) button.classList.replace("btn-light", "btn-outline-light");
+            if (button.classList.contains("btn-warning")) button.classList.replace("btn-warning", "btn-outline-warning");
+            if (button.classList.contains("btn-info")) button.classList.replace("btn-info", "btn-outline-info");
+            if (button.classList.contains("btn-secondary")) button.classList.replace("btn-secondary", "btn-outline-secondary");
+        }
+
+        function deselectGroup(group) {
+            document.querySelectorAll(`button[data-group="${group}"]`).forEach(clearButtonSelected);
+        }
+
+        function submitFilters() {
+            const groups = ["language", "type", "genre", "year", "sort"];
+            groups.forEach(group => {
+                const selected = [...document.querySelectorAll(`button[data-group="${group}"].active`)]
+                    .map(btn => btn.getAttribute("data-value"));
+                const input = document.querySelector(`input[name="${group}"]`);
+                if (input) input.value = (selected.includes("All") || selected.length === 0) ? "" : selected.join(",");
+            });
+
+            // Always reset to page 1 when filtering
+            const form = document.getElementById("filterForm");
+            form.action = "/advanced_search?page=1";
+            form.submit();
+        }
+
+
+        // Preload selected buttons if filters exist in URL
+        window.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const groups = ["language", "type", "genre", "year", "sort"];
+
+            groups.forEach(group => {
+                const param = urlParams.get(group);
+                if (!param) return;
+
+                const values = param.split(",");
+
+                if (group === "sort") {
+                    // Only one sort option allowed
+                    const value = values[0];
+                    const button = document.querySelector(`button[data-group="sort"][data-value="${value}"]`);
+                    if (button) {
+                        deselectGroup("sort");
+                        setButtonSelected(button);
+                    }
+                    return;
+                }
+
+                const allButton = document.querySelector(`button[data-group="${group}"][data-value="All"]`);
+                const allOtherButtons = [...document.querySelectorAll(`button[data-group="${group}"]:not([data-value="All"])`)];
+
+                // Check if user selected ALL options (excluding "All")
+                const allValues = allOtherButtons.map(btn => btn.getAttribute("data-value"));
+                const selectedAll = values.length === allValues.length && allValues.every(v => values.includes(v));
+
+                if (selectedAll) {
+                    if (allButton) setButtonSelected(allButton);
+                    allOtherButtons.forEach(clearButtonSelected);
+                    return;
+                }
+
+                values.forEach(value => {
+                    const btn = document.querySelector(`button[data-group="${group}"][data-value="${value}"]`);
+                    if (btn) setButtonSelected(btn);
+                });
+
+                if (values.includes("All") === false && allButton) clearButtonSelected(allButton);
+            });
+        });
+
+        function resetFilters() {
+            const groups = ["language", "type", "genre", "year", "sort"];
+
+            groups.forEach(group => {
+                deselectGroup(group);
+                const allBtn = document.querySelector(`button[data-group="${group}"][data-value="All"]`);
+                if (allBtn) setButtonSelected(allBtn);
+                const input = document.querySelector(`input[name="${group}"]`);
+                if (input) input.value = "";
+            });
+        }
+
+
+    </script>
+    <div th:if="${noResults}" class="text-center mt-5">
+        <img src="https://i.imgur.com/wANfZ0H.gif" alt="No results found"
+             style="max-width: 400px; width: 100%;">
+        <p class="text-light mt-4 fs-4">Oops! We couldn't find any media matching your filters.</p>
+    </div>
+
+    <br>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 gx-4 gy-4">
+        <div class="col" th:each="media : ${allMedia}">
+            <a th:href="@{'/media/' + ${media.id}}" style="text-decoration: none; color: inherit;">
+                <div class="card bg-dark border-0 h-100 text-white text-center">
+                    <img th:src="${media.poster}" class="card-img-top" alt="Movie Poster"
+                         style="height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1" th:text="${media.title}">Movie Title</h6>
+                        <small class="text"
+                               th:text="${#lists.size(media.genres) >= 2
+                                       ? media.genres[0].name + ', ' + media.genres[1].name + ' | ' + media.releaseYear
+                                       : #lists.size(media.genres) == 1
+                                       ? media.genres[0].name + ' | ' + media.releaseYear
+                                       : 'Unknown | ' + media.releaseYear}">
+                            Genre | Year
+                        </small>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center align-items-center mt-4 pagination-bar" th:if="${totalPages > 1}">
+
+    <!-- Previous Button -->
+    <a th:if="${currentPage > 1}"
+       th:href="@{/advanced_search(
+            language=${selectedLanguage},
+            type=${selectedType},
+            genre=${selectedGenre},
+            year=${selectedYear},
+            sort=${selectedSort},
+            page=${currentPage - 1})}"
+       class="btn btn-dark rounded-circle me-2 page-arrow">⮜</a>
+
+    <!-- Page Info -->
+    <div class="bg-secondary px-3 py-1 rounded-pill text-white page-info">
+        Page
+        <input type="text" th:value="${currentPage}" class="bg-dark text-white border-0 text-center"
+               style="width: 40px;" readonly/>
+        / <span th:text="${totalPages}">0</span>
+    </div>
+
+    <!-- Next Button -->
+    <a th:if="${currentPage < totalPages}"
+       th:href="@{/advanced_search(
+            language=${selectedLanguage},
+            type=${selectedType},
+            genre=${selectedGenre},
+            year=${selectedYear},
+            sort=${selectedSort},
+            page=${currentPage + 1})}"
+       class="btn btn-dark rounded-circle ms-2 page-arrow">⮞</a>
+
+</div>
+
+
+<!-- Footer -->
+<div th:insert="fragments/footer :: footer"></div>
+</body>
+</html>
