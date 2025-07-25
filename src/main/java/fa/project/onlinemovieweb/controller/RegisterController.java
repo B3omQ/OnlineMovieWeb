@@ -43,10 +43,15 @@ public class RegisterController {
     @PostMapping("/register")
     public String register(@ModelAttribute("userDto") UserRegistrationDto userDto, Model model){
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         List<User> users = userRepo.findAllByUsernameIgnoreCase(userDto.getUsername());
         if (!Pattern.matches(emailRegex, userDto.getEmail())) {
             model.addAttribute("error", "Invalid email format");
             return "register";
+        }
+        if(!userDto.getPassword().matches(pattern)) {
+        	model.addAttribute("error","Invalid password, password must include atleast 1 uppercase letter, 1 lowercase lette, 1 number and 1 special character");
+        	return "register";
         }
         if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
             model.addAttribute("error", "Passwords do not match");
@@ -85,7 +90,7 @@ public class RegisterController {
 		emailService.sendVerifyMessage(
 				userDto.getEmail(),
 	            "Please verify your email by clicking the link below",
-	            "Here is your link: " + "http://localhost:8080/api/verify?token=" + user.getVerificationToken() + " ."
+	            "Here is your link: " + "http://localhost:8080/verify?token=" + user.getVerificationToken() + " ."
 	        );
 		model.addAttribute("error", "A verification link has been sent to your email. Please access it to verify your email right away");
         return "login";

@@ -10,18 +10,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import fa.project.onlinemovieweb.service.UserService;
 
 @Controller
-@RequestMapping("/api")
 public class VerificationController {
 
     @Autowired
     private UserService userService;
 
     @GetMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam("token") String token) {
+    public String verifyUser(@RequestParam("token") String token) {
         boolean verified = userService.verifyUser(token);
         if (verified) {
-            return ResponseEntity.ok("Account verified successfully.");
+            return "verify-success";
         }
-        return ResponseEntity.badRequest().body("Invalid or expired token.");
+        return "verify-failed";
     }
 }
