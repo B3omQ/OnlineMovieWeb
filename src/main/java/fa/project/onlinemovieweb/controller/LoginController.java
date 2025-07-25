@@ -52,6 +52,11 @@ public class LoginController {
     			return "login";
     		}
     		
+    		if(exactMatch != null && !exactMatch.isEnabled()) {
+    			model.addAttribute("error", "This account's email has not been verified, please verify it before trying to login.");
+    			return "login";
+    		}
+    		
     		if(password.contains(" ")) {
     			model.addAttribute("error", "Password can not contain white space");
     			return "login";
