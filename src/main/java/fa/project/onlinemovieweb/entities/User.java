@@ -132,6 +132,9 @@ public class User {
         this.verificationToken = verificationToken;
     }
 
+	public boolean isAdmin() {
+		return this.role == Role.ADMIN;
+	}
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Favorite> favorites;
