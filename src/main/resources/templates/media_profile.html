@@ -26,8 +26,9 @@
             <h1 class="hero-title" th:text="${media.title}"></h1>
             <div class="badges my-2">
                 <span class="badge bg-warning me-2 text-dark" th:text="${media.type}"></span>
-                <a th:each="genre : ${media.genres}" class="badge bg-secondary me-2" th:href="@{'/genres/' + ${genre.id}}" style="text-decoration: none;"
-                      th:text="${genre.name}"></a>
+                <a th:each="genre : ${media.genres}" class="badge bg-secondary me-2"
+                   th:href="@{'/genres/' + ${genre.id}}" style="text-decoration: none;"
+                   th:text="${genre.name}"></a>
                 <span class="badge bg-info text-dark me-2" th:text="${media.language}"></span>
                 <span class="badge bg-light text-dark me-2" th:text="${media.releaseYear}"></span>
             </div>
@@ -45,7 +46,8 @@
                     <span th:text="${isFavorite} ? 'Favorited' : 'Favorite'"></span>
                 </button>
 
-                <a href="#" id="scrollToCommentBtn" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Comment</a>
+                <a href="#" id="scrollToCommentBtn" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i>
+                    Comment</a>
 
                 <button class="btn btn-success btn-lg d-flex align-items-center gap-2 ms-auto px-4 py-2"
                         data-bs-toggle="modal"
@@ -143,14 +145,31 @@
 
 <section class="reviews-section bg-dark text-white d-none" id="reviewsSection">
     <div class="container">
+        <div class="mb-3">
+            <h6>Average <span th:text="${averageRating}"></span> out of 5 stars</h6>
+            <p th:text="${totalReviews} + ' ratings'"></p>
+            <div th:each="i : ${#numbers.sequence(5,1)}" class="d-flex align-items-center mb-2">
+                <i class="bi bi-star-fill me-2 text-warning"></i>
+                <span class="me-1" th:text="${i}">5</span>
+                <div class="progress flex-grow-1 me-2" style="height: 10px; max-width: 40%;">
+                    <div class="progress-bar bg-warning" role="progressbar"
+                         th:style="'width: ' + ${ratingPercentage.get(i)} + '%'"
+                         aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <span th:text="${ratingPercentage.get(i)} + '%'">0%</span>
+            </div>
+        </div>
         <div class="review-list d-flex flex-column gap-4">
             <div class="review-box d-flex gap-3" th:each="r : ${reviews}">
-                <img th:src="${r.user.avatar}" alt="avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                <img th:src="${r.user.avatar}" alt="avatar" class="rounded-circle"
+                     style="width: 50px; height: 50px; object-fit: cover;">
                 <div>
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <strong th:text="${r.user.username}">Username</strong>
-                            <span class="text-muted small ms-2" th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                            <span class="small ms-2"
+                                  th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
                         </div>
                     </div>
                     <div class="mb-2">
@@ -182,14 +201,14 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Rating</label>
-                        <select class="form-select" name="rating" required>
-                            <option value="" disabled selected>Select a rating</option>
-                            <option value="1">⭐</option>
-                            <option value="2">⭐⭐</option>
-                            <option value="3">⭐⭐⭐</option>
-                            <option value="4">⭐⭐⭐⭐</option>
-                            <option value="5">⭐⭐⭐⭐⭐</option>
-                        </select>
+                        <div id="starRating" class="d-flex gap-1 fs-4">
+                            <i class="bi bi-star" data-value="1"></i>
+                            <i class="bi bi-star" data-value="2"></i>
+                            <i class="bi bi-star" data-value="3"></i>
+                            <i class="bi bi-star" data-value="4"></i>
+                            <i class="bi bi-star" data-value="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" required>
                     </div>
                     <div class="mb-3">
                         <textarea class="form-control" name="content" maxlength="1000" rows="3"
@@ -383,6 +402,47 @@
         e.preventDefault();
         commentsSection?.scrollIntoView({ behavior: 'smooth' });
       });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll("#starRating i");
+        const ratingInput = document.getElementById("ratingInput");
+
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener("mouseenter", () => {
+                const value = parseInt(star.dataset.value);
+                highlightStars(value);
+            });
+
+            star.addEventListener("mouseleave", () => {
+                highlightStars(selectedRating);
+            });
+
+            star.addEventListener("click", () => {
+                selectedRating = parseInt(star.dataset.value);
+                ratingInput.value = selectedRating;
+                highlightStars(selectedRating);
+            });
+        });
+
+        function highlightStars(rating) {
+        stars.forEach(star => {
+            const starValue = parseInt(star.dataset.value);
+            if (starValue <= rating) {
+                star.classList.add("text-warning");
+                star.classList.remove("bi-star");
+                star.classList.add("bi-star-fill");
+            } else {
+                star.classList.remove("text-warning");
+                star.classList.remove("bi-star-fill");
+                star.classList.add("bi-star");
+            }
+        });
+    }
     });
 </script>
 
