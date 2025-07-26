@@ -25,8 +25,8 @@
         <div class="info ms-4">
             <h1 class="hero-title" th:text="${media.title}"></h1>
             <div class="badges my-2">
-                <span class="badge bg-secondary me-2" th:text="${media.type}"></span>
-                <a th:each="genre : ${media.genres}" class="badge bg-warning text-dark me-2" th:href="@{'/genres/' + ${genre.id}}" style="text-decoration: none;"
+                <span class="badge bg-warning me-2 text-dark" th:text="${media.type}"></span>
+                <a th:each="genre : ${media.genres}" class="badge bg-secondary me-2" th:href="@{'/genres/' + ${genre.id}}" style="text-decoration: none;"
                       th:text="${genre.name}"></a>
                 <span class="badge bg-info text-dark me-2" th:text="${media.language}"></span>
                 <span class="badge bg-light text-dark me-2" th:text="${media.releaseYear}"></span>
