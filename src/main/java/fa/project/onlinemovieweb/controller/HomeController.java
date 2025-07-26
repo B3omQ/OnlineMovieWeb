@@ -3,6 +3,7 @@ package fa.project.onlinemovieweb.controller;
 import fa.project.onlinemovieweb.entities.Genre;
 import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.repo.FavoriteRepo;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import jakarta.servlet.http.HttpSession;
@@ -49,7 +50,8 @@ public class HomeController {
         model.addAttribute("mustWatch", mustWatch);
         model.addAttribute("latestMedia", latestMedia);
         model.addAttribute("genres", topGenres);
-
+        List<Media> favoriteMedia = mediaRepository.findAllByFavoritesAndUser(user);
+        model.addAttribute("favoriteMedia", favoriteMedia);
         return "home";
     }
 
