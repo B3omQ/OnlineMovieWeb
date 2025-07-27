@@ -224,3 +224,12 @@ body {
     margin-top: 2px;
 }
 
+a.badge {
+    cursor: pointer;
+}
+
+a.badge:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+    color: #FFD875;
+}
