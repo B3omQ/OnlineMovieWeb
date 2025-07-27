@@ -16,7 +16,7 @@
                     </div>
                 </a>
 
-                <div th:if="${user.getRole == T(fa.project.onlinemovieweb.entities.Role).ADMIN}">
+                <div th:if="${user.isAdmin()}">
                     <a class="item" href="/admin/medias">
                         <div class="line-center flex">
                             <i class="fa-solid fa-photo-film"></i>

@@ -238,3 +238,23 @@
   line-height: 1.4;
 }
 
+a.badge {
+    cursor: pointer;
+}
+
+a.badge:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+    color: #FFD875;
+}
+
+#starRating i {
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+#starRating i.hovered,
+#starRating i.selected {
+    color: #FFD700;
+}
