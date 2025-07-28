@@ -69,7 +69,9 @@ public class AdminController {
         m.setReleaseYear(media.getReleaseYear());
         m.setLanguage(media.getLanguage());
         m.setType(media.getType());
-        m.setVideoUrl(media.getVideoUrl());
+        if(media.getVideoUrl() != null || !media.getVideoUrl().isEmpty()){
+            m.setVideoUrl(media.getVideoUrl());
+        }
 
         if (genreIds == null || genreIds.isEmpty()) {
             m.setGenres(new ArrayList<>());
