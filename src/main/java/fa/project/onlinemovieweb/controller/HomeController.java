@@ -3,6 +3,7 @@ package fa.project.onlinemovieweb.controller;
 import fa.project.onlinemovieweb.entities.Genre;
 import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.repo.FavoriteRepo;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import jakarta.servlet.http.HttpSession;
@@ -49,7 +50,8 @@ public class HomeController {
         model.addAttribute("mustWatch", mustWatch);
         model.addAttribute("latestMedia", latestMedia);
         model.addAttribute("genres", topGenres);
-
+        List<Media> favoriteMedia = mediaRepository.findAllByFavoritesAndUser(user);
+        model.addAttribute("favoriteMedia", favoriteMedia);
         return "home";
     }
 
@@ -205,5 +207,27 @@ public class HomeController {
         return "advanced_search";
     }
 
+    @GetMapping("/search")
+    public String search(@RequestParam("q") String query,
+                         @RequestParam(defaultValue = "1") int page,
+                         Model model, HttpSession session) {
+
+        int pageSize = 10;
+        PageRequest pageable = PageRequest.of(page - 1, pageSize, Sort.by("releaseYear").descending());
+        Page<Media> resultsPage = mediaRepository.findByTitleContainingIgnoreCase(query, pageable);
+
+        model.addAttribute("allMedia", resultsPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", resultsPage.getTotalPages());
+        model.addAttribute("sectionTitle", "Search results for \"" + query + "\"");
+        model.addAttribute("pageTitle", "Search");
+        model.addAttribute("searchQuery", query); // Needed for pagination links
+        model.addAttribute("searchQuery", query);
+
+        Object user = session.getAttribute("user");
+        model.addAttribute("user", user);
+
+        return "seperated_film";
+    }
 
 }
