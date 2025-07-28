@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${media.title != null and media.title != '' ? media.title : 'Create New Media'}">Title</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2" th:insert="~{fragments/admin_sidebar :: admin_sidebar}"></div>
+        <div class="col">
+            <div class="row">
+                <div class="col-2">
+                    <div th:each="season : ${seasons}">
+                        <div class="row" style="padding-bottom: 15px;">
+                            <label th:text="'Season ' + ${season[0].season}"></label>
+                            <div class="row">
+                                <div class="d-flex flex-wrap">
+                                    <span
+                                        th:each="episode : ${season}"
+                                        th:text="${episode.episodeNumber}"
+                                        class="btn mb-2 me-2 badge bg-secondary"
+                                        th:attr="data-episode-id=${episode.id},
+                                                 data-title=${episode.title},
+                                                 data-season=${episode.season},
+                                                 data-episode-number=${episode.episodeNumber},
+                                                 data-video-url=${episode.videoUrl}"
+                                        onclick="setSelected(this)">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <span
+                                class="btn mb-2 me-2 badge bg-success"
+                                onclick="setSelected('new')">New
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col" id="formContainer" style="display: none;">
+                    <form id="episodeForm" action="" method="post">
+                        <input type="hidden" th:value="${media.id}">
+                        <div class="row" style="padding-bottom: 15px;">
+                            <div class="col-8">
+                                <label for="title">Title</label>
+                                <input class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="col-2">
+                                <label for="season">Season</label>
+                                <input class="form-control" id="season" name="season" oninput="validateDigits(this)" required>
+                            </div>
+                            <div class="col-2">
+                                <label for="episodeNumber">Episode</label>
+                                <input class="form-control" id="episodeNumber" name="episodeNumber" oninput="validateDigits(this)" required>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-bottom: 15px;">
+                            <div class="col-2">
+                                <label for="video">Video</label>
+                            </div>
+                            <div class="col">
+                                <input id="videoUrl" name="videoUrl" class="form-control" required oninput="updateVideo()"
+                                       placeholder="embedded https video link here">
+                            </div>
+                            <div style="aspect-ratio: 16/9; width: 100%">
+                                <iframe id="video" width="100%" height="100%"
+                                        style="display: block" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Save</button>
+                                <button id="deleteButton" style="display: none;" type="button" class="btn btn-danger" onclick="deleteEpisode()">Delete</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<style>
+    label{
+        color: white;
+    }
+</style>
+<script th:inline="javascript">
+    let selectedEpisode = null;
+
+    function setSelected(element){
+        if(element === 'new'){
+            const deleteButton = document.getElementById('deleteButton');
+            if(deleteButton){
+                deleteButton.style.display = 'none';
+            }
+            createEpisode();
+            return;
+        }
+        if(selectedEpisode){
+            selectedEpisode.classList.remove('bg-primary');
+            selectedEpisode.classList.add('bg-secondary');
+        }
+        element.classList.remove('bg-secondary');
+        element.classList.add('bg-primary');
+
+        const formContainer = document.getElementById('formContainer');
+        if(formContainer){
+            formContainer.style.display = '';
+        }
+        const deleteButton = document.getElementById('deleteButton');
+        if(deleteButton){
+            deleteButton.style.display = '';
+        }
+
+        document.getElementById('title').value = element.getAttribute('data-title') || '';
+        document.getElementById('season').value = element.getAttribute('data-season') || '';
+        document.getElementById('episodeNumber').value = element.getAttribute('data-episode-number') || '';
+        document.getElementById('videoUrl').value = element.getAttribute('data-video-url') || '';
+
+        updateVideo();
+        const episodeId = element.getAttribute('data-episode-id');
+        document.getElementById('episodeForm').action = `/admin/medias/episodes/update/${episodeId}`;
+
+        selectedEpisode = element;
+    }
+
+    function updateVideo(){
+        const videoUrl = document.getElementById('videoUrl');
+        const videoPlayer = document.getElementById('video');
+        videoPlayer.src = videoUrl.value;
+    }
+
+    function deleteEpisode(){
+        if(selectedEpisode && confirm('Are you sure you want to delete this episode?')){
+            const id = selectedEpisode.getAttribute('data-episode-id');
+            window.location.href = `/admin/medias/episodes/delete/${id}`;
+        }
+    }
+
+    function createEpisode(){
+        if(selectedEpisode){
+            selectedEpisode.classList.remove('bg-primary');
+            selectedEpisode.classList.add('bg-secondary');
+            selectedEpisode = null;
+        }
+
+        document.getElementById('formContainer').style.display = '';
+        document.getElementById('title').value = '';
+        document.getElementById('season').value = '';
+        document.getElementById('episodeNumber').value = '';
+        document.getElementById('videoUrl').value = '';
+        document.getElementById('video').src = '';
+        const mediaId = document.querySelector('input[type="hidden"]').value;
+        document.getElementById('episodeForm').action = `/admin/medias/episodes/create/${mediaId}`;
+    }
+
+    function validateDigits(input){
+        input.value = input.value.replace(/\D/g, '');
+    }
+</script>
