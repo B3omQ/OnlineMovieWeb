@@ -98,6 +98,46 @@
                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s"
                      class="profile-icon" alt="Profile"/>
             </a>
+            <div th:if="${user != null and user.username != null}" class="dropdown position-relative me-3">
+                <a href="#" class="text-white d-flex align-items-center position-relative"
+                   id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
+                    <i class="bi bi-bell fs-4"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          style="font-size: 0.75rem;">
+            2
+        </span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow"
+                    aria-labelledby="notificationDropdown"
+                    style="min-width: 300px; background-color: #222; color: #fff;">
+                    <li class="dropdown-item text-white d-flex align-items-start" style="background-color: #222;">
+                        <i class="bi bi-film me-2 text-info"></i>
+                        <div>
+                            <strong>Inception added</strong><br>
+                            <small class="text-muted">2h ago</small>
+                        </div>
+                    </li>
+                    <li class="dropdown-item text-white d-flex align-items-start" style="background-color: #222;">
+                        <i class="bi bi-star me-2 text-warning"></i>
+                        <div>
+                            <strong>Review: The Matrix</strong><br>
+                            <small class="text-muted">5h ago</small>
+                        </div>
+                    </li>
+                    <li class="dropdown-item text-white d-flex align-items-start" style="background-color: #222;">
+                        <i class="bi bi-person-plus me-2 text-success"></i>
+                        <div>
+                            <strong>New follower</strong><br>
+                            <small class="text-muted">1d ago</small>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider" style="border-color: #444;"></li>
+                    <li><a class="dropdown-item text-center text-light" href="/notify"
+                           style="background-color: #222;">View all</a></li>
+                </ul>
+            </div>
+
 
             <a th:if="${user != null and user.username != null}" href="/logout" class="btn logout">Logout</a>
             <a th:if="${user == null or user.username == null}" href="/login" class="btn login">Login</a>
