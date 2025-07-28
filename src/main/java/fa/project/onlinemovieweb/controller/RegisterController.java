@@ -11,14 +11,12 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -43,7 +41,7 @@ public class RegisterController {
     @PostMapping("/register")
     public String register(@ModelAttribute("userDto") UserRegistrationDto userDto, Model model){
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{6,}$";
         List<User> users = userRepo.findAllByUsernameIgnoreCase(userDto.getUsername());
         if (!Pattern.matches(emailRegex, userDto.getEmail())) {
             model.addAttribute("error", "Invalid email format");

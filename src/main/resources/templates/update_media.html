@@ -27,7 +27,14 @@
                         <div class="row" style="padding-bottom: 15px;">
                             <div class="col">
                                 <label for="language">Language</label>
-                                <input class="form-control" id="language" th:field="*{language}" required>
+                                <select class="form-control" id="language" th:field="*{language}" required>
+                                    <option value="English">English</option>
+                                    <option value="Chinese">Chinese</option>
+                                    <option value="Korean">Korean</option>
+                                    <option value="Japanese">Japanese</option>
+                                    <option value="Spanish">Spanish</option>
+                                    <option value="Vietnamese">Vietnamese</option>
+                                </select>
                             </div>
                             <div class="col">
                                 <label for="year">Release year</label>
@@ -46,12 +53,12 @@
                             <label>Genres</label>
                             <div class="d-flex flex-wrap">
                                 <span
-                                        th:each="genre : ${genres}"
-                                        th:text="${genre.name}"
-                                        class="btn mb-2 me-2 badge"
-                                        th:classappend="${isUpdate and media.genres!=null and media.genres.contains(genre) ? 'bg-primary' : 'bg-secondary'}"
-                                        th:attr="data-genre-id=${genre.id}"
-                                        onclick="toggleGenre(this)">
+                                    th:each="genre : ${genres}"
+                                    th:text="${genre.name}"
+                                    class="btn mb-2 me-2 badge"
+                                    th:classappend="${isUpdate and media.genres!=null and media.genres.contains(genre) ? 'bg-primary' : 'bg-secondary'}"
+                                    th:attr="data-genre-id=${genre.id}"
+                                    onclick="toggleGenre(this)">
                                 </span>
                                 <div id="genreInputsContainer"></div>
                             </div>
@@ -83,7 +90,7 @@
                                 <label for="video">Video</label>
                             </div>
                             <div class="col">
-                                <input class="form-control" th:field="*{videoUrl}" required oninput="updateVideo()"
+                                <input class="form-control" th:field="*{videoUrl}" oninput="updateVideo()"
                                        placeholder="embedded https video link here">
                             </div>
                             <div style="aspect-ratio: 16/9; width: 100%">
@@ -220,8 +227,39 @@
 
     function updateVideo(){
         const videoUrl = document.getElementById('videoUrl');
+        const convertedLink = convertGGDriveLink(videoUrl.value);
         const videoPlayer = document.getElementById('video');
-        videoPlayer.src = videoUrl.value;
+        if(convertedLink !== ''){
+            setTimeout(() => {
+                videoUrl.value = convertedLink;
+                videoPlayer.src = convertedLink;
+            }, 500);
+        }
+        else{
+            videoPlayer.src = videoUrl.value;
+        }
+    }
+
+    function convertGGDriveLink(rawLink){
+        //Check if link is extractable
+        if(!rawLink || !rawLink.includes('drive.google.com') || !rawLink.includes('/d/')){
+            console.log('Invalid link');
+        }
+        else{
+            //Extract file id from link
+            const matched = rawLink.match(/\/d\/([a-zA-Z0-9_-]{25,})/);
+
+            //Update link if extracted
+            if(matched){
+                const fileId = matched[1];
+                console.log('Found ' + fileId);
+                return "https://drive.google.com/file/d/" + fileId + "/preview";
+            }
+            else{
+                console.log('No match');
+            }
+        }
+        return '';
     }
 
     function updateBanner(source){

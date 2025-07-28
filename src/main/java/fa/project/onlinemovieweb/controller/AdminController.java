@@ -1,9 +1,7 @@
 package fa.project.onlinemovieweb.controller;
 
-import fa.project.onlinemovieweb.entities.Genre;
-import fa.project.onlinemovieweb.entities.Media;
-import fa.project.onlinemovieweb.entities.Role;
-import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.entities.*;
+import fa.project.onlinemovieweb.repo.EpisodeRepo;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
@@ -21,9 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class AdminController {
@@ -34,9 +30,12 @@ public class AdminController {
     private MediaRepo mediaRepo;
 
     @Autowired
+    private EpisodeRepo episodeRepo;
+
+    @Autowired
     private GenreRepo genreRepo;
 
-    @GetMapping("/admin")
+    @GetMapping({"/admin", "/admin/"})
     public String getAdmin() {
         return "redirect:/admin/medias";
     }
@@ -70,11 +69,14 @@ public class AdminController {
         m.setReleaseYear(media.getReleaseYear());
         m.setLanguage(media.getLanguage());
         m.setType(media.getType());
-        m.setVideoUrl(media.getVideoUrl());
+        if(media.getVideoUrl() != null || !media.getVideoUrl().isEmpty()){
+            m.setVideoUrl(media.getVideoUrl());
+        }
 
         if (genreIds == null || genreIds.isEmpty()) {
             m.setGenres(new ArrayList<>());
-        } else {
+        }
+        else {
             List<Genre> genres = genreRepo.findAllById(genreIds);
             m.setGenres(genres);
         }
@@ -120,9 +122,10 @@ public class AdminController {
                               @RequestParam(required = false) String bannerUrl, @RequestParam(required = false) String posterUrl,
                               RedirectAttributes redirectAttributes) {
         if (media != null) {
-            if (genreIds == null || genreIds.isEmpty()) {
+            if(genreIds == null || genreIds.isEmpty()) {
                 media.setGenres(new ArrayList<>());
-            } else {
+            }
+            else {
                 List<Genre> genres = genreRepo.findAllById(genreIds);
                 media.setGenres(genres);
             }
@@ -186,6 +189,58 @@ public class AdminController {
         userRepo.save(u);
         redirectAttributes.addAttribute("query", u.getUsername());
         return "redirect:/admin/users";
+    }
+
+    @GetMapping("/admin/medias/episodes/{id}")
+    public String getEpisodes(@PathVariable Long id, Model model){
+        Media m = mediaRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if(!m.getType().equals("TV Show")){
+            return "/admin/medias";
+        }
+        List<List<Episode>> seasons = new ArrayList<>();
+        List<Episode> season = new ArrayList<>();
+        for(Episode e : episodeRepo.findByMediaIdOrderBySeasonAscEpisodeNumberAsc(id)){
+            if(!season.isEmpty()){
+                if(season.get(season.size()-1).getSeason() != e.getSeason()){
+                    seasons.add(new ArrayList<>(season));
+                    season = new ArrayList<>();
+                }
+            }
+            season.add(e);
+        }
+        if(!season.isEmpty()){
+            seasons.add(season);
+        }
+        model.addAttribute("media", m);
+        model.addAttribute("seasons", seasons);
+        return "admin_episodes";
+    }
+
+    @PostMapping("/admin/medias/episodes/update/{id}")
+    public String updateEpisode(@ModelAttribute Episode episode, @PathVariable Long id) {
+        Episode e = episodeRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        e.setTitle(episode.getTitle());
+        e.setSeason(episode.getSeason());
+        e.setEpisodeNumber(episode.getEpisodeNumber());
+        e.setVideoUrl(episode.getVideoUrl());
+        episodeRepo.save(e);
+        return "redirect:/admin/medias/episodes/" + e.getMedia().getId();
+    }
+
+    @PostMapping("/admin/medias/episodes/create/{mediaId}")
+    public String createEpisode(@ModelAttribute Episode episode, @PathVariable Long mediaId){
+        Media m = mediaRepo.findById(mediaId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        episode.setMedia(m);
+        episodeRepo.save(episode);
+        return "redirect:/admin/medias/episodes/" + mediaId;
+    }
+
+    @GetMapping("admin/medias/episodes/delete/{id}")
+    public String deleteEpisode(@PathVariable Long id){
+        Episode e = episodeRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Long mediaId = e.getMedia().getId();
+        episodeRepo.delete(e);
+        return "redirect:/admin/medias/episodes/" + mediaId;
     }
 
     public String uploadImage(MultipartFile image, String folder){
