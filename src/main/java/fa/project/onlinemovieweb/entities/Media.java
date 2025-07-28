@@ -45,13 +45,11 @@ public class Media {
     @OneToMany(mappedBy = "media", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public List<Comment> getComments() {
-        return comments;
-    }
+    @OneToMany(mappedBy = "media", cascade = CascadeType.ALL)
+    private List<Favorite> favorites;
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
+    @OneToMany(mappedBy = "media", cascade = CascadeType.ALL)
+    private List<Review> reviews;
 
     public Long getId() {
         return id;
@@ -157,8 +155,13 @@ public class Media {
         this.watchHistories = watchHistories;
     }
 
-    @OneToMany(mappedBy = "media", cascade = CascadeType.ALL)
-    private List<Favorite> favorites;
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public List<Favorite> getFavorites() {
         return favorites;
@@ -168,4 +171,12 @@ public class Media {
         this.favorites = favorites;
     }
 
+
+    public List<Review> getReviews(){
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews){
+        this.reviews = reviews;
+    }
 }
