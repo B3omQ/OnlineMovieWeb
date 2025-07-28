@@ -18,6 +18,7 @@ public class User {
 
 	private String password;
 
+	@Enumerated(EnumType.ORDINAL)
 	private Role role; // "USER", "ADMIN"
 
 	private LocalDateTime createdAt = LocalDateTime.now();
@@ -132,6 +133,9 @@ public class User {
         this.verificationToken = verificationToken;
     }
 
+	public boolean isAdmin() {
+		return this.role == Role.ADMIN;
+	}
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Favorite> favorites;

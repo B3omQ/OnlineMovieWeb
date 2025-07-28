@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class MediaProfileController {
@@ -89,6 +90,26 @@ public class MediaProfileController {
                 .orElse(0);
         model.addAttribute("reviews", reviews);
         model.addAttribute("averageRating", Math.round(averageRating * 10.0) / 10.0);
+        Map<Integer, Long> ratingCount = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            ratingCount.put(i, 0L);
+        }
+        reviews.forEach(review -> {
+            int rating = review.getRating();
+            ratingCount.put(rating, ratingCount.getOrDefault(rating, 0L) + 1);
+        });
+        long totalReviews = reviews.size();
+        Map<Integer, Long> ratingCountMap = reviews.stream()
+                .collect(Collectors.groupingBy(Review::getRating, Collectors.counting()));
+        Map<Integer, Integer> ratingPercentage = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            long count = ratingCountMap.getOrDefault(i, 0L);
+            int percent = totalReviews > 0 ? (int) Math.round((count * 100.0) / totalReviews) : 0;
+            ratingPercentage.put(i, percent);
+        }
+        model.addAttribute("ratingCount", ratingCount);
+        model.addAttribute("ratingPercentage", ratingPercentage);
+        model.addAttribute("totalReviews", totalReviews);
         return "media_profile";
     }
 

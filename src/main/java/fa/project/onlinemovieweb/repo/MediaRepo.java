@@ -2,6 +2,7 @@ package fa.project.onlinemovieweb.repo;
 
 import fa.project.onlinemovieweb.entities.Genre;
 import fa.project.onlinemovieweb.entities.Media;
+import fa.project.onlinemovieweb.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,7 +45,8 @@ public interface MediaRepo extends JpaRepository<Media, Long> {
             Pageable pageable
     );
 
-
+    @Query("select m from Media m where m in (select f.media from Favorite f where f.user = ?1)")
+    List<Media> findAllByFavoritesAndUser (User user);
 }
 
 

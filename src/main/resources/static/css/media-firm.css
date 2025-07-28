@@ -280,4 +280,12 @@ body {
     text-decoration: none;
     transition: background 0.3s ease;
 }
-
+a.media-link {
+    text-decoration: none;
+    cursor: pointer;
+    color: white;
+}
+a.media-link:hover  {
+    text-decoration: none;
+    color: #FFD875;
+}
