@@ -87,8 +87,12 @@ public class HomeController {
         model.addAttribute("pageTitle", "Latest Release");
         model.addAttribute("sectionTitle", "Latest Release");
 
-        Object user = session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "seperated_film";
     }
 

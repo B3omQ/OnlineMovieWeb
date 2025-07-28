@@ -1,5 +1,6 @@
 package fa.project.onlinemovieweb.repo;
 
+import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.Role;
 import fa.project.onlinemovieweb.entities.User;
 
@@ -17,4 +18,7 @@ public interface UserRepo extends JpaRepository<User,Long> {
 
     @Query("select u from User u where u.username like %:query% or u.email like %:query%")
     List<User> filterByQuery(String query);
+
+    @Query("select f.user from Favorite f where f.media = ?1")
+    List<User> findByFavoriteMedia(Media media);
 }
