@@ -102,36 +102,39 @@
                 <a href="#" class="text-white d-flex align-items-center position-relative"
                    id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
                     <i class="bi bi-bell fs-4"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                          style="font-size: 0.75rem;">
-            2
-        </span>
+                    <span th:if="${unreadCount > 0}"
+                          th:text="${unreadCount}"
+                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          style="font-size: 0.75rem;">0</span>
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-end shadow"
                     aria-labelledby="notificationDropdown"
                     style="min-width: 300px; background-color: #222; color: #fff;">
-                    <li class="dropdown-item text-white d-flex align-items-start" style="background-color: #222;">
-                        <i class="bi bi-film me-2 text-info"></i>
-                        <div>
-                            <strong>Inception added</strong><br>
-                            <small class="text-muted">2h ago</small>
+
+                    <li th:each="noti : ${notifications}"
+                        class="dropdown-item text-white d-flex align-items-start"
+                        style="background-color: #222; padding: 0.5rem 0.75rem;">
+                        <a th:href="@{'/mediaVideo/' + ${noti.episode.media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${noti.episode.media.id} + '?ep=' + ${noti.episode.episodeNumber}}"
+                           class="d-flex text-decoration-none text-white w-100">
+                        <img th:src="@{${noti.episode != null && noti.episode.media != null ? noti.episode.media.poster : '/assets/placeholder.jpg'}}"
+                             alt="Poster"
+                             class="rounded me-3"
+                             style="width: 45px; height: 65px; object-fit: cover;"/>
+
+                        <div style="font-size: 0.875rem; max-width: 220px;">
+                            <span style="display: block; white-space: normal; word-break: break-word;">
+                                <strong th:text="${noti.episode.media.title}"></strong><span> has been released new episode : </span>
+                                <strong th:text="'Episode ' + ${noti.episode.episodeNumber}"></strong>
+                            </span>
+                            <small class="text-muted"
+                                   th:text="${#temporals.format(noti.createdAt, 'HH:mm dd/MM')}"></small>
                         </div>
+                        </a>
                     </li>
-                    <li class="dropdown-item text-white d-flex align-items-start" style="background-color: #222;">
-                        <i class="bi bi-star me-2 text-warning"></i>
-                        <div>
-                            <strong>Review: The Matrix</strong><br>
-                            <small class="text-muted">5h ago</small>
-                        </div>
-                    </li>
-                    <li class="dropdown-item text-white d-flex align-items-start" style="background-color: #222;">
-                        <i class="bi bi-person-plus me-2 text-success"></i>
-                        <div>
-                            <strong>New follower</strong><br>
-                            <small class="text-muted">1d ago</small>
-                        </div>
-                    </li>
+
+
+
                     <li><hr class="dropdown-divider" style="border-color: #444;"></li>
                     <li><a class="dropdown-item text-center text-light" href="/notify"
                            style="background-color: #222;">View all</a></li>

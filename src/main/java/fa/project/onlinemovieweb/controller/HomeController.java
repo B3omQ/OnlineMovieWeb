@@ -1,11 +1,10 @@
 package fa.project.onlinemovieweb.controller;
 
-import fa.project.onlinemovieweb.entities.Genre;
-import fa.project.onlinemovieweb.entities.Media;
-import fa.project.onlinemovieweb.entities.User;
+import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.FavoriteRepo;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
+import fa.project.onlinemovieweb.repo.NotificationRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -34,6 +34,9 @@ public class HomeController {
 
     @Autowired
     private GenreRepo genreRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
 
     @GetMapping("/")
     public String redirectToHome() {
@@ -52,6 +55,10 @@ public class HomeController {
         model.addAttribute("genres", topGenres);
         List<Media> favoriteMedia = mediaRepository.findAllByFavoritesAndUser(user);
         model.addAttribute("favoriteMedia", favoriteMedia);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "home";
     }
 
