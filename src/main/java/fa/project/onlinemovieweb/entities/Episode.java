@@ -28,6 +28,9 @@ public class Episode {
     @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
     public List<Comment> getComments() {
         return comments;
     }
@@ -90,6 +93,14 @@ public class Episode {
 
     public void setWatchHistories(List<WatchHistory> watchHistories) {
         this.watchHistories = watchHistories;
+    }
+
+    public List<Review> getReviews(){
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews){
+        this.reviews = reviews;
     }
 }
 
