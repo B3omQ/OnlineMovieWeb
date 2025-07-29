@@ -1,10 +1,7 @@
 package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.*;
-import fa.project.onlinemovieweb.repo.EpisodeRepo;
-import fa.project.onlinemovieweb.repo.GenreRepo;
-import fa.project.onlinemovieweb.repo.MediaRepo;
-import fa.project.onlinemovieweb.repo.UserRepo;
+import fa.project.onlinemovieweb.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -19,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -34,6 +32,9 @@ public class AdminController {
 
     @Autowired
     private GenreRepo genreRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
 
     @GetMapping({"/admin", "/admin/"})
     public String getAdmin() {
@@ -232,6 +233,15 @@ public class AdminController {
         Media m = mediaRepo.findById(mediaId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         episode.setMedia(m);
         episodeRepo.save(episode);
+        // Send notification to users that favorite media
+        List<User> users = userRepo.findByFavoriteMedia(m);
+        for(User u : users) {
+            Notification notification = new Notification();
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setEpisode(episode);
+            notification.setUser(u);
+            notificationRepo.save(notification);
+        }
         return "redirect:/admin/medias/episodes/" + mediaId;
     }
 
