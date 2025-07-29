@@ -245,7 +245,7 @@ public class HomeController {
         model.addAttribute("pageTitle", "Search");
         model.addAttribute("searchQuery", query); // Needed for pagination links
         model.addAttribute("searchQuery", query);
-
+        model.addAttribute("noResults", resultsPage.getContent().isEmpty());
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
         List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
