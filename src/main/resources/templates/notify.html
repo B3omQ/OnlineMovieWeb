@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/history.css">
 </head>
 
@@ -20,41 +21,41 @@
             <div class="cg-body-box py-0 is-profile">
 
                 <div class="box-body">
+                        <h4 class="mb-4 text-white">Your Notifications</h4>
 
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 gx-4 gy-4">
-<!--                        <div class="col" th:each="history : ${historyList}">-->
-<!--                            <a th:href="@{'/media/' + ${history.media.id}}"-->
-<!--                               style="text-decoration: none; color: inherit;">-->
-<!--                                <div class="card bg-dark border-0 h-100 text-white text-center"-->
-<!--                                     style="transition: transform 0.2s;">-->
-<!--                                    <img th:src="${history.media.poster}" class="card-img-top" alt="Movie Poster"-->
-<!--                                         style="height: 350px; object-fit: cover; border-radius: 8px;">-->
-<!--                                    <div class="card-body p-2">-->
-<!--                                        <h6 class="card-title mb-1" th:text="${history.media.title}">Movie Title</h6>-->
-<!--                                        <small class="text"-->
-<!--                                               th:text="${#lists.size(history.media.genres) >= 2-->
-<!--                    ? history.media.genres[0].name + ', ' + history.media.genres[1].name + ' | ' + history.media.releaseYear-->
-<!--                    : #lists.size(history.media.genres) == 1-->
-<!--                    ? history.media.genres[0].name + ' | ' + history.media.releaseYear-->
-<!--                    : 'Unknown | ' + history.media.releaseYear}">-->
-<!--                                            Genre | Year-->
-<!--                                        </small>-->
+                        <ul class="list-group list-group-flush">
+                            <li th:each="noti : ${notifications}"
+                                class="list-group-item d-flex justify-content-between align-items-center bg-dark text-white"
+                                style="border-color: #444;">
 
+                                <a th:href="@{'/notification/read/' + ${noti.id}}"
+                                   class="d-flex align-items-center text-decoration-none text-white w-100">
 
-<!--                                        <br>-->
-<!--                                        Watched at-->
-<!--                                        <th:block-->
-<!--                                                th:with="watchedDate=${T(java.util.Date).from(history.watchedAt.atZone(T(java.time.ZoneId).systemDefault()).toInstant())}">-->
-<!--                                            <small th:text="${#dates.format(watchedDate, 'dd-MM-yyyy HH:mm')}"></small>-->
-<!--                                        </th:block>-->
+                                    <!-- Poster -->
+                                    <img th:src="@{${noti.episode != null && noti.episode.media != null ? noti.episode.media.poster : '/assets/placeholder.jpg'}}"
+                                         class="rounded me-3"
+                                         style="width: 50px; height: 70px; object-fit: cover;" alt="Poster"/>
 
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </a>-->
-<!--                        </div>-->
+                                    <!-- Text -->
+                                    <div>
+                                        <div style="font-size: 0.9rem;">
+                                            <strong th:text="${noti.episode.media.title}">Title</strong>
+                                            <span> has been released new episode: </span>
+                                            <strong th:text="'Episode ' + ${noti.episode.episodeNumber}"></strong>
+                                        </div>
+                                        <small style="color: #bbb"
+                                               th:text="${#temporals.format(noti.createdAt, 'HH:mm dd/MM/yyyy')}"></small>
+                                    </div>
+                                </a>
 
-                    </div>
-
+                                <!-- Dot indicator -->
+                                <div style="width: 16px; display: flex; align-items: center; justify-content: center;">
+                                <span th:if="${!noti.read}"
+                                    style="width: 10px; height: 10px; background-color: #0d6efd; border-radius: 50%; display: inline-block;">
+                                </span>
+                                </div>
+                            </li>
+                        </ul>
                 </div>
             </div>
         </div>

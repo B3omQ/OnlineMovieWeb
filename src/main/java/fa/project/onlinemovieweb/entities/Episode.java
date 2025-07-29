@@ -31,6 +31,9 @@ public class Episode {
     @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL)
+    private List<Notification> notifications;
+
     public List<Comment> getComments() {
         return comments;
     }
@@ -101,6 +104,14 @@ public class Episode {
 
     public void setReviews(List<Review> reviews){
         this.reviews = reviews;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
 

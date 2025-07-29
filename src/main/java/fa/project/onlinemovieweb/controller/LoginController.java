@@ -1,6 +1,5 @@
 package fa.project.onlinemovieweb.controller;
 
-import fa.project.onlinemovieweb.dto.UserRegistrationDto;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import fa.project.onlinemovieweb.service.EmailService;
@@ -9,8 +8,6 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

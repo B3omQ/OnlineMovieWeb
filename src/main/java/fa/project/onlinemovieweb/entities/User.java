@@ -37,6 +37,9 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<WatchHistory> watchHistories;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Notification> notifications;
+
 	public Long getId() {
 		return id;
 	}
@@ -168,5 +171,13 @@ public class User {
 
 	public void setComments(List<Comment> comments){
 		this.comments = comments;
+	}
+
+	public List<Notification> getNotifications() {
+		return notifications;
+	}
+
+	public void setNotifications(List<Notification> notifications) {
+		this.notifications = notifications;
 	}
 }

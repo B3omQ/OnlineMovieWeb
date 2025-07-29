@@ -44,6 +44,7 @@ public class ProfileCompletionController {
 
         User user = userRepo.findById(userId).orElse(null);
         if (user == null) return "redirect:/login";
+        user.setAvatar("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-tuRFyRupR6eIMCFvaXBnVWJ9x9ghHyZ1IQ&s");
         user.setUsername(username);
         userRepo.save(user);
 

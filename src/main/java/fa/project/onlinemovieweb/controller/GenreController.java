@@ -2,8 +2,11 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.Genre;
 import fa.project.onlinemovieweb.entities.Media;
+import fa.project.onlinemovieweb.entities.Notification;
+import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.GenreRepo;
 import fa.project.onlinemovieweb.repo.MediaRepo;
+import fa.project.onlinemovieweb.repo.NotificationRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,13 +30,20 @@ public class GenreController {
     @Autowired
     MediaRepo mediaRepo;
 
+    @Autowired
+    private NotificationRepo notificationRepo;
+
     @GetMapping("/genres")
     public String showGenres(HttpSession session, Model model) {
         List<Genre> genres = genreRepo.findAll();
         genres.sort(Comparator.comparing(Genre::getName, String.CASE_INSENSITIVE_ORDER));
         model.addAttribute("genres", genres);
-        Object user = session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "genres";
     }
 
@@ -58,8 +68,12 @@ public class GenreController {
         model.addAttribute("pageTitle", genre.getName());
         model.addAttribute("sectionTitle", genre.getName());
 
-        Object user = session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
 
         return "seperated_film";
     }

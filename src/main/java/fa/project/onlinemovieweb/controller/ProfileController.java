@@ -1,13 +1,12 @@
 package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.dto.UserChangePasswordDto;
-import fa.project.onlinemovieweb.dto.UserRegistrationDto;
 import fa.project.onlinemovieweb.entities.Favorite;
 import fa.project.onlinemovieweb.entities.Media;
+import fa.project.onlinemovieweb.entities.Notification;
 import fa.project.onlinemovieweb.entities.User;
-import fa.project.onlinemovieweb.entities.WatchHistory;
 import fa.project.onlinemovieweb.repo.FavoriteRepo;
-import fa.project.onlinemovieweb.repo.HistoryRepo;
+import fa.project.onlinemovieweb.repo.NotificationRepo;
 import fa.project.onlinemovieweb.repo.UserRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,9 @@ public class ProfileController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private NotificationRepo notificationRepo;
+
     public ProfileController(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
@@ -48,6 +50,10 @@ public class ProfileController {
         if (currentUser == null) return "redirect:/login";
         model.addAttribute("userDtoCp", new UserChangePasswordDto());
         model.addAttribute("user", currentUser);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(currentUser);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(currentUser);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "member_profile";
     }
 
@@ -59,10 +65,13 @@ public class ProfileController {
             Model model) {
         List<User> users = userRepo.findAllByUsernameIgnoreCase(name);
         User currentUser = (User) session.getAttribute("user");
-
         if (currentUser == null) {
             return "redirect:/login";
         }
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(currentUser);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(currentUser);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
 
         if (name == null || name.trim().isEmpty()) {
             model.addAttribute("error", "Name cannot be empty.");
@@ -124,7 +133,11 @@ public class ProfileController {
         if (currentUser == null) {
             return "redirect:/login";
         }
-
+        
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(currentUser);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(currentUser);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         model.addAttribute("user", currentUser);
 
         String oldPassword = userDtoCp.getPassword();
@@ -219,6 +232,10 @@ public class ProfileController {
             model.addAttribute("error", "Upload failed.");
         }
         model.addAttribute("userDtoCp", new UserChangePasswordDto());
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(currentUser);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(currentUser);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "member_profile";
     }
 

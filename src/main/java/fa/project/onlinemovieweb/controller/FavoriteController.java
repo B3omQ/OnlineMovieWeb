@@ -2,14 +2,17 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.Favorite;
 import fa.project.onlinemovieweb.entities.Media;
+import fa.project.onlinemovieweb.entities.Notification;
 import fa.project.onlinemovieweb.repo.FavoriteRepo;
-import fa.project.onlinemovieweb.repo.HistoryRepo;
+import fa.project.onlinemovieweb.repo.NotificationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import fa.project.onlinemovieweb.entities.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -17,6 +20,9 @@ import java.util.List;
 public class FavoriteController {
     @Autowired
     private FavoriteRepo favoriteRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
 
     @GetMapping("/favorite")
     public String viewFavourite(HttpSession session, Model model) {
@@ -32,6 +38,22 @@ public class FavoriteController {
 
         model.addAttribute("user", user);
         model.addAttribute("mediaList", favoriteList);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "favorite";
+    }
+
+    @GetMapping("/favorite/delete/{id}")
+    @Transactional
+    public String deleteFavorite(@PathVariable Long id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        favoriteRepo.deleteByMediaIdAndUserId(id, user.getId());
+        return "redirect:/favorite";
     }
 }
