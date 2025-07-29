@@ -108,8 +108,12 @@ public class HomeController {
         model.addAttribute("pageTitle", "All Movies");
         model.addAttribute("sectionTitle", "All Movies");
 
-        Object user = session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "seperated_film";
     }
 
@@ -125,8 +129,12 @@ public class HomeController {
         model.addAttribute("pageTitle", "All Series");
         model.addAttribute("sectionTitle", "All Series");
 
-        Object user = session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "seperated_film";
     }
 
@@ -212,7 +220,12 @@ public class HomeController {
         model.addAttribute("selectedSort", sort);
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("noResults", mediaPage.getContent().isEmpty());
-
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "advanced_search";
     }
 
@@ -233,8 +246,12 @@ public class HomeController {
         model.addAttribute("searchQuery", query); // Needed for pagination links
         model.addAttribute("searchQuery", query);
 
-        Object user = session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
 
         return "seperated_film";
     }

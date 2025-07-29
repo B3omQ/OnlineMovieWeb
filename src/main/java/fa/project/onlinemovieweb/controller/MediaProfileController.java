@@ -1,10 +1,7 @@
 package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.*;
-import fa.project.onlinemovieweb.repo.CommentRepo;
-import fa.project.onlinemovieweb.repo.FavoriteRepo;
-import fa.project.onlinemovieweb.repo.MediaRepo;
-import fa.project.onlinemovieweb.repo.ReviewRepo;
+import fa.project.onlinemovieweb.repo.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +21,9 @@ import java.util.stream.Collectors;
 public class MediaProfileController {
     @Autowired
     private MediaRepo mediaRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
 
     @Autowired
     CommentRepo commentRepo;
@@ -110,6 +110,10 @@ public class MediaProfileController {
         model.addAttribute("ratingCount", ratingCount);
         model.addAttribute("ratingPercentage", ratingPercentage);
         model.addAttribute("totalReviews", totalReviews);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "media_profile";
     }
 

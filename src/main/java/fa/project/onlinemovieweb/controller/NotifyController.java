@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @Controller
 public class NotifyController {
 
@@ -24,6 +26,10 @@ public class NotifyController {
             return "redirect:/login";
         }
         model.addAttribute("user", user);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "notify";
     }
 
