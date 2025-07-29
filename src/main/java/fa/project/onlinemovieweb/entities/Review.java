@@ -11,12 +11,15 @@ public class Review {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "media_id")
     private Media media;
 
     @ManyToOne
+    @JoinColumn(name = "episode_id")
     private Episode episode;
 
     private int rating;

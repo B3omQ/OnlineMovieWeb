@@ -2,10 +2,7 @@ package fa.project.onlinemovieweb.controller;
 
 
 import fa.project.onlinemovieweb.entities.*;
-import fa.project.onlinemovieweb.repo.CommentRepo;
-import fa.project.onlinemovieweb.repo.HistoryRepo;
-import fa.project.onlinemovieweb.repo.MediaRepo;
-import fa.project.onlinemovieweb.repo.ReviewRepo;
+import fa.project.onlinemovieweb.repo.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,6 +35,9 @@ public class MediaVideoController {
 
     @Autowired
     HistoryRepo historyRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
 
     @GetMapping("/mediaVideo/{slug}.{id}")
     public String viewMediaVideo(HttpSession session, Model model,
@@ -122,6 +122,10 @@ public class MediaVideoController {
         watchHistory.setEpisode(selectedEpisode);
         watchHistory.setUser(user);
         historyRepo.save(watchHistory);
+        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        long unreadCount = notificationRepo.countByUserAndReadFalse(user);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("unreadCount", unreadCount);
         return "mediaVideo";
     }
 

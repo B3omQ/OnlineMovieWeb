@@ -34,8 +34,11 @@ public class User {
 //	@Column(nullable = false)
 	private Boolean oauthUser;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<WatchHistory> watchHistories;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Notification> notifications;
 
 	public Long getId() {
 		return id;
@@ -137,7 +140,7 @@ public class User {
 		return this.role == Role.ADMIN;
 	}
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Favorite> favorites;
 
 	public List<Favorite> getFavorites() {
@@ -146,5 +149,35 @@ public class User {
 
 	public void setFavorites(List<Favorite> favorites) {
 		this.favorites = favorites;
+	}
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Review> reviews;
+
+	public List<Review> getReviews(){
+		return reviews;
+	}
+
+	public void setReviews(List<Review> reviews){
+		this.reviews = reviews;
+	}
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> comments;
+
+	public List<Comment> getComments(){
+		return comments;
+	}
+
+	public void setComments(List<Comment> comments){
+		this.comments = comments;
+	}
+
+	public List<Notification> getNotifications() {
+		return notifications;
+	}
+
+	public void setNotifications(List<Notification> notifications) {
+		this.notifications = notifications;
 	}
 }
