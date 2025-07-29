@@ -134,8 +134,39 @@
 
     function updateVideo(){
         const videoUrl = document.getElementById('videoUrl');
+        const convertedLink = convertGGDriveLink(videoUrl.value);
         const videoPlayer = document.getElementById('video');
-        videoPlayer.src = videoUrl.value;
+        if(convertedLink !== ''){
+            setTimeout(() => {
+                videoUrl.value = convertedLink;
+                videoPlayer.src = convertedLink;
+            }, 500);
+        }
+        else{
+            videoPlayer.src = videoUrl.value;
+        }
+    }
+
+    function convertGGDriveLink(rawLink){
+        //Check if link is extractable
+        if(!rawLink || !rawLink.includes('drive.google.com') || !rawLink.includes('/d/')){
+            console.log('Invalid link');
+        }
+        else{
+            //Extract file id from link
+            const matched = rawLink.match(/\/d\/([a-zA-Z0-9_-]{25,})/);
+
+            //Update link if extracted
+            if(matched){
+                const fileId = matched[1];
+                console.log('Found ' + fileId);
+                return "https://drive.google.com/file/d/" + fileId + "/preview";
+            }
+            else{
+                console.log('No match');
+            }
+        }
+        return '';
     }
 
     function deleteEpisode(){
