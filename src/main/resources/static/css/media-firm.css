@@ -29,6 +29,9 @@ body {
     text-decoration: none;
     transition: background 0.3s ease;
 }
+.episode-btn-container {
+    margin: 10px 10px 0 0;
+}
 
 .episode-btn:hover {
     background-color: #ffc107;
