@@ -20,9 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+
 import org.springframework.data.domain.PageRequest;
 
 @Controller
@@ -44,7 +43,8 @@ public class MediaVideoController {
     public String viewMediaVideo(HttpSession session, Model model,
                                  @PathVariable Long id,
                                  @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber,
-                                 @RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+                                 @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+                                 @RequestParam(name = "season", required = false, defaultValue = "1") int seasonParam) {
 
         Media media = mediaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -53,13 +53,22 @@ public class MediaVideoController {
         Episode selectedEpisode = null;
         int season = 1;
 
+        Map<Integer, List<Episode>> episodesBySeason = new TreeMap<>();
+
         if ("TV Show".equalsIgnoreCase(media.getType())) {
             episodes = media.getEpisodes().stream()
                     .sorted(Comparator.comparingInt(Episode::getEpisodeNumber))
                     .toList();
 
+            for (Episode ep : episodes) {
+                episodesBySeason
+                        .computeIfAbsent(ep.getSeason(), k -> new ArrayList<>())
+                        .add(ep);
+            }
+
+            // Find episode matching both season and episode number
             selectedEpisode = episodes.stream()
-                    .filter(ep -> ep.getEpisodeNumber() == episodeNumber)
+                    .filter(ep -> ep.getSeason() == seasonParam && ep.getEpisodeNumber() == episodeNumber)
                     .findFirst()
                     .orElse(null);
 
@@ -67,11 +76,14 @@ public class MediaVideoController {
                 season = selectedEpisode.getSeason();
             }
         }
+
         model.addAttribute("media", media);
-        model.addAttribute("episodes", episodes);
+        model.addAttribute("episodes", episodes); // optional, if you still need flat list
+        model.addAttribute("episodesBySeason", episodesBySeason); // grouped episodes
         model.addAttribute("selectedEpisode", selectedEpisode);
         model.addAttribute("episode", episodeNumber);
         model.addAttribute("season", season);
+
 
         List<Media> mediaList = mediaRepo.findAll();
         model.addAttribute("mediaList", mediaList);
