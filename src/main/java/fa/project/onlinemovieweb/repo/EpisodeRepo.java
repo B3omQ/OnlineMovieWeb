@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface EpisodeRepo extends JpaRepository<Episode, Long> {
     List<Episode> findByMediaIdOrderBySeasonAscEpisodeNumberAsc(Long mediaId);
-
+    Episode findByMedia_IdAndSeasonAndEpisodeNumber(Long mediaId, int season, int episodeNumber);
 }
