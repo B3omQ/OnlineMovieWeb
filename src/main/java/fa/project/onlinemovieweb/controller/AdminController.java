@@ -232,6 +232,10 @@ public class AdminController {
     public String createEpisode(@ModelAttribute Episode episode, @PathVariable Long mediaId){
         Media m = mediaRepo.findById(mediaId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         episode.setMedia(m);
+        //Check for duplicates
+        if(episodeRepo.findByMedia_IdAndSeasonAndEpisodeNumber(mediaId, episode.getSeason(), episode.getEpisodeNumber()) != null){
+            return "redirect:/admin/medias/episodes/" + mediaId;
+        }
         episodeRepo.save(episode);
         // Send notification to users that favorite media
         List<User> users = userRepo.findByFavoriteMedia(m);

@@ -45,8 +45,8 @@
                     </div>
                 </div>
                 <div class="col" id="formContainer" style="display: none;">
-                    <form id="episodeForm" action="" method="post">
-                        <input type="hidden" th:value="${media.id}">
+                    <form id="episodeForm" action="" method="post" onsubmit="return validateCreate()">
+                        <input type="hidden" name="mediaId" th:value="${media.id}">
                         <div class="row" style="padding-bottom: 15px;">
                             <div class="col-8">
                                 <label for="title">Title</label>
@@ -96,6 +96,7 @@
     let selectedEpisode = null;
 
     function setSelected(element){
+        //create
         if(element === 'new'){
             const deleteButton = document.getElementById('deleteButton');
             if(deleteButton){
@@ -104,6 +105,8 @@
             createEpisode();
             return;
         }
+
+        //update
         if(selectedEpisode){
             selectedEpisode.classList.remove('bg-primary');
             selectedEpisode.classList.add('bg-secondary');
@@ -191,6 +194,35 @@
         document.getElementById('video').src = '';
         const mediaId = document.querySelector('input[type="hidden"]').value;
         document.getElementById('episodeForm').action = `/admin/medias/episodes/create/${mediaId}`;
+    }
+
+    //avoid creating duplicate episodes
+    function validateCreate(){
+        if(selectedEpisode !== null){
+            return true;
+        }
+        const season = document.getElementById('season').value;
+        const episodeNumber = document.getElementById('episodeNumber').value;
+        if(findEpisode(season, episodeNumber) !== null){
+            if(confirm('This episode already exists. Do you want to update it instead?')){
+                const episodeId = findEpisode(season, episodeNumber).getAttribute('data-episode-id');
+                document.getElementById('episodeForm').action = `/admin/medias/episodes/update/${episodeId}`;
+                return true;
+            }
+            return false;
+        }
+        return true;
+
+    }
+
+    function findEpisode(season, episodeNumber){
+        const episodes = document.querySelectorAll('[data-season][data-episode-number]');
+        for(let e of episodes){
+            if(e.getAttribute('data-season') === season && e.getAttribute('data-episode-number') === episodeNumber){
+                return e;
+            }
+        }
+        return null;
     }
 
     function validateDigits(input){
