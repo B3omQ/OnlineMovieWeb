@@ -29,24 +29,20 @@
                 🔥 Watch more quality firm at <a href="/home" class="text-warning">Film Addicted</a>
             </div>
 
-            <div th:if="${media.type == 'TV Show'}" class="mb-3 d-flex align-items-center">
-                <strong class="me-2">
-                    <i class="bi bi-list"></i>
-                    <span th:text="'Part ' + ${season}">Part 1</span>
-                </strong>
-            </div>
+            <div th:if="${media.type == 'TV Show'}">
+                <div th:each="entry : ${episodesBySeason}" th:class="episode-btn-container">
+                    <div class="mb-3 d-flex align-items-center">
+                        <strong class="me-2">
+                            <i class="bi bi-list"></i> Part <span th:text="${entry.key}">1</span>
+                        </strong>
+                    </div>
 
-            <div th:if="${media.type == 'TV Show'}" class="mb-4 d-flex flex-wrap">
-                <a th:each="ep : ${episodes}"
-                   th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber}}"
-                   th:class="'episode-btn me-2' + (${ep.episodeNumber} == ${episode} ? ' active' : '')">
-                    <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
-                </a>
-            </div>
-
-            <!-- Banner-->
-            <div class="ad-banner">
-                <strong>AD BANNER</strong>
+                    <a th:each="ep : ${entry.value}"
+                       th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber} + '&season=' + ${ep.season}}"
+                       th:class="'episode-btn me-2' + ((ep.episodeNumber == episode and ep.season == season) ? ' active' : '')">
+                        <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Comment -->

@@ -19,19 +19,19 @@
         width: 40px;
         height: 40px;
         display: flex;
-        align-items: center;     /* vertical centering */
+        align-items: center; /* vertical centering */
         justify-content: center; /* horizontal centering */
         font-size: 18px;
         font-weight: bold;
         text-decoration: none;
         transition: all 0.3s ease;
-        line-height: 1;          /* FIX: avoids vertical misalignment */
+        line-height: 1; /* FIX: avoids vertical misalignment */
         padding-top: 5px; /* FIX: make sure padding doesn’t offset text */
     }
 
     /* Page info pill */
     .page-info {
-        background-color: #5a5a5a;  /* lighter than #444 for contrast */
+        background-color: #5a5a5a; /* lighter than #444 for contrast */
         color: #fff;
         padding: 6px 18px;
         border-radius: 999px;
@@ -44,7 +44,7 @@
 
     /* Fix current page black box */
     .page-info input[type="text"] {
-        background-color: #1a1a1a;  /* slightly lighter black */
+        background-color: #1a1a1a; /* slightly lighter black */
         color: #fff;
         border: none;
         width: 36px;
@@ -56,6 +56,7 @@
         font-size: 15px;
         line-height: 1;
     }
+
     .page-info input[type="text"] {
         box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.1);
         border: 1px solid #333;
@@ -126,7 +127,7 @@
     <div class="bg-secondary px-3 py-1 rounded-pill text-white page-info">
         Page
         <input type="text" th:value="${currentPage}" class="bg-dark text-white border-0 text-center"
-               style="width: 40px;" readonly />
+               style="width: 40px;" readonly/>
         / <span th:text="${totalPages}">0</span>
     </div>
 
@@ -159,8 +160,11 @@
     </div>
 
 </div>
-
-
+<div th:if="${noResults}" class="text-center mt-5">
+    <img src="https://i.imgur.com/wANfZ0H.gif" alt="No results found"
+         style="max-width: 600px; width: 100%;">
+    <p class="text-light mt-4 fs-4">Oops! We couldn't find any media matching.</p>
+</div>
 <!-- Footer -->
 <div th:insert="fragments/footer :: footer"></div>
 </body>
