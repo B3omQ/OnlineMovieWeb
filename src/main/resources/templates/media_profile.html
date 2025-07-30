@@ -145,19 +145,38 @@
 
 <section class="reviews-section bg-dark text-white d-none" id="reviewsSection">
     <div class="container">
-        <div class="mb-3">
-            <h6>Average <span th:text="${averageRating}"></span> out of 5 stars</h6>
-            <p th:text="${totalReviews} + ' ratings'"></p>
-            <div th:each="i : ${#numbers.sequence(5,1)}" class="d-flex align-items-center mb-2">
-                <i class="bi bi-star-fill me-2 text-warning"></i>
-                <span class="me-1" th:text="${i}">5</span>
-                <div class="progress flex-grow-1 me-2" style="height: 10px; max-width: 40%;">
-                    <div class="progress-bar bg-warning" role="progressbar"
-                         th:style="'width: ' + ${ratingPercentage.get(i)} + '%'"
-                         aria-valuemin="0" aria-valuemax="100">
+        <div class="row mb-3">
+            <div class="col-2">
+                <div class="rating-summary text-center">
+                    <div th:text="${averageRating}" class="avg-score"></div>
+                    <div class="stars">
+                        <span class="bi bi-star-fill text-warning me-1"
+                              th:if="${averageRating >= 1}"
+                              th:each="star : ${#numbers.sequence(1, T(java.lang.Math).floor(averageRating))}">
+                        </span>
+                        <span class="bi bi-star-half text-warning me-1"
+                              th:if="${averageRating - T(java.lang.Math).floor(averageRating) >= 0.001}">
+                        </span>
+                        <span class="bi bi-star text-warning me-1"
+                              th:if="${averageRating <= 4}"
+                              th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(averageRating))}">
+                        </span>
                     </div>
+                    <div th:text="${totalReviews} + ' ratings'" class="rating-count"></div>
                 </div>
-                <span th:text="${ratingPercentage.get(i)} + '%'">0%</span>
+            </div>
+            <div class="col-8">
+                <div th:each="i : ${#numbers.sequence(5,1)}" class="d-flex align-items-center mb-2">
+                    <i class="bi bi-star-fill me-2 text-warning"></i>
+                    <span class="me-1" th:text="${i}">5</span>
+                    <div class="progress flex-grow-1 me-2" style="height: 10px; max-width: 40%;">
+                        <div class="progress-bar bg-warning" role="progressbar"
+                             th:style="'width: ' + ${ratingPercentage.get(i)} + '%'"
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <span th:text="${ratingPercentage.get(i)} + '%'">0%</span>
+                </div>
             </div>
         </div>
         <div class="review-list d-flex flex-column gap-4">
