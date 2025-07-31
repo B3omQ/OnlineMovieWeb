@@ -31,7 +31,10 @@ public class MediaProfileController {
     @GetMapping("/media/{id}")
     public String getMedia(@PathVariable Long id, Model model, HttpSession session,
                            @RequestParam(name = "ep", required = false, defaultValue = "1") int episodeNumber,
-                           @RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+                           @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+                           @RequestParam(name = "season", required = false, defaultValue = "1") int seasonParam) {
+        Map<Integer, List<Episode>> episodesBySeason = new TreeMap<>();
+
         Media media = mediaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -43,9 +46,13 @@ public class MediaProfileController {
             episodes = media.getEpisodes().stream()
                     .sorted(Comparator.comparingInt(Episode::getEpisodeNumber))
                     .toList();
-
+            for (Episode ep : episodes) {
+                episodesBySeason
+                        .computeIfAbsent(ep.getSeason(), k -> new ArrayList<>())
+                        .add(ep);
+            }
             selectedEpisode = episodes.stream()
-                    .filter(ep -> ep.getEpisodeNumber() == episodeNumber)
+                    .filter(ep -> ep.getSeason() == seasonParam && ep.getEpisodeNumber() == episodeNumber)
                     .findFirst()
                     .orElse(null);
 
@@ -59,7 +66,7 @@ public class MediaProfileController {
         model.addAttribute("selectedEpisode", selectedEpisode);
         model.addAttribute("episode", episodeNumber);
         model.addAttribute("season", season);
-
+        model.addAttribute("episodesBySeason", episodesBySeason);
         List<Media> mediaList = mediaRepo.findAll();
         model.addAttribute("mediaList", mediaList);
 

@@ -279,3 +279,6 @@ a.badge:hover {
     color: #fff;
     font-size: 14px;
 }
+.episode-btn-container {
+    margin: 10px 10px 0 0;
+}

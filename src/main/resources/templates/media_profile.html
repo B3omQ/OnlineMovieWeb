@@ -24,6 +24,8 @@
         <img class="poster shadow-lg" th:src="${media.poster}" alt="Poster">
         <div class="info ms-4">
             <h1 class="hero-title" th:text="${media.title}"></h1>
+            <h5 class="fw-semibold d-flex align-items-center ms-2" style="color: #bbb"
+                th:text="${media.views} + ' views'"></h5>
             <div class="badges my-2">
                 <span class="badge bg-warning me-2 text-dark" th:text="${media.type}"></span>
                 <a th:each="genre : ${media.genres}" class="badge bg-secondary me-2"
@@ -62,7 +64,7 @@
     </div>
 </section>
 
-<section class="episodes-section py-5 bg-dark text-white">
+<section class="episodes-section py-5 pb-3 bg-dark text-white">
     <div class="container">
         <h2 class="mb-4">Episodes</h2>
         <div th:if="${media.type == 'Movie'}">
@@ -71,18 +73,25 @@
                 <i class="bi bi-play-fill "></i> Movie
             </a>
         </div>
-        <div th:if="${media.type == 'TV Show'}" class="mb-4 d-flex flex-wrap">
-            <a th:each="ep : ${episodes}"
-               th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber}}"
-               th:class="'episode-btn me-2' + (${ep.episodeNumber} == ${episode} ? ' active' : '')">
-                <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
-            </a>
+        <div th:if="${media.type == 'TV Show'}">
+            <div th:each="entry : ${episodesBySeason}" th:class="episode-btn-container">
+                <div class="mb-3 d-flex align-items-center">
+                    <strong class="me-2">
+                        <i class="bi bi-list"></i> Part <span th:text="${entry.key}">1</span>
+                    </strong>
+                </div>
+                <a th:each="ep : ${entry.value}"
+                   th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber} + '&season=' + ${ep.season}}"
+                   th:class="'episode-btn me-2' + ((ep.episodeNumber == episode and ep.season == season) ? ' active' : '')">
+                    <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- Comments Section -->
-<section class="comments-section pt-5 pb-5 bg-dark text-white" id="commentsSection">
+<section class="comments-section pt-2 pb-5 bg-dark text-white" id="commentsSection">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 id="sectionTitle" class="mb-0">Comments</h2>
