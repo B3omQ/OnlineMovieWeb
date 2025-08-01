@@ -58,10 +58,10 @@
                 <p th:if="${user == null or user.username == null}" >Please<a href="/login" class="text-warning">Login</a> to leave a comment</p>
 
                 <!--Comment box-->
-                <form id="commentForm" th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment${media.type == 'TV Show' ? ('?ep=' + episode) : ''}|}" method="post">
+                <form id="commentForm" th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment|}" method="post">
                 <textarea id="commentContent" name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
               placeholder="Write your comment..." required></textarea>
-                    <input type="hidden" id="episodeId" name="episodeId" th:value="${episode}">
+                    <input type="hidden" id="episodeId" name="episodeId" th:value="${selectedEpisode.id}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div></div>
                         <div>
@@ -165,7 +165,7 @@
 
         const formData = new URLSearchParams();
         formData.append("content", content);
-        if (episodeId) formData.append("ep", episodeId);
+        if (episodeId) formData.append("episodeId", episodeId);
 
         try {
             const response = await fetch(form.action, {
