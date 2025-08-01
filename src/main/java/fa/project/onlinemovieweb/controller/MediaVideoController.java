@@ -39,6 +39,9 @@ public class MediaVideoController {
     @Autowired
     private NotificationRepo notificationRepo;
 
+    @Autowired
+    private EpisodeRepo episodeRepo;
+
     @GetMapping("/mediaVideo/{slug}.{id}")
     public String viewMediaVideo(HttpSession session, Model model,
                                  @PathVariable Long id,
@@ -66,7 +69,7 @@ public class MediaVideoController {
                         .add(ep);
             }
 
-            // Find episode matching both season and episode number
+
             selectedEpisode = episodes.stream()
                     .filter(ep -> ep.getSeason() == seasonParam && ep.getEpisodeNumber() == episodeNumber)
                     .findFirst()
@@ -74,12 +77,13 @@ public class MediaVideoController {
 
             if (selectedEpisode != null) {
                 season = selectedEpisode.getSeason();
+                System.out.println(selectedEpisode.getId());
             }
         }
 
         model.addAttribute("media", media);
-        model.addAttribute("episodes", episodes); // optional, if you still need flat list
-        model.addAttribute("episodesBySeason", episodesBySeason); // grouped episodes
+        model.addAttribute("episodes", episodes);
+        model.addAttribute("episodesBySeason", episodesBySeason);
         model.addAttribute("selectedEpisode", selectedEpisode);
         model.addAttribute("episode", episodeNumber);
         model.addAttribute("season", season);
@@ -129,9 +133,9 @@ public class MediaVideoController {
         return "mediaVideo";
     }
 
-   @PostMapping("/mediaVideo/{slug}.{id}/comment")
+    @PostMapping("/mediaVideo/{slug}.{id}/comment")
     public String postComment(@PathVariable Long id,
-                              @RequestParam(name = "ep", required = false) Integer episodeNumber,
+                              @RequestParam("episodeId") Long episodeId,
                               @RequestParam("content") String content,
                               HttpSession session,
                               RedirectAttributes redirectAttributes,
@@ -140,7 +144,7 @@ public class MediaVideoController {
         User user = (User) session.getAttribute("user");
         if (user == null || content == null || content.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Please log in and write something.");
-            return "redirect:/mediaVideo/slug." + id + (episodeNumber != null ? "?ep=" + episodeNumber : "");
+            return "redirect:/mediaVideo/slug." + id;
         }
 
         Media media = mediaRepo.findById(id)
@@ -150,10 +154,8 @@ public class MediaVideoController {
         comment.setUser(user);
         comment.setContent(content);
 
-        if (episodeNumber != null && "TV Show".equalsIgnoreCase(media.getType())) {
-            Episode episode = media.getEpisodes().stream()
-                    .filter(ep -> ep.getEpisodeNumber() == episodeNumber)
-                    .findFirst()
+        if ("TV Show".equalsIgnoreCase(media.getType()) && episodeId != null) {
+            Episode episode = episodeRepo.findById(episodeId)
                     .orElse(null);
             if (episode != null) {
                 comment.setEpisode(episode);
@@ -165,9 +167,10 @@ public class MediaVideoController {
 
         commentRepo.save(comment);
 
-       model.addAttribute("c", comment);
-       return "fragments/comment :: comment";
+        model.addAttribute("c", comment);
+        return "fragments/comment :: comment";
     }
+
 
     @PostMapping("/mediaVideo/{slug}.{id}/rate")
     public String postRating(@PathVariable Long id,
