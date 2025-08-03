@@ -128,10 +128,15 @@
 
                             <!-- Text -->
                             <div style="font-size: 0.875rem; max-width: 250px;">
-                                <span style="display: block; white-space: normal; word-break: break-word;">
+                                <span style="display: block; white-space: normal; word-break: break-word;" th:if="${noti.type == 'Episode'}">
                                     <strong th:text="${noti.episode.media.title}"></strong>
                                     <span> has been released new episode : </span>
                                     <strong th:text="'Episode ' + ${noti.episode.episodeNumber}"></strong>
+                                </span>
+                                <span style="display: block; white-space: normal; word-break: break-word;" th:if="${noti.type == 'Mention'}">
+                                    <strong th:text="${noti.triggeredBy.username}"></strong>
+                                    <span> mentioned you in a reply on </span>
+                                    <strong th:text="${noti.comment.media.title}"></strong>
                                 </span>
                                 <small style="color: #bbb"
                                        th:text="${#temporals.format(noti.createdAt, 'HH:mm dd/MM')}"></small>

@@ -19,6 +19,12 @@ public class CommentController {
     @Autowired
     private MediaRepo mediaRepo;
 
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
+
     @PostMapping("/media/comment/{commentId}/like")
     public ResponseEntity<?> likeComment(@PathVariable Long commentId, HttpSession session, Model model) {
         Comment comment = commentRepo.findById(commentId).get();
@@ -41,20 +47,31 @@ public class CommentController {
     public String replyToComment(@PathVariable Long mediaId,
                                  @PathVariable Long parentId,
                                  @RequestParam String content,
+                                 @RequestParam Long taggedUserId,
                                  HttpSession session, Model model) {
         Comment parent = commentRepo.findById(parentId).get();
         Media media = mediaRepo.findById(mediaId).get();
         User user = (User) session.getAttribute("user");
-
+        User taggedUser = userRepo.findById(taggedUserId).get();
         Comment reply = new Comment();
         reply.setContent(content);
         reply.setMedia(media);
         reply.setParent(parent);
         reply.setUser(user);
         reply.setCreatedAt(LocalDateTime.now());
+        reply.setTaggedUser(taggedUser);
         commentRepo.save(reply);
         String redirectUrl = "/media/" + mediaId;
         model.addAttribute("c", reply);
+        if (!taggedUser.getId().equals(user.getId())) {
+            Notification notification = new Notification();
+            notification.setUser(taggedUser);
+            notification.setTriggeredBy(user);
+            notification.setComment(reply);
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setType("Mention");
+            notificationRepo.save(notification);
+        }
         return "redirect:/media/" + mediaId;
     }
 

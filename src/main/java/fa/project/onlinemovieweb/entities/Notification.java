@@ -73,4 +73,36 @@ public class Notification {
     public void setEpisode(Episode episode) {
         this.episode = episode;
     }
+
+    @ManyToOne
+    private User triggeredBy;
+
+    @ManyToOne
+    private Comment comment;
+
+    private String type; // "Mention", "Episode"
+
+    public User getTriggeredBy() {
+        return triggeredBy;
+    }
+
+    public void setTriggeredBy(User triggeredBy) {
+        this.triggeredBy = triggeredBy;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

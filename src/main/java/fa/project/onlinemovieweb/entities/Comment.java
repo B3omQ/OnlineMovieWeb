@@ -93,5 +93,18 @@ public class Comment {
     public void setLikedByUsers(Set<User> likedByUsers) {
         this.likedByUsers = likedByUsers;
     }
+
+    @ManyToOne
+    @JoinColumn(name = "tagged_user_id")
+    private User taggedUser;
+
+    public User getTaggedUser() {
+        return taggedUser;
+    }
+
+    public void setTaggedUser(User taggedUser) {
+        this.taggedUser = taggedUser;
+    }
+
 }
 

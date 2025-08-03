@@ -1,6 +1,7 @@
 package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.Episode;
+import fa.project.onlinemovieweb.entities.Media;
 import fa.project.onlinemovieweb.entities.Notification;
 import fa.project.onlinemovieweb.entities.User;
 import fa.project.onlinemovieweb.repo.NotificationRepo;
@@ -39,14 +40,21 @@ public class NotifyController {
         if (notification != null) {
             notification.setRead(true);
             notificationRepo.save(notification);
+            if(notification.getType().equals("Episode")) {
+                Episode episode = notification.getEpisode();
+                if (episode != null) {
+                    String mediaTitle = episode.getMedia().getTitle().replaceAll(" ", "-").toLowerCase();
+                    Long mediaId = episode.getMedia().getId();
+                    int episodeNumber = episode.getEpisodeNumber();
 
-            Episode episode = notification.getEpisode();
-            if (episode != null) {
-                String mediaTitle = episode.getMedia().getTitle().replaceAll(" ", "-").toLowerCase();
-                Long mediaId = episode.getMedia().getId();
-                int episodeNumber = episode.getEpisodeNumber();
-
-                return "redirect:/mediaVideo/" + mediaTitle + "." + mediaId + "?ep=" + episodeNumber;
+                    return "redirect:/mediaVideo/" + mediaTitle + "." + mediaId + "?ep=" + episodeNumber;
+                }
+            }
+            else if(notification.getType().equals("Mention")) {
+                Media media = notification.getComment().getMedia();
+                if(media != null) {
+                    return "redirect:/media/" + media.getId();
+                }
             }
         }
         return "redirect:/notify";
