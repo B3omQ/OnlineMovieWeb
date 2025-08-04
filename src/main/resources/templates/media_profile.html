@@ -133,7 +133,7 @@
                             <span th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
                         </div>
                         <div th:if="${c.episode != null}" class="comment-episode mb-1">
-                            Episode <span th:text="${c.episode.episodeNumber}">1</span>
+                            Episode <span th:text="${c.episode.episodeNumber}">1</span> - Season <span th:text="${c.episode.season}">1</span>
                         </div>
                         <div class="comment-content">
                             <span th:if="*{taggedUser != null}">
@@ -171,6 +171,9 @@
                                     <div class="comment-header">
                                         <strong th:text="*{user.username}">Username</strong>
                                         <span th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                    </div>
+                                    <div th:if="${reply.episode != null}" class="comment-episode mb-1">
+                                        Episode <span th:text="${reply.episode.episodeNumber}">1</span> - Season <span th:text="${reply.episode.season}">1</span>
                                     </div>
                                     <div class="comment-content">
                                         <span th:if="*{taggedUser != null}">
