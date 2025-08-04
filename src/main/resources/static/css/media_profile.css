@@ -282,3 +282,53 @@ a.badge:hover {
 .episode-btn-container {
     margin: 10px 10px 0 0;
 }
+
+.like-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+}
+
+.like-btn i {
+  font-size: 1.1rem;
+}
+
+.like-btn:hover {
+  color: #fff;
+}
+.reply-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.reply-btn:hover {
+  color: #fff;
+  text-decoration: none;
+}
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+.reply-box {
+    padding-left: 1rem;
+}
+.reply-box.comment-box {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+

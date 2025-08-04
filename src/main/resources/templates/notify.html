@@ -38,10 +38,15 @@
 
                                     <!-- Text -->
                                     <div>
-                                        <div style="font-size: 0.9rem;">
+                                        <div style="font-size: 0.9rem;" th:if="${noti.type == 'Episode'}">
                                             <strong th:text="${noti.episode.media.title}">Title</strong>
                                             <span> has been released new episode: </span>
                                             <strong th:text="'Episode ' + ${noti.episode.episodeNumber}"></strong>
+                                        </div>
+                                        <div style="font-size: 0.9rem;" th:if="${noti.type == 'Mention'}">
+                                            <strong th:text="${noti.triggeredBy.username}"></strong>
+                                            <span> mentioned you in a reply on </span>
+                                            <strong th:text="${noti.comment.media.title}"></strong>
                                         </div>
                                         <small style="color: #bbb"
                                                th:text="${#temporals.format(noti.createdAt, 'HH:mm dd/MM/yyyy')}"></small>

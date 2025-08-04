@@ -244,6 +244,7 @@ public class AdminController {
             notification.setCreatedAt(LocalDateTime.now());
             notification.setEpisode(episode);
             notification.setUser(u);
+            notification.setType("Episode");
             notificationRepo.save(notification);
         }
         return "redirect:/admin/medias/episodes/" + mediaId;
