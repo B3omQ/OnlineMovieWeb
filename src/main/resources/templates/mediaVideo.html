@@ -80,6 +80,85 @@
                                 <span th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
                             </div>
                             <div class="comment-content" th:text="*{content}">Comment here</div>
+                            <div class="comment-actions d-flex align-items-center gap-2">
+                                <!-- Like -->
+                                <div class="like-btn ps-0" th:data-id="*{id}">
+                                    <i class="bi bi-hand-thumbs-up-fill text-warning" th:if="${#lists.contains(c.likedByUsers, user)}"></i>
+                                    <i class="bi bi-hand-thumbs-up" th:unless="${#lists.contains(c.likedByUsers, user)}"></i>
+                                    <span th:text="${#lists.size(c.likedByUsers)}">0</span>
+                                </div>
+                                <!-- Reply toggle -->
+                                <button class="reply-btn reply-toggle" type="button">Reply</button>
+                            </div>
+                            <!-- Reply form -->
+                            <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
+                                  th:action="@{/ep/{episodeId}/comment/{commentId}/reply(episodeId=${selectedEpisode.id}, commentId=${c.id})}"
+                                  method="post">
+                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
+                                <input type="hidden" name="taggedUserId" th:value="${c.user.id}" />
+                                <textarea name="content" class="form-control" style="width: 700px;" rows="2" placeholder="Write a reply..."></textarea>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                </div>
+                            </form>
+                            <form th:if="${media.type == 'Movie'}" class="reply-form d-none mt-2"
+                                  th:action="@{/media/{mediaId}/comment/{commentId}/reply(mediaId=${media.id}, commentId=${c.id})}"
+                                  method="post">
+                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
+                                <input type="hidden" name="taggedUserId" th:value="${c.user.id}" />
+                                <textarea name="content" class="form-control" style="width: 700px;" rows="2" placeholder="Write a reply..."></textarea>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                </div>
+                            </form>
+                            <!-- Replies list -->
+                            <div class="reply-list mt-3" style="width:600px;">
+                                <div class="comment-box reply-box" th:each="reply : *{replies}" th:object="${reply}">
+                                    <img th:src="*{user.avatar}" alt="avatar">
+                                    <div>
+                                        <div class="comment-header">
+                                            <strong th:text="*{user.username}">Username</strong>
+                                            <span th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                        </div>
+                                        <div class="comment-content">
+                                            <span th:if="*{taggedUser != null}">
+                                                <span th:href="@{/user/{id}(id=*{taggedUser.id})}"
+                                                  class="text-primary fw-bold">@<span th:text="*{taggedUser.username}"></span></span>
+                                            </span>
+                                            <span th:text="*{content}"></span>
+                                        </div>
+                                        <div class="comment-actions d-flex align-items-center gap-2">
+                                            <div class="like-btn ps-0" th:data-id="*{id}">
+                                                <i class="bi bi-hand-thumbs-up-fill text-warning" th:if="${#lists.contains(reply.likedByUsers, user)}"></i>
+                                                <i class="bi bi-hand-thumbs-up" th:unless="${#lists.contains(reply.likedByUsers, user)}"></i>
+                                                <span th:text="${#lists.size(reply.likedByUsers)}">0</span>
+                                            </div>
+                                            <button class="reply-btn reply-toggle" type="button">Reply</button>
+                                        </div>
+
+                                        <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
+                                              th:action="@{/ep/{episodeId}/comment/{commentId}/reply(episodeId=${selectedEpisode.id}, commentId=${c.id})}"
+                                              method="post">
+                                            <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
+                                            <input type="hidden" name="taggedUserId" th:value="${reply.user.id}"/>
+                                            <textarea name="content" class="form-control" rows="2" placeholder="Write a reply..." style="width: 480px;"></textarea>
+                                            <div class="d-flex justify-content-end">
+                                                <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                            </div>
+                                        </form>
+                                        <form th:if="${media.type == 'Movie'}" class="reply-form d-none mt-2"
+                                              th:action="@{/media/{mediaId}/comment/{commentId}/reply(mediaId=${media.id}, commentId=${c.id})}"
+                                              method="post">
+                                            <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
+                                            <input type="hidden" name="taggedUserId" th:value="${reply.user.id}"/>
+                                            <textarea name="content" class="form-control" rows="2" placeholder="Write a reply..." style="width: 480px;"></textarea>
+                                            <div class="d-flex justify-content-end">
+                                                <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -258,6 +337,40 @@
             .catch(err => {
                 alert("Failed to submit rating: " + err.message);
             });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".like-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                const icon = this.querySelector("i");
+                const countSpan = this.querySelector("span");
+
+                fetch(`/media/comment/${id}/like`, { method: "POST" })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            countSpan.textContent = data.likeCount;
+                            if (data.liked) {
+                                icon.classList.remove("bi-hand-thumbs-up");
+                                icon.classList.add("bi-hand-thumbs-up-fill", "text-warning");
+                            } else {
+                                icon.classList.remove("bi-hand-thumbs-up-fill", "text-warning");
+                                icon.classList.add("bi-hand-thumbs-up");
+                            }
+                        }
+                    });
+            });
+        });
+
+        document.querySelectorAll(".reply-toggle").forEach(btn => {
+            btn.addEventListener("click", function () {
+            const parent = this.closest(".comment-box");
+            const form = parent.querySelector(".reply-form");
+            if (form) form.classList.toggle("d-none");
+            });
+        });
     });
 </script>
 <!-- Footer -->

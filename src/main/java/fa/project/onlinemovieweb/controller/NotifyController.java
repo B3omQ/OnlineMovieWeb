@@ -52,7 +52,15 @@ public class NotifyController {
             }
             else if(notification.getType().equals("Mention")) {
                 Media media = notification.getComment().getMedia();
-                if(media != null) {
+                Episode episode = notification.getComment().getEpisode();
+                if(episode != null) {
+                    media = episode.getMedia();
+                    String slug = media.getTitle().toLowerCase().replaceAll(" ", "-");
+                    return "redirect:/mediaVideo/" + slug + "." + media.getId()
+                            + "?ep=" + episode.getEpisodeNumber()
+                            + "&season=" + episode.getSeason();
+                }
+                else if(media != null) {
                     return "redirect:/media/" + media.getId();
                 }
             }

@@ -99,10 +99,10 @@ public class MediaVideoController {
         Page<Comment> commentPage;
 
         if (selectedEpisode != null) {
-            commentPage = commentRepo.findByEpisodeIdOrderByCreatedAtDesc(
+            commentPage = commentRepo.findByEpisodeIdAndParentIsNullOrderByCreatedAtDesc(
                     selectedEpisode.getId(), PageRequest.of(page, pageSize));
         } else {
-            commentPage = commentRepo.findByMediaIdOrderByCreatedAtDesc(
+            commentPage = commentRepo.findByMediaIdAndParentIsNullOrderByCreatedAtDesc(
                     media.getId(), PageRequest.of(page, pageSize));
         }
 
@@ -130,6 +130,7 @@ public class MediaVideoController {
         long unreadCount = notificationRepo.countByUserAndReadFalse(user);
         model.addAttribute("notifications", notifications);
         model.addAttribute("unreadCount", unreadCount);
+        model.addAttribute("fromVideoPage", true);
         return "mediaVideo";
     }
 
