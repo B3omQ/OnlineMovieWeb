@@ -258,3 +258,27 @@ a.badge:hover {
 #starRating i.selected {
     color: #FFD700;
 }
+
+.rating-summary {
+    color: #fff;
+    font-family: sans-serif;
+}
+
+.rating-summary .avg-score {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.rating-summary .stars {
+    color: #FFD700;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.rating-summary .rating-count {
+    color: #fff;
+    font-size: 14px;
+}
+.episode-btn-container {
+    margin: 10px 10px 0 0;
+}

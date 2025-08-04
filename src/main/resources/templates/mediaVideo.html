@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="stylesheet" href="/css/media-firm.css"/>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
@@ -18,7 +20,7 @@
     <div class="row mt-3">
         <div class="col-md-9">
             <h5 class="">YOU ARE WATCHING <a class="media-link" th:href="@{'/media/' + ${media.id}}" th:text="${media.title}">Media Title</a>
-                <span th:if="${media.type == 'TV Show'}" th:text="': Episode ' + ${episode}"></span>
+                <span th:if="${media.type == 'TV Show'}" th:text="': Episode ' + ${episode} + ' - Season ' + ${season}"></span>
             </h5>
 
             <div class="video-container mb-3 bg-dark">
@@ -39,7 +41,8 @@
 
                     <a th:each="ep : ${entry.value}"
                        th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber} + '&season=' + ${ep.season}}"
-                       th:class="'episode-btn me-2' + ((ep.episodeNumber == episode and ep.season == season) ? ' active' : '')">
+                       class="episode-btn me-2"
+                       th:classappend="${ep.episodeNumber == episode and ep.season == season} ? ' active'">
                         <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
                     </a>
                 </div>
@@ -55,10 +58,10 @@
                 <p th:if="${user == null or user.username == null}" >Please<a href="/login" class="text-warning">Login</a> to leave a comment</p>
 
                 <!--Comment box-->
-                <form id="commentForm" th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment${media.type == 'TV Show' ? ('?ep=' + episode) : ''}|}" method="post">
+                <form id="commentForm" th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment|}" method="post">
                 <textarea id="commentContent" name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
               placeholder="Write your comment..." required></textarea>
-                    <input type="hidden" id="episodeId" name="episodeId" th:value="${episode}">
+                    <input type="hidden" id="episodeId" name="episodeId" th:value="${selectedEpisode.id}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div></div>
                         <div>
@@ -162,7 +165,7 @@
 
         const formData = new URLSearchParams();
         formData.append("content", content);
-        if (episodeId) formData.append("ep", episodeId);
+        if (episodeId) formData.append("episodeId", episodeId);
 
         try {
             const response = await fetch(form.action, {
