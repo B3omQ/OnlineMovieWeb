@@ -188,7 +188,7 @@
                     <textarea id="ratingContent" name="content" class="form-control mb-2" rows="3"
                               maxlength="1000" placeholder="Write your review..." required></textarea>
 
-<!--                    <input type="hidden" name="episodeId" id="episodeId" th:value="${episode}">-->
+                    <input th:if="${media.type == 'TV Show'}" type="hidden" name="episodeId" th:value="${selectedEpisode.id}">
 
                     <button type="submit" class="btn btn-warning">Submit Rating</button>
                 </form>
@@ -240,7 +240,10 @@
         const content = document.getElementById("commentContent").value.trim();
         const episodeId = document.getElementById("episodeId")?.value || "";
 
-        if (!content) return;
+        if (!content) {
+            alert("Please write something before submitting.");
+            return;
+        }
 
         const formData = new URLSearchParams();
         formData.append("content", content);
@@ -255,13 +258,15 @@
                 body: formData
             });
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert("Please login to comment.");
-                } else {
-                    throw new Error("Server error");
-                }
+            if (response.status === 401) {
+                alert("You must be logged in to comment.");
                 return;
+            } else if (response.status === 400) {
+                const msg = await response.text();
+                alert("Error: " + msg);
+                return;
+            } else if (!response.ok) {
+                throw new Error("Server error");
             }
 
             const newCommentHtml = await response.text();
@@ -276,6 +281,7 @@
             alert("Error submitting comment: " + err.message);
         }
     });
+
 </script>
 
 <!-- JavaScript to toggle sections -->
@@ -307,38 +313,46 @@
     });
 </script>
 <script>
-    document.getElementById("ratingForm").addEventListener("submit", function (e) {
+    document.getElementById("ratingForm").addEventListener("submit", async function (e) {
         e.preventDefault(); // Prevent page reload
 
         const form = e.target;
         const url = form.action;
         const formData = new FormData(form);
 
-        fetch(url, {
-            method: "POST",
-            body: formData
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return res.text(); // Expect HTML fragment
-            })
-            .then(html => {
-                // Append new review to the review section
-                const reviewSection = document.getElementById("reviewSection");
-                const temp = document.createElement("div");
-                temp.innerHTML = html;
-                reviewSection.prepend(temp.firstElementChild);
-
-                // Reset the form
-                form.reset();
-            })
-            .catch(err => {
-                alert("Failed to submit rating: " + err.message);
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                body: formData
             });
+
+            if (res.status === 401) {
+                alert("You must be logged in to submit a rating.");
+                return;
+            } else if (res.status === 400) {
+                const text = await res.text();
+                alert("Rating error: " + text);
+                return;
+            } else if (!res.ok) {
+                throw new Error("Unexpected server error.");
+            }
+
+            const html = await res.text();
+
+            // Append new review to the review section
+            const reviewSection = document.getElementById("reviewSection");
+            const temp = document.createElement("div");
+            temp.innerHTML = html;
+            reviewSection.prepend(temp.firstElementChild);
+
+            // Reset the form
+            form.reset();
+        } catch (err) {
+            alert("Failed to submit rating: " + err.message);
+        }
     });
 </script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".like-btn").forEach(btn => {
