@@ -136,16 +136,19 @@ public class MediaVideoController {
 
     @PostMapping("/mediaVideo/{slug}.{id}/comment")
     public String postComment(@PathVariable Long id,
-                              @RequestParam("episodeId") Long episodeId,
+                              @RequestParam(name = "episodeId", required = false) Long episodeId,
                               @RequestParam("content") String content,
                               HttpSession session,
                               RedirectAttributes redirectAttributes,
                               Model model) {
 
         User user = (User) session.getAttribute("user");
-        if (user == null || content == null || content.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Please log in and write something.");
-            return "redirect:/mediaVideo/slug." + id;
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
+        }
+
+        if (content == null || content.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content cannot be empty");
         }
 
         Media media = mediaRepo.findById(id)
@@ -175,7 +178,7 @@ public class MediaVideoController {
 
     @PostMapping("/mediaVideo/{slug}.{id}/rate")
     public String postRating(@PathVariable Long id,
-                             @RequestParam(name = "ep", required = false) Integer episodeNumber,
+                             @RequestParam(name = "episodeId", required = false) Long episodeNumber,
                              @RequestParam("rating") int rating,
                              @RequestParam("content") String content,
                              HttpSession session,
@@ -183,9 +186,12 @@ public class MediaVideoController {
                              Model model) {
 
         User user = (User) session.getAttribute("user");
-        if (user == null || content == null || content.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Please log in and write something.");
-            return "redirect:/mediaVideo/slug." + id + (episodeNumber != null ? "?ep=" + episodeNumber : "");
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
+        }
+
+        if (rating < 1 || rating > 5 || content == null || content.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid rating or review content");
         }
 
         Media media = mediaRepo.findById(id)
@@ -199,9 +205,7 @@ public class MediaVideoController {
         review.setCreatedAt(LocalDateTime.now());
 
         if (episodeNumber != null && "TV Show".equalsIgnoreCase(media.getType())) {
-            Episode episode = media.getEpisodes().stream()
-                    .filter(ep -> ep.getEpisodeNumber() == episodeNumber)
-                    .findFirst()
+            Episode episode = episodeRepo.findById(episodeNumber)
                     .orElse(null);
             if (episode != null) {
                 review.setEpisode(episode);
