@@ -335,3 +335,7 @@ a.badge:hover {
     font-style: italic;
     color: #aaa !important;
 }
+.reply-box.deleted .comment-content {
+    font-style: italic;
+    color: #aaa !important;
+}
