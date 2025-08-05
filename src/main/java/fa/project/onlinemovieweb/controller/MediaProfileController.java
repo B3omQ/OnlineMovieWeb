@@ -76,7 +76,7 @@ public class MediaProfileController {
         int pageSize = 5;
         Page<Comment> commentPage;
 
-        commentPage = commentRepo.findByMediaIdOrderByCreatedAtDesc(
+        commentPage = commentRepo.findByMediaIdAndParentIsNullOrderByCreatedAtDesc(
                 media.getId(), PageRequest.of(page, pageSize));
 
         model.addAttribute("commentPage", commentPage);

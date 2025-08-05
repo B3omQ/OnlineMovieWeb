@@ -45,7 +45,7 @@
 
                     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 gx-4 gy-4">
                         <div class="col" th:each="history : ${historyList}">
-                            <a th:href="@{|/mediaVideo/${#strings.replace(history.media.title.toLowerCase(), ' ', '-')}.${history.media.id}${history.episode != null ? '?ep=' + history.episode.episodeNumber : '?ep=1'}|}"
+                            <a th:href="@{|/mediaVideo/${#strings.replace(history.media.title.toLowerCase(), ' ', '-')}.${history.media.id}${history.episode != null ? '?ep=' + history.episode.episodeNumber  + '&season=' + history.episode.season: '?ep=1'}|}"
                                style="text-decoration: none; color: inherit;">
                                 <div class="card bg-dark border-0 h-100 text-white text-center"
                                      style="transition: transform 0.2s;">
@@ -54,25 +54,9 @@
                                     <div class="card-body p-2">
                                         <a th:href="@{/history/delete/{id}(id=${history.getMedia().getId()})}" class="close-link fa-solid fa-times"></a>
                                         <h6 class="card-title mb-1" th:text="${history.media.title}">Movie Title</h6>
-                                        <!--                                        <small class="text"-->
-                                        <!--                                               th:text="${#lists.size(history.media.genres) >= 2-->
-                                        <!--                    ? history.media.genres[0].name + ', ' + history.media.genres[1].name + ' | ' + history.media.releaseYear-->
-                                        <!--                    : #lists.size(history.media.genres) == 1-->
-                                        <!--                    ? history.media.genres[0].name + ' | ' + history.media.releaseYear-->
-                                        <!--                    : 'Unknown | ' + history.media.releaseYear}">-->
-                                        <!--                                            Genre | Year-->
-                                        <!--                                        </small>-->
                                         <small class="episode-info"
-                                               th:text="${history.episode!= null ?'Episode ' + history.episode.episodeNumber : 'Movies'}">
+                                               th:text="${history.episode!= null ?'Episode ' + history.episode.episodeNumber + ' Season ' +history.episode.season : 'Movies'}">
                                         </small>
-
-                                        <br>
-<!--                                        Watched at-->
-<!--                                        <th:block-->
-<!--                                                th:with="watchedDate=${T(java.util.Date).from(history.watchedAt.atZone(T(java.time.ZoneId).systemDefault()).toInstant())}">-->
-<!--                                            <small th:text="${#dates.format(watchedDate, 'dd-MM-yyyy HH:mm')}"></small>-->
-<!--                                        </th:block>-->
-
                                     </div>
                                 </div>
                             </a>

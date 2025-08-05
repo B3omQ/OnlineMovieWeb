@@ -32,16 +32,27 @@
                                    class="d-flex align-items-center text-decoration-none text-white w-100">
 
                                     <!-- Poster -->
-                                    <img th:src="@{${noti.episode != null && noti.episode.media != null ? noti.episode.media.poster : '/assets/placeholder.jpg'}}"
+                                    <img th:if="${noti.type != 'Mention'}"
+                                         th:src="@{${noti.episode != null && noti.episode.media != null ? noti.episode.media.poster : '/assets/placeholder.jpg'}}"
                                          class="rounded me-3"
                                          style="width: 50px; height: 70px; object-fit: cover;" alt="Poster"/>
-
+                                    <!-- Avatar -->
+                                    <img th:if="${noti.type == 'Mention'}"
+                                         th:src="@{${noti.triggeredBy.avatar != null ? noti.triggeredBy.avatar : '/assets/default-avatar.jpg'}}"
+                                         alt="User Avatar"
+                                         class="rounded-circle me-3"
+                                         style="width: 45px; height: 45px; object-fit: cover;"/>
                                     <!-- Text -->
                                     <div>
-                                        <div style="font-size: 0.9rem;">
+                                        <div style="font-size: 0.9rem;" th:if="${noti.type == 'Episode'}">
                                             <strong th:text="${noti.episode.media.title}">Title</strong>
                                             <span> has been released new episode: </span>
-                                            <strong th:text="'Episode ' + ${noti.episode.episodeNumber}"></strong>
+                                            <strong th:text="'Episode ' + ${noti.episode.episodeNumber} + ' - Season ' + ${noti.episode.season}"></strong>
+                                        </div>
+                                        <div style="font-size: 0.9rem;" th:if="${noti.type == 'Mention'}">
+                                            <strong th:text="${noti.triggeredBy.username}"></strong>
+                                            <span> mentioned you in a reply on </span>
+                                            <strong th:text="${noti.comment.media.title}"></strong>
                                         </div>
                                         <small style="color: #bbb"
                                                th:text="${#temporals.format(noti.createdAt, 'HH:mm dd/MM/yyyy')}"></small>
