@@ -15,264 +15,295 @@
 <!--header-->
 <div th:insert="fragments/navbar :: navbar"></div>
 <div class="container">
-<div class="container-fluid py-3">
+    <div class="container-fluid py-3">
 
-    <div class="row mt-3">
-        <div class="col-md-9">
-            <h5 class="">YOU ARE WATCHING <a class="media-link" th:href="@{'/media/' + ${media.id}}" th:text="${media.title}">Media Title</a>
-                <span th:if="${media.type == 'TV Show'}" th:text="': Episode ' + ${episode} + ' - Season ' + ${season}"></span>
-            </h5>
+        <div class="row mt-3">
+            <div class="col-md-9">
+                <h5 class="">YOU ARE WATCHING <a class="media-link" th:href="@{'/media/' + ${media.id}}"
+                                                 th:text="${media.title}">Media Title</a>
+                    <span th:if="${media.type == 'TV Show'}"
+                          th:text="': Episode ' + ${episode} + ' - Season ' + ${season}"></span>
+                </h5>
 
-            <div class="video-container mb-3 bg-dark">
-                <iframe th:src="${media.type == 'TV Show'} ? ${selectedEpisode?.videoUrl} : ${media.videoUrl}"
-                        frameborder="0" allowfullscreen></iframe>
-            </div>
-            <div class="bg-secondary p-2 rounded">
-                🔥 Watch more quality firm at <a href="/home" class="text-warning">Film Addicted</a>
-            </div>
-
-            <div th:if="${media.type == 'TV Show'}">
-                <div th:each="entry : ${episodesBySeason}" th:class="episode-btn-container">
-                    <div class="mb-3 d-flex align-items-center">
-                        <strong class="me-2">
-                            <i class="bi bi-list"></i> Part <span th:text="${entry.key}">1</span>
-                        </strong>
-                    </div>
-
-                    <a th:each="ep : ${entry.value}"
-                       th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber} + '&season=' + ${ep.season}}"
-                       class="episode-btn me-2"
-                       th:classappend="${ep.episodeNumber == episode and ep.season == season} ? ' active'">
-                        <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
-                    </a>
+                <div class="video-container mb-3 bg-dark">
+                    <iframe th:src="${media.type == 'TV Show'} ? ${selectedEpisode?.videoUrl} : ${media.videoUrl}"
+                            frameborder="0" allowfullscreen></iframe>
                 </div>
-            </div>
-
-            <!-- Comment -->
-            <div class="mt-4">
-                <h5><i class="bi bi-chat-left-text"></i> Comments</h5>
-                <div class="mb-3">
-                    <button class="btn btn-outline-light btn-sm" id="btnComment">Comment</button>
-                    <button class="btn btn-outline-light btn-sm" id="btnRate">Rate</button>
+                <div class="bg-secondary p-2 rounded">
+                    🔥 Watch more quality firm at <a href="/home" class="text-warning">Film Addicted</a>
                 </div>
-                <p th:if="${user == null or user.username == null}" >Please<a href="/login" class="text-warning">Login</a> to leave a comment</p>
 
-                <!--Comment box-->
-                <form id="commentForm" th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment|}" method="post">
-                <textarea id="commentContent" name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
-              placeholder="Write your comment..." required></textarea>
-                    <input th:if="${media.type == 'TV Show'}" type="hidden" id="episodeId" name="episodeId" th:value="${selectedEpisode.id}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div></div>
-                        <div>
-                            <button class="btn send-btn" type="submit">
-                                Send <i class="bi bi-send-fill"></i>
-                            </button>
+                <div th:if="${media.type == 'TV Show'}">
+                    <div th:each="entry : ${episodesBySeason}" th:class="episode-btn-container">
+                        <div class="mb-3 d-flex align-items-center">
+                            <strong class="me-2">
+                                <i class="bi bi-list"></i> Part <span th:text="${entry.key}">1</span>
+                            </strong>
                         </div>
-                    </div>
-                </form>
-                <div id="commentSection">
-                    <div class="comment-box" th:each="c : ${comments}" th:object="${c}">
-                        <img th:src="*{user.avatar}" alt="avatar">
-                        <div>
-                            <div class="comment-parent" th:classappend="*{deleted} ? 'deleted'">
-                            <div class="comment-header">
-                                <strong th:text="*{user.username}">Username</strong>
-                                <span th:if="!*{deleted}" th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
-                            </div>
-                            <div class="comment-content">
-                                <span th:if="*{deleted}">This comment has been deleted</span>
-                                <span th:unless="*{deleted}" th:text="*{content}"></span>
-                            </div>
-                            <div th:if="!*{deleted}" class="comment-actions d-flex align-items-center gap-2">
-                                <!-- Like -->
-                                <div class="like-btn ps-0" th:data-id="*{id}">
-                                    <i class="bi bi-hand-thumbs-up-fill text-warning" th:if="${#lists.contains(c.likedByUsers, user)}"></i>
-                                    <i class="bi bi-hand-thumbs-up" th:unless="${#lists.contains(c.likedByUsers, user)}"></i>
-                                    <span th:text="${#lists.size(c.likedByUsers)}">0</span>
-                                </div>
-                                <!-- Reply toggle -->
-                                <button class="reply-btn reply-toggle" type="button">Reply</button>
-                                <!-- Edit button -->
-                                <button th:if="${c.user == user}" class="reply-btn edit-toggle" type="button">Edit
-                                </button>
-                                <!-- Delete button -->
-                                <a th:href="@{/comment/{commentId}/delete(commentId=${c.id}, fromVideoPage=${fromVideoPage})}"
-                                   th:if="${c.user == user or (user != null and user.role.name() == 'ADMIN')}"
-                                   style="text-decoration:none; color: #ccc;" class="reply-btn">Delete</a>
-                                <span th:if="${c.edited}" class="ms-3">Edited</span>
-                            </div>
-                            </div>
-                            <!-- Reply form -->
-                            <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
-                                  th:action="@{/ep/{episodeId}/comment/{commentId}/reply(episodeId=${selectedEpisode.id}, commentId=${c.id})}"
-                                  method="post">
-                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
-                                <input type="hidden" name="taggedUserId" th:value="${c.user.id}" />
-                                <textarea name="content" class="form-control" style="width: 700px;" rows="2" placeholder="Write a reply..."></textarea>
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
-                                </div>
-                            </form>
-                            <form th:if="${media.type == 'Movie'}" class="reply-form d-none mt-2"
-                                  th:action="@{/media/{mediaId}/comment/{commentId}/reply(mediaId=${media.id}, commentId=${c.id})}"
-                                  method="post">
-                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
-                                <input type="hidden" name="taggedUserId" th:value="${c.user.id}" />
-                                <textarea name="content" class="form-control" style="width: 700px;" rows="2" placeholder="Write a reply..."></textarea>
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
-                                </div>
-                            </form>
-                            <!-- Edit form -->
-                            <form class="edit-form d-none mt-2"
-                                  th:action="@{/comment/{commentId}/edit(commentId=*{id})}"
-                                  method="post">
-                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
-                                <textarea name="content" class="form-control" rows="2" th:text="*{content}"></textarea>
-                                <div class="d-flex justify-content-end gap-2 mt-1">
-                                    <button type="submit" class="btn btn-success btn-sm">Save</button>
-                                </div>
-                            </form>
-                            <!-- Replies list -->
-                            <div class="reply-list mt-3" style="width:600px;">
-                                <div class="comment-box reply-box" th:classappend="*{deleted} ? 'deleted'" th:each="reply : *{replies}" th:object="${reply}">
-                                    <img th:src="*{user.avatar}" alt="avatar">
-                                    <div>
-                                        <div class="comment-header">
-                                            <strong th:text="*{user.username}">Username</strong>
-                                            <span th:if="!*{deleted}" th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
-                                        </div>
-                                        <div class="comment-content">
-                                            <span th:if="*{deleted}">This comment has been deleted</span>
-                                            <span th:if="*{taggedUser != null}">
-                                                <span th:href="@{/user/{id}(id=*{taggedUser.id})}" th:unless="*{deleted}"
-                                                  class="text-primary fw-bold">@<span th:text="*{taggedUser.username}"></span></span>
-                                            </span>
-                                            <span th:unless="*{deleted}" th:text="*{content}"></span>
-                                        </div>
-                                        <div th:if="!*{deleted}" class="comment-actions d-flex align-items-center gap-2">
-                                            <div class="like-btn ps-0" th:data-id="*{id}">
-                                                <i class="bi bi-hand-thumbs-up-fill text-warning" th:if="${#lists.contains(reply.likedByUsers, user)}"></i>
-                                                <i class="bi bi-hand-thumbs-up" th:unless="${#lists.contains(reply.likedByUsers, user)}"></i>
-                                                <span th:text="${#lists.size(reply.likedByUsers)}">0</span>
-                                            </div>
-                                            <button class="reply-btn reply-toggle" type="button">Reply</button>
-                                            <!-- Edit button -->
-                                            <button th:if="${reply.user == user}" class="reply-btn edit-toggle"
-                                                    type="button">Edit
-                                            </button>
-                                            <!-- Delete button -->
-                                            <a th:href="@{/comment/{commentId}/delete(commentId=${reply.id}, fromVideoPage=${fromVideoPage})}"
-                                               th:if="${reply.user == user or (user != null and user.role.name() == 'ADMIN')}"
-                                               style="text-decoration:none; color: #ccc;" class="reply-btn">Delete</a>
-                                            <span th:if="${reply.edited}" class="ms-3">Edited</span>
-                                        </div>
 
-                                        <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
-                                              th:action="@{/ep/{episodeId}/comment/{commentId}/reply(episodeId=${selectedEpisode.id}, commentId=${c.id})}"
-                                              method="post">
-                                            <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
-                                            <input type="hidden" name="taggedUserId" th:value="${reply.user.id}"/>
-                                            <textarea name="content" class="form-control" rows="2" placeholder="Write a reply..." style="width: 480px;"></textarea>
-                                            <div class="d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                        <a th:each="ep : ${entry.value}"
+                           th:href="@{'/mediaVideo/' + ${media.title.replaceAll(' ', '-').toLowerCase()} + '.' + ${media.id} + '?ep=' + ${ep.episodeNumber} + '&season=' + ${ep.season}}"
+                           class="episode-btn me-2"
+                           th:classappend="${ep.episodeNumber == episode and ep.season == season} ? ' active'">
+                            <i class="bi bi-play-fill"></i> Ep <span th:text="${ep.episodeNumber}">1</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Comment -->
+                <div class="mt-4">
+                    <h5><i class="bi bi-chat-left-text"></i> Comments</h5>
+                    <div class="mb-3">
+                        <button class="btn btn-outline-light btn-sm" id="btnComment">Comment</button>
+                        <button class="btn btn-outline-light btn-sm" id="btnRate">Rate</button>
+                    </div>
+                    <p th:if="${user == null or user.username == null}">Please<a href="/login" class="text-warning">Login</a>
+                        to leave a comment</p>
+
+                    <!--Comment box-->
+                    <form id="commentForm"
+                          th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/comment|}"
+                          method="post">
+                <textarea id="commentContent" name="content" class="form-control comment mb-2" rows="3" maxlength="1000"
+                          placeholder="Write your comment..." required></textarea>
+                        <input th:if="${media.type == 'TV Show'}" type="hidden" id="episodeId" name="episodeId"
+                               th:value="${selectedEpisode.id}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div></div>
+                            <div>
+                                <button class="btn send-btn" type="submit">
+                                    Send <i class="bi bi-send-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="commentSection">
+                        <div class="comment-box" th:each="c : ${comments}" th:object="${c}">
+                            <img th:src="*{user.avatar}" alt="avatar">
+                            <div>
+                                <div class="comment-parent" th:classappend="*{deleted} ? 'deleted'">
+                                    <div class="comment-header">
+                                        <strong th:text="*{user.username}">Username</strong>
+                                        <span th:if="!*{deleted}"
+                                              th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                    </div>
+                                    <div class="comment-content">
+                                        <span th:if="*{deleted}">This comment has been deleted</span>
+                                        <span th:unless="*{deleted}" th:text="*{content}"></span>
+                                    </div>
+                                    <div th:if="!*{deleted}" class="comment-actions d-flex align-items-center gap-2">
+                                        <!-- Like -->
+                                        <div class="like-btn ps-0" th:data-id="*{id}">
+                                            <i class="bi bi-hand-thumbs-up-fill text-warning"
+                                               th:if="${#lists.contains(c.likedByUsers, user)}"></i>
+                                            <i class="bi bi-hand-thumbs-up"
+                                               th:unless="${#lists.contains(c.likedByUsers, user)}"></i>
+                                            <span th:text="${#lists.size(c.likedByUsers)}">0</span>
+                                        </div>
+                                        <!-- Reply toggle -->
+                                        <button class="reply-btn reply-toggle" type="button">Reply</button>
+                                        <!-- Edit button -->
+                                        <button th:if="${c.user == user}" class="reply-btn edit-toggle" type="button">
+                                            Edit
+                                        </button>
+                                        <!-- Delete button -->
+                                        <a th:href="@{/comment/{commentId}/delete(commentId=${c.id}, fromVideoPage=${fromVideoPage})}"
+                                           th:if="${c.user == user or (user != null and user.role.name() == 'ADMIN')}"
+                                           style="text-decoration:none; color: #ccc;" class="reply-btn">Delete</a>
+                                        <span th:if="${c.edited}" class="ms-3">Edited</span>
+                                    </div>
+                                </div>
+                                <!-- Reply form -->
+                                <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
+                                      th:action="@{/ep/{episodeId}/comment/{commentId}/reply(episodeId=${selectedEpisode.id}, commentId=${c.id})}"
+                                      method="post">
+                                    <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}"/>
+                                    <input type="hidden" name="taggedUserId" th:value="${c.user.id}"/>
+                                    <textarea name="content" class="form-control" style="width: 700px;" rows="2"
+                                              placeholder="Write a reply..."></textarea>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                    </div>
+                                </form>
+                                <form th:if="${media.type == 'Movie'}" class="reply-form d-none mt-2"
+                                      th:action="@{/media/{mediaId}/comment/{commentId}/reply(mediaId=${media.id}, commentId=${c.id})}"
+                                      method="post">
+                                    <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}"/>
+                                    <input type="hidden" name="taggedUserId" th:value="${c.user.id}"/>
+                                    <textarea name="content" class="form-control" style="width: 700px;" rows="2"
+                                              placeholder="Write a reply..."></textarea>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                    </div>
+                                </form>
+                                <!-- Edit form -->
+                                <form class="edit-form d-none mt-2"
+                                      th:action="@{/comment/{commentId}/edit(commentId=*{id})}"
+                                      method="post">
+                                    <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}"/>
+                                    <textarea name="content" class="form-control" rows="2"
+                                              th:text="*{content}"></textarea>
+                                    <div class="d-flex justify-content-end gap-2 mt-1">
+                                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                    </div>
+                                </form>
+                                <!-- Replies list -->
+                                <div class="reply-list mt-3" style="width:600px;">
+                                    <div class="comment-box reply-box" th:classappend="*{deleted} ? 'deleted'"
+                                         th:each="reply : *{replies}" th:object="${reply}">
+                                        <img th:src="*{user.avatar}" alt="avatar">
+                                        <div>
+                                            <div class="comment-header">
+                                                <strong th:text="*{user.username}">Username</strong>
+                                                <span th:if="!*{deleted}"
+                                                      th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
                                             </div>
-                                        </form>
-                                        <form th:if="${media.type == 'Movie'}" class="reply-form d-none mt-2"
-                                              th:action="@{/media/{mediaId}/comment/{commentId}/reply(mediaId=${media.id}, commentId=${c.id})}"
-                                              method="post">
-                                            <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
-                                            <input type="hidden" name="taggedUserId" th:value="${reply.user.id}"/>
-                                            <textarea name="content" class="form-control" rows="2" placeholder="Write a reply..." style="width: 480px;"></textarea>
-                                            <div class="d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                            <div class="comment-content">
+                                                <span th:if="*{deleted}">This comment has been deleted</span>
+                                                <span th:if="*{taggedUser != null}">
+                                                <span th:href="@{/user/{id}(id=*{taggedUser.id})}"
+                                                      th:unless="*{deleted}"
+                                                      class="text-primary fw-bold">@<span
+                                                        th:text="*{taggedUser.username}"></span></span>
+                                            </span>
+                                                <span th:unless="*{deleted}" th:text="*{content}"></span>
                                             </div>
-                                        </form>
-                                        <form class="edit-form d-none mt-2"
-                                              th:action="@{/comment/{commentId}/edit(commentId=${reply.id})}"
-                                              method="post">
-                                            <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
-                                        <textarea style="min-width: 750px;" name="content" class="form-control" rows="2"
-                                                  th:text="*{content}"></textarea>
-                                            <div class="d-flex justify-content-end gap-2 mt-1">
-                                                <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                            <div th:if="!*{deleted}"
+                                                 class="comment-actions d-flex align-items-center gap-2">
+                                                <div class="like-btn ps-0" th:data-id="*{id}">
+                                                    <i class="bi bi-hand-thumbs-up-fill text-warning"
+                                                       th:if="${#lists.contains(reply.likedByUsers, user)}"></i>
+                                                    <i class="bi bi-hand-thumbs-up"
+                                                       th:unless="${#lists.contains(reply.likedByUsers, user)}"></i>
+                                                    <span th:text="${#lists.size(reply.likedByUsers)}">0</span>
+                                                </div>
+                                                <button class="reply-btn reply-toggle" type="button">Reply</button>
+                                                <!-- Edit button -->
+                                                <button th:if="${reply.user == user}" class="reply-btn edit-toggle"
+                                                        type="button">Edit
+                                                </button>
+                                                <!-- Delete button -->
+                                                <a th:href="@{/comment/{commentId}/delete(commentId=${reply.id}, fromVideoPage=${fromVideoPage})}"
+                                                   th:if="${reply.user == user or (user != null and user.role.name() == 'ADMIN')}"
+                                                   style="text-decoration:none; color: #ccc;"
+                                                   class="reply-btn">Delete</a>
+                                                <span th:if="${reply.edited}" class="ms-3">Edited</span>
                                             </div>
-                                        </form>
+
+                                            <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
+                                                  th:action="@{/ep/{episodeId}/comment/{commentId}/reply(episodeId=${selectedEpisode.id}, commentId=${c.id})}"
+                                                  method="post">
+                                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}"/>
+                                                <input type="hidden" name="taggedUserId" th:value="${reply.user.id}"/>
+                                                <textarea name="content" class="form-control" rows="2"
+                                                          placeholder="Write a reply..."
+                                                          style="width: 480px;"></textarea>
+                                                <div class="d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-warning btn-sm mt-1">Send
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            <form th:if="${media.type == 'Movie'}" class="reply-form d-none mt-2"
+                                                  th:action="@{/media/{mediaId}/comment/{commentId}/reply(mediaId=${media.id}, commentId=${c.id})}"
+                                                  method="post">
+                                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}"/>
+                                                <input type="hidden" name="taggedUserId" th:value="${reply.user.id}"/>
+                                                <textarea name="content" class="form-control" rows="2"
+                                                          placeholder="Write a reply..."
+                                                          style="width: 480px;"></textarea>
+                                                <div class="d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-warning btn-sm mt-1">Send
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            <form class="edit-form d-none mt-2"
+                                                  th:action="@{/comment/{commentId}/edit(commentId=${reply.id})}"
+                                                  method="post">
+                                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}"/>
+                                                <textarea style="min-width: 750px;" name="content" class="form-control"
+                                                          rows="2"
+                                                          th:text="*{content}"></textarea>
+                                                <div class="d-flex justify-content-end gap-2 mt-1">
+                                                    <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="pagination" id="pagination">
-                    <a th:if="${currentPage > 0}"
-                       th:href="@{|/mediaVideo/${media.title}.${media.id}?ep=${episode}&page=${currentPage - 1}|}">Previous</a>
+                    <div class="pagination" id="pagination">
+                        <a th:if="${currentPage > 0}"
+                           th:href="@{|/mediaVideo/${media.title}.${media.id}?ep=${episode}&page=${currentPage - 1}|}">Previous</a>
 
-                    <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
+                        <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
 
-                    <a th:if="${currentPage + 1 < totalPages}"
-                       th:href="@{|/mediaVideo/${media.title}.${media.id}?ep=${episode}&page=${currentPage + 1}|}">Next</a>
-                </div>
-                <!-- Rating Form -->
-                <form id="ratingForm"
-                      th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/rate${media.type == 'TV Show' ? ('?ep=' + episode) : ''}|}"
-                      method="post" style="display: none;">
-
-                    <div class="mb-2">
-                        <label for="ratingValue" class="form-label">Your Rating</label>
-                        <select id="ratingValue" name="rating" class="form-select" required>
-                            <option value="" disabled selected>Select a rating</option>
-                            <option th:each="i : ${#numbers.sequence(1,5)}"
-                                    th:value="${i}" th:text="${i} + ' ★'">1</option>
-                        </select>
+                        <a th:if="${currentPage + 1 < totalPages}"
+                           th:href="@{|/mediaVideo/${media.title}.${media.id}?ep=${episode}&page=${currentPage + 1}|}">Next</a>
                     </div>
+                    <!-- Rating Form -->
+                    <form id="ratingForm"
+                          th:action="@{|/mediaVideo/${media.title.replaceAll(' ', '-').toLowerCase()}.${media.id}/rate${media.type == 'TV Show' ? ('?ep=' + episode) : ''}|}"
+                          method="post" style="display: none;">
 
-                    <textarea id="ratingContent" name="content" class="form-control mb-2" rows="3"
-                              maxlength="1000" placeholder="Write your review..." required></textarea>
+                        <div class="mb-2">
+                            <label for="ratingValue" class="form-label">Your Rating</label>
+                            <select id="ratingValue" name="rating" class="form-select" required>
+                                <option value="" disabled selected>Select a rating</option>
+                                <option th:each="i : ${#numbers.sequence(1,5)}"
+                                        th:value="${i}" th:text="${i} + ' ★'">1
+                                </option>
+                            </select>
+                        </div>
 
-                    <input th:if="${media.type == 'TV Show'}" type="hidden" name="episodeId" th:value="${selectedEpisode.id}">
+                        <textarea id="ratingContent" name="content" class="form-control mb-2" rows="3"
+                                  maxlength="1000" placeholder="Write your review..." required></textarea>
 
-                    <button type="submit" class="btn btn-warning">Submit Rating</button>
-                </form>
+                        <input th:if="${media.type == 'TV Show'}" type="hidden" name="episodeId"
+                               th:value="${selectedEpisode.id}">
+
+                        <button type="submit" class="btn btn-warning">Submit Rating</button>
+                    </form>
 
 
-                <div id="reviewSection" style="display: none;">
-                    <div class="comment-box" th:each="r : ${reviews}" th:object="${r}">
-                        <img th:src="*{user.avatar}" alt="avatar">
-                        <div>
-                            <div class="comment-header">
-                                <strong th:text="*{user.username}">Username</strong>
-                                <span th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
-                                <span class="text-warning" style="margin-left: 10px;">
+                    <div id="reviewSection" style="display: none;">
+                        <div class="comment-box" th:each="r : ${reviews}" th:object="${r}">
+                            <img th:src="*{user.avatar}" alt="avatar">
+                            <div>
+                                <div class="comment-header">
+                                    <strong th:text="*{user.username}">Username</strong>
+                                    <span th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                    <span class="text-warning" style="margin-left: 10px;">
                     ★ <span th:text="*{rating}">5</span>/5
                 </span>
+                                </div>
+                                <div class="comment-content" th:text="*{content}">Review content</div>
                             </div>
-                            <div class="comment-content" th:text="*{content}">Review content</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3 sidebar">
-            <h6 class="text-warning">⭐ RECOMMEND FOR YOU</h6>
-            <ul class="list-group">
-                <li th:each="media, iterStat : ${mediaList}"
-                    th:if="${iterStat.index < 12}"
-                    class="list-group-item d-flex align-items-center">
-                    <a th:href="@{|/media/${media.id}}"
-                       class="media-card d-flex align-items-center mb-3 p-2 rounded shadow-sm text-decoration-none text-light">
-                        <img th:src="${media.poster}" class="media-thumb me-3 rounded" th:alt="${media.title + ' thumbnail'}">
-                        <div class="media-info flex-grow-1">
-                            <h6 class="mb-1" th:text="${media.title}">Media Title</h6>
-                            <small class="text-warning fw-bold" th:text="${media.releaseYear}">2025</small>
-                        </div>
-                    </a>
-                </li>
-            </ul>
+            <div class="col-md-3 sidebar">
+                <h6 class="text-warning">⭐ RECOMMEND FOR YOU</h6>
+                <ul class="list-group">
+                    <li th:each="media, iterStat : ${mediaList}"
+                        th:if="${iterStat.index < 12}"
+                        class="list-group-item d-flex align-items-center">
+                        <a th:href="@{|/media/${media.id}}"
+                           class="media-card d-flex align-items-center mb-3 p-2 rounded shadow-sm text-decoration-none text-light">
+                            <img th:src="${media.poster}" class="media-thumb me-3 rounded"
+                                 th:alt="${media.title + ' thumbnail'}">
+                            <div class="media-info flex-grow-1">
+                                <h6 class="mb-1" th:text="${media.title}">Media Title</h6>
+                                <small class="text-warning fw-bold" th:text="${media.releaseYear}">2025</small>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 <script>

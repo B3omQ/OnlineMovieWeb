@@ -214,7 +214,10 @@ public class MediaProfileController {
 
         int rating = Integer.parseInt(payload.get("rating"));
         String content = payload.get("content");
-
+        List<Review> reviews = reviewRepo.findByUser(user);
+        if(reviews != null && !reviews.isEmpty()) {
+            reviewRepo.delete(reviews.get(0));
+        }
         Review review = new Review();
         review.setUser(user);
         review.setMedia(media);
