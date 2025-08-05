@@ -47,7 +47,7 @@ public class NotifyController {
                     Long mediaId = episode.getMedia().getId();
                     int episodeNumber = episode.getEpisodeNumber();
 
-                    return "redirect:/mediaVideo/" + mediaTitle + "." + mediaId + "?ep=" + episodeNumber;
+                    return "redirect:/mediaVideo/" + mediaTitle + "." + mediaId + "?ep=" + episodeNumber + "&season=" + episode.getSeason();
                 }
             }
             else if(notification.getType().equals("Mention")) {

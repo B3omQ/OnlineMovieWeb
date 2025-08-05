@@ -120,4 +120,26 @@ public class CommentController {
                 + "?ep=" + episode.getEpisodeNumber()
                 + "&season=" + episode.getSeason();
     }
+
+    @PostMapping("/media/{mediaId}/comment/{commentId}/edit")
+    public String editComment(@PathVariable Long mediaId,
+                              @PathVariable Long commentId,
+                              @RequestParam String content,
+                              HttpSession session, Model model) {
+        Comment comment = commentRepo.findById(commentId).get();
+        comment.setContent(content);
+        comment.setEdited(true);
+        commentRepo.save(comment);
+        return "redirect:/media/" + mediaId;
+    }
+
+    @GetMapping("/media/{mediaId}/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable Long mediaId,
+                              @PathVariable Long commentId,
+                              HttpSession session, Model model) {
+        Comment comment = commentRepo.findById(commentId).get();
+        comment.setDeleted(true);
+        commentRepo.save(comment);
+        return "redirect:/media/" + mediaId;
+    }
 }

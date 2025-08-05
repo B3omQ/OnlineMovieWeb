@@ -121,17 +121,24 @@
                            class="d-flex text-decoration-none text-white w-100 me-2">
 
                             <!-- Poster -->
-                            <img th:src="@{${noti.episode != null && noti.episode.media != null ? noti.episode.media.poster : '/assets/placeholder.jpg'}}"
+                            <img th:if="${noti.type != 'Mention'}"
+                                 th:src="@{${noti.episode != null && noti.episode.media != null ? noti.episode.media.poster : '/assets/placeholder.jpg'}}"
                                  alt="Poster"
                                  class="rounded me-3"
                                  style="width: 45px; height: 65px; object-fit: cover;"/>
+                            <!-- Avatar -->
+                            <img th:if="${noti.type == 'Mention'}"
+                                 th:src="@{${noti.triggeredBy.avatar != null ? noti.triggeredBy.avatar : '/assets/default-avatar.jpg'}}"
+                                 alt="User Avatar"
+                                 class="rounded-circle me-3"
+                                 style="width: 45px; height: 45px; object-fit: cover;"/>
 
                             <!-- Text -->
                             <div style="font-size: 0.875rem; max-width: 250px;">
                                 <span style="display: block; white-space: normal; word-break: break-word;" th:if="${noti.type == 'Episode'}">
                                     <strong th:text="${noti.episode.media.title}"></strong>
                                     <span> has been released new episode : </span>
-                                    <strong th:text="'Episode ' + ${noti.episode.episodeNumber}"></strong>
+                                    <strong th:text="'Episode ' + ${noti.episode.episodeNumber} + ' - Season ' + ${noti.episode.season}"></strong>
                                 </span>
                                 <span style="display: block; white-space: normal; word-break: break-word;" th:if="${noti.type == 'Mention'}">
                                     <strong th:text="${noti.triggeredBy.username}"></strong>

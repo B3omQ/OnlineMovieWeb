@@ -331,4 +331,11 @@ a.badge:hover {
   padding: 0;
   margin-top: 0.5rem;
 }
-
+.comment-parent.deleted .comment-content {
+    font-style: italic;
+    color: #aaa !important;
+}
+.reply-box.deleted .comment-content {
+    font-style: italic;
+    color: #aaa !important;
+}
