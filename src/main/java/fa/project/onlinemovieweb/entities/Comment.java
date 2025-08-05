@@ -106,5 +106,25 @@ public class Comment {
         this.taggedUser = taggedUser;
     }
 
+    private boolean deleted = false;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    private boolean edited = false;
+
+
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
 }
 
