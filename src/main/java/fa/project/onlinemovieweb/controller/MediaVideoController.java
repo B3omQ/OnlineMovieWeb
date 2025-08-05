@@ -51,7 +51,8 @@ public class MediaVideoController {
 
         Media media = mediaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+        media.setViews(media.getViews() + 1);
+        mediaRepo.save(media);
         List<Episode> episodes = new ArrayList<>();
         Episode selectedEpisode = null;
         int season = 1;

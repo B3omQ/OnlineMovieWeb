@@ -1,4 +1,5 @@
 package fa.project.onlinemovieweb.controller;
+
 import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.*;
 import jakarta.servlet.http.HttpSession;
@@ -87,10 +88,10 @@ public class CommentController {
 
     @PostMapping("/ep/{episodeId}/comment/{parentId}/reply")
     public String replyToComment_Episode(@PathVariable Long episodeId,
-                                 @PathVariable Long parentId,
-                                 @RequestParam String content,
-                                 @RequestParam Long taggedUserId,
-                                 HttpSession session, Model model) {
+                                         @PathVariable Long parentId,
+                                         @RequestParam String content,
+                                         @RequestParam Long taggedUserId,
+                                         HttpSession session, Model model) {
         Comment parent = commentRepo.findById(parentId).get();
         Episode episode = episodeRepo.findById(episodeId).get();
         Media media = episode.getMedia();
@@ -121,25 +122,43 @@ public class CommentController {
                 + "&season=" + episode.getSeason();
     }
 
-    @PostMapping("/media/{mediaId}/comment/{commentId}/edit")
-    public String editComment(@PathVariable Long mediaId,
-                              @PathVariable Long commentId,
+    @PostMapping("/comment/{commentId}/edit")
+    public String editComment(@PathVariable Long commentId,
+                              @RequestParam(required = false) String fromVideoPage,
                               @RequestParam String content,
                               HttpSession session, Model model) {
         Comment comment = commentRepo.findById(commentId).get();
         comment.setContent(content);
         comment.setEdited(true);
         commentRepo.save(comment);
-        return "redirect:/media/" + mediaId;
+        Media media = comment.getMedia();
+        if ("true".equalsIgnoreCase(fromVideoPage)) {
+            String slug = media.getTitle().toLowerCase().replaceAll(" ", "-");
+            return "redirect:/mediaVideo/" + slug + "." + media.getId() +
+                    (comment.getEpisode() != null
+                            ? "?ep=" + comment.getEpisode().getEpisodeNumber() + "&season=" + comment.getEpisode().getSeason()
+                            : "?ep=1");
+        } else {
+            return "redirect:/media/" + media.getId();
+        }
     }
 
-    @GetMapping("/media/{mediaId}/comment/{commentId}/delete")
-    public String deleteComment(@PathVariable Long mediaId,
-                              @PathVariable Long commentId,
-                              HttpSession session, Model model) {
+    @GetMapping("/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable Long commentId,
+                                @RequestParam(required = false) String fromVideoPage,
+                                HttpSession session, Model model) {
         Comment comment = commentRepo.findById(commentId).get();
         comment.setDeleted(true);
         commentRepo.save(comment);
-        return "redirect:/media/" + mediaId;
+        Media media = comment.getMedia();
+        if ("true".equalsIgnoreCase(fromVideoPage)) {
+            String slug = media.getTitle().toLowerCase().replaceAll(" ", "-");
+            return "redirect:/mediaVideo/" + slug + "." + media.getId() +
+                    (comment.getEpisode() != null
+                            ? "?ep=" + comment.getEpisode().getEpisodeNumber() + "&season=" + comment.getEpisode().getSeason()
+                            : "?ep=1");
+        } else {
+            return "redirect:/media/" + media.getId();
+        }
     }
 }

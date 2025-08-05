@@ -214,7 +214,6 @@ public class MediaProfileController {
 
         int rating = Integer.parseInt(payload.get("rating"));
         String content = payload.get("content");
-
         Review review = new Review();
         review.setUser(user);
         review.setMedia(media);
