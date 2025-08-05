@@ -75,12 +75,16 @@
                     <div class="comment-box" th:each="c : ${comments}" th:object="${c}">
                         <img th:src="*{user.avatar}" alt="avatar">
                         <div>
+                            <div class="comment-parent" th:classappend="*{deleted} ? 'deleted'">
                             <div class="comment-header">
                                 <strong th:text="*{user.username}">Username</strong>
-                                <span th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                <span th:if="!*{deleted}" th:text="${#temporals.format(c.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
                             </div>
-                            <div class="comment-content" th:text="*{content}">Comment here</div>
-                            <div class="comment-actions d-flex align-items-center gap-2">
+                            <div class="comment-content">
+                                <span th:if="*{deleted}">This comment has been deleted</span>
+                                <span th:unless="*{deleted}" th:text="*{content}"></span>
+                            </div>
+                            <div th:if="!*{deleted}" class="comment-actions d-flex align-items-center gap-2">
                                 <!-- Like -->
                                 <div class="like-btn ps-0" th:data-id="*{id}">
                                     <i class="bi bi-hand-thumbs-up-fill text-warning" th:if="${#lists.contains(c.likedByUsers, user)}"></i>
@@ -89,6 +93,15 @@
                                 </div>
                                 <!-- Reply toggle -->
                                 <button class="reply-btn reply-toggle" type="button">Reply</button>
+                                <!-- Edit button -->
+                                <button th:if="${c.user == user}" class="reply-btn edit-toggle" type="button">Edit
+                                </button>
+                                <!-- Delete button -->
+                                <a th:href="@{/comment/{commentId}/delete(commentId=${c.id}, fromVideoPage=${fromVideoPage})}"
+                                   th:if="${c.user == user or (user != null and user.role.name() == 'ADMIN')}"
+                                   style="text-decoration:none; color: #ccc;" class="reply-btn">Delete</a>
+                                <span th:if="${c.edited}" class="ms-3">Edited</span>
+                            </div>
                             </div>
                             <!-- Reply form -->
                             <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
@@ -111,29 +124,49 @@
                                     <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
                                 </div>
                             </form>
+                            <!-- Edit form -->
+                            <form class="edit-form d-none mt-2"
+                                  th:action="@{/comment/{commentId}/edit(commentId=*{id})}"
+                                  method="post">
+                                <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
+                                <textarea name="content" class="form-control" rows="2" th:text="*{content}"></textarea>
+                                <div class="d-flex justify-content-end gap-2 mt-1">
+                                    <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                </div>
+                            </form>
                             <!-- Replies list -->
                             <div class="reply-list mt-3" style="width:600px;">
-                                <div class="comment-box reply-box" th:each="reply : *{replies}" th:object="${reply}">
+                                <div class="comment-box reply-box" th:classappend="*{deleted} ? 'deleted'" th:each="reply : *{replies}" th:object="${reply}">
                                     <img th:src="*{user.avatar}" alt="avatar">
                                     <div>
                                         <div class="comment-header">
                                             <strong th:text="*{user.username}">Username</strong>
-                                            <span th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                            <span th:if="!*{deleted}" th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
                                         </div>
                                         <div class="comment-content">
+                                            <span th:if="*{deleted}">This comment has been deleted</span>
                                             <span th:if="*{taggedUser != null}">
-                                                <span th:href="@{/user/{id}(id=*{taggedUser.id})}"
+                                                <span th:href="@{/user/{id}(id=*{taggedUser.id})}" th:unless="*{deleted}"
                                                   class="text-primary fw-bold">@<span th:text="*{taggedUser.username}"></span></span>
                                             </span>
-                                            <span th:text="*{content}"></span>
+                                            <span th:unless="*{deleted}" th:text="*{content}"></span>
                                         </div>
-                                        <div class="comment-actions d-flex align-items-center gap-2">
+                                        <div th:if="!*{deleted}" class="comment-actions d-flex align-items-center gap-2">
                                             <div class="like-btn ps-0" th:data-id="*{id}">
                                                 <i class="bi bi-hand-thumbs-up-fill text-warning" th:if="${#lists.contains(reply.likedByUsers, user)}"></i>
                                                 <i class="bi bi-hand-thumbs-up" th:unless="${#lists.contains(reply.likedByUsers, user)}"></i>
                                                 <span th:text="${#lists.size(reply.likedByUsers)}">0</span>
                                             </div>
                                             <button class="reply-btn reply-toggle" type="button">Reply</button>
+                                            <!-- Edit button -->
+                                            <button th:if="${reply.user == user}" class="reply-btn edit-toggle"
+                                                    type="button">Edit
+                                            </button>
+                                            <!-- Delete button -->
+                                            <a th:href="@{/comment/{commentId}/delete(commentId=${reply.id}, fromVideoPage=${fromVideoPage})}"
+                                               th:if="${reply.user == user or (user != null and user.role.name() == 'ADMIN')}"
+                                               style="text-decoration:none; color: #ccc;" class="reply-btn">Delete</a>
+                                            <span th:if="${reply.edited}" class="ms-3">Edited</span>
                                         </div>
 
                                         <form th:if="${media.type == 'TV Show'}" class="reply-form d-none mt-2"
@@ -154,6 +187,16 @@
                                             <textarea name="content" class="form-control" rows="2" placeholder="Write a reply..." style="width: 480px;"></textarea>
                                             <div class="d-flex justify-content-end">
                                                 <button type="submit" class="btn btn-warning btn-sm mt-1">Send</button>
+                                            </div>
+                                        </form>
+                                        <form class="edit-form d-none mt-2"
+                                              th:action="@{/comment/{commentId}/edit(commentId=${reply.id})}"
+                                              method="post">
+                                            <input type="hidden" name="fromVideoPage" th:value="${fromVideoPage}" />
+                                        <textarea style="min-width: 750px;" name="content" class="form-control" rows="2"
+                                                  th:text="*{content}"></textarea>
+                                            <div class="d-flex justify-content-end gap-2 mt-1">
+                                                <button type="submit" class="btn btn-success btn-sm">Save</button>
                                             </div>
                                         </form>
                                     </div>
@@ -382,6 +425,14 @@
             btn.addEventListener("click", function () {
             const parent = this.closest(".comment-box");
             const form = parent.querySelector(".reply-form");
+            if (form) form.classList.toggle("d-none");
+            });
+        });
+        // Toggle edit form
+        document.querySelectorAll(".edit-toggle").forEach(btn => {
+            btn.addEventListener("click", function () {
+            const parent = this.closest(".comment-box");
+            const form = parent.querySelector(".edit-form");
             if (form) form.classList.toggle("d-none");
             });
         });
