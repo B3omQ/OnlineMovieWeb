@@ -27,9 +27,10 @@ public class NotifyController {
             return "redirect:/login";
         }
         model.addAttribute("user", user);
-        List<Notification> notifications = notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user);
+        List<Notification> notifications = notificationRepo.findAllByUserOrderByCreatedAtDesc(user);
         long unreadCount = notificationRepo.countByUserAndReadFalse(user);
-        model.addAttribute("notifications", notifications);
+        model.addAttribute("notifications", notificationRepo.findTop5ByUserOrderByCreatedAtDesc(user));
+        model.addAttribute("notification_page", notifications);
         model.addAttribute("unreadCount", unreadCount);
         return "notify";
     }
