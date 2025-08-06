@@ -34,6 +34,9 @@ public class AdminController {
     private GenreRepo genreRepo;
 
     @Autowired
+    private CommentRepo commentRepo;
+
+    @Autowired
     private NotificationRepo notificationRepo;
 
     @GetMapping({"/admin", "/admin/"})
@@ -174,6 +177,12 @@ public class AdminController {
     @GetMapping("/admin/users/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         User u = userRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        //Handle unsupported cross-referenced hibernation
+        notificationRepo.clearTriggeredByUser(id);
+        commentRepo.clearLikesForUser(id);
+        commentRepo.clearTaggedUser(id);
+        commentRepo.clearUserFromComments(id);
+
         userRepo.delete(u);
         return "redirect:/admin/users";
     }

@@ -70,6 +70,13 @@ public class Comment {
     )
     private Set<User> likedByUsers = new HashSet<>();
 
+    public void addLikedByUser(User user){
+        likedByUsers.add(user);
+    }
+    public void removeLikedByUser(User user){
+        likedByUsers.remove(user);
+    }
+
     public Comment getParent() {
         return parent;
     }
