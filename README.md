@@ -19,21 +19,22 @@ Online Movie Website is a Spring Boot-based web application that allows users to
 
 ## Getting Started
 
-Steps
-1. Clone the reposetory:
+### Step 1: Clone the reposetory:
 ```sh
 git clone https://github.com/B3omQ/OnlineMovieWeb.git
 ```
-2. Create database in your sql server or mySQL(Recommend sql server)
+### Step 2: Create database in your sql server or mySQL(Recommend sql server)
 ```sh
 CREATE DATABASE MovieWebsite
 ```
-3. You can run example data query in data packet.
+### Step 3: Run example data query in data packet.
 ```sh
 OnlineMovieWeb\data\data_Test_Query1.sql
 ```
-4. Read `example-application.properties` to modify it to work on your device.
-5. After modify, change the name `example-application.properties`, into `application.properties` and it all done.
+### Step 4: Read `example-application.properties` to modify.
+Modify `example-application.properties` to work on your device.
+### Step 5: Change example-application.properties name
+Change the name `example-application.properties`, into `application.properties` and it all done.
 
 
 ## How to Get Google OAuth2 Credentials
@@ -88,11 +89,41 @@ To send emails from your Gmail account using Spring Boot, follow these steps:
 
 > Use this password in your `application.properties` as the value of `spring.mail.password`
 
----
+## Create admin account to create and update media
+### Step 1: Create new account
+Register a new account from the register site
+```sh
+http://localhost:8080/register
+```
+### Step 2: Enter Controller Admin site
+Login using account that registerd and enter url
+```sh
+http://localhost:8080/admin/users
+```
+and update account from user to admin
+### Step 3: Enable filter
+Enter file in the path:
+```sh
+src/main/java/fa/project/onlinemovieweb/config/WebConfig.java
+```
+and uncomment the filter line to enable it
+```sh
+//    @Autowired
+//    private AdminInterceptor adminInterceptor;
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry){
+//        registry
+//                .addInterceptor(adminInterceptor)
+//                .addPathPatterns("/admin/**");
+//    }
+    //End highlight
+```
 
+---
 ## Summary of What You Need
 
 - `spring.security.oauth2.client.registration.google.client-id` → From Google Console
 - `spring.security.oauth2.client.registration.google.client-secret` → From Google Console
 - `spring.mail.username` → Your Gmail address
 - `spring.mail.password` → Gmail App Password (not your real Gmail password!)
+- `config/WebConfig.java` → enable filter admin and user
