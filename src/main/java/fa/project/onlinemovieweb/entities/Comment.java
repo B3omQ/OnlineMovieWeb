@@ -126,5 +126,7 @@ public class Comment {
     public void setEdited(boolean edited) {
         this.edited = edited;
     }
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 }
 
