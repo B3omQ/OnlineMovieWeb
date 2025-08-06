@@ -317,6 +317,10 @@
                                   th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
                         </div>
                     </div>
+                    <div th:if="${r.episode != null}" class="comment-episode mb-1">
+                        Episode <span th:text="${r.episode.episodeNumber}">1</span> - Season <span
+                            th:text="${r.episode.season}">1</span>
+                    </div>
                     <div class="mb-2">
             <span th:each="i : ${#numbers.sequence(1, r.rating)}">
                 <i class="bi bi-star-fill text-warning"></i>
@@ -462,15 +466,12 @@
                     body: formData
                 });
 
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        alert("Please login to comment.");
-                    } else {
-                        alert("Server error");
-                    }
+                if (response.status === 401) {
+                    alert("You must be logged in to comment.");
                     return;
+                } else if (!response.ok) {
+                    throw new Error("Server error");
                 }
-
                 const newCommentHtml = await response.text();
 
                 const commentSection = document.getElementById("commentSection");

@@ -17,6 +17,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 
     long countByUserAndReadFalse(User user);
 
+
     @Modifying
     @Transactional
     @Query("update Notification n set n.triggeredBy = null where n.triggeredBy.id = :userId")
@@ -26,5 +27,8 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
     @Transactional
     @Query("delete from Notification n where n.comment.id in (select c.id from Comment c where c.user.id = :userId)")
     void deleteNotificationsForUserComments(@Param("userId") Long userId);
+
+    List<Notification> findAllByUserOrderByCreatedAtDesc(User user);
+
 }
 

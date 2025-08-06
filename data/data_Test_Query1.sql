@@ -139,6 +139,3 @@ INSERT INTO Media_Genre (media_id, genre_id) VALUES (40, 36), (40, 30);
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (41, 6), (41, 38)
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (42, 8), (42, 13)
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (43, 23), (43, 1)
-
-
-
