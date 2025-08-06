@@ -57,6 +57,9 @@ public class CommentController {
         Comment parent = commentRepo.findById(parentId).get();
         Media media = mediaRepo.findById(mediaId).get();
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
         User taggedUser = userRepo.findById(taggedUserId).get();
         Comment reply = new Comment();
         reply.setContent(content);
@@ -96,6 +99,9 @@ public class CommentController {
         Episode episode = episodeRepo.findById(episodeId).get();
         Media media = episode.getMedia();
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
         User taggedUser = userRepo.findById(taggedUserId).get();
         Comment reply = new Comment();
         reply.setContent(content);

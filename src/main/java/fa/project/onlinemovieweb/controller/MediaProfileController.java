@@ -132,7 +132,7 @@ public class MediaProfileController {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
-            return "redirect:/login";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
         }
 
         Media media = mediaRepo.findById(id)
