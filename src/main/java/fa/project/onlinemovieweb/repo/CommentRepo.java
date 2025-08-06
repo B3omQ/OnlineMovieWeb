@@ -33,9 +33,4 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
     @Transactional
     @Query(value = "update Comment c set c.taggedUser = null WHERE c.taggedUser.id = :userId")
     void clearTaggedUser(@Param("userId") Long userId);
-
-    @Modifying
-    @Transactional
-    @Query(value = "delete from Comment c WHERE c.user.id = :userId")
-    void clearUserFromComments(@Param("userId") Long userId);
 }
