@@ -36,10 +36,10 @@ public class CommentController {
 
         boolean liked;
         if (comment.getLikedByUsers().contains(user)) {
-            comment.getLikedByUsers().remove(user);
+            comment.removeLikedByUser(user);
             liked = false;
         } else {
-            comment.getLikedByUsers().add(user);
+            comment.addLikedByUser(user);
             liked = true;
         }
         commentRepo.save(comment);

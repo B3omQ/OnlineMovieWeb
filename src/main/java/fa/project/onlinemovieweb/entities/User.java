@@ -2,8 +2,7 @@ package fa.project.onlinemovieweb.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -37,9 +36,6 @@ public class User {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<WatchHistory> watchHistories;
-
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<Notification> notifications;
 
 	public Long getId() {
 		return id;
@@ -174,12 +170,33 @@ public class User {
 		this.comments = comments;
 	}
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Notification> notifications;
+
 	public List<Notification> getNotifications() {
 		return notifications;
 	}
 
 	public void setNotifications(List<Notification> notifications) {
 		this.notifications = notifications;
+	}
+
+	@OneToMany(mappedBy = "triggeredBy", cascade = CascadeType.ALL)
+	private List<Notification> triggeredNotifications;
+
+	public List<Notification> getTriggeredNotifications(){
+		return triggeredNotifications;
+	}
+
+	public void setTriggeredNotifications(List<Notification> triggeredNotifications){
+		this.triggeredNotifications = triggeredNotifications;
+	}
+
+	@ManyToMany(mappedBy = "likedByUsers")
+	private Set<Comment> likedComments = new HashSet<>();
+
+	public Set<Comment> getLikedComments(){
+		return likedComments;
 	}
 
 	@Override

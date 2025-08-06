@@ -18,10 +18,12 @@ public class Notification {
     private LocalDateTime createdAt;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     // Optionally link to episode
     @ManyToOne
+    @JoinColumn(name = "episode_id", nullable = true)
     private Episode episode;
 
     // Constructors, getters, setters
@@ -75,9 +77,11 @@ public class Notification {
     }
 
     @ManyToOne
+    @JoinColumn(name = "triggered_by_id", nullable = true)
     private User triggeredBy;
 
     @ManyToOne
+    @JoinColumn(name = "comment_id", nullable = true)
     private Comment comment;
 
     private String type; // "Mention", "Episode"

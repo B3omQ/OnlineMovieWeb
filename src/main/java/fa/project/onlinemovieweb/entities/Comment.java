@@ -1,4 +1,5 @@
 package fa.project.onlinemovieweb.entities;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,6 +70,13 @@ public class Comment {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> likedByUsers = new HashSet<>();
+
+    public void addLikedByUser(User user){
+        likedByUsers.add(user);
+    }
+    public void removeLikedByUser(User user){
+        likedByUsers.remove(user);
+    }
 
     public Comment getParent() {
         return parent;
