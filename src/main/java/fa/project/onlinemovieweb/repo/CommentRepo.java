@@ -2,6 +2,7 @@ package fa.project.onlinemovieweb.repo;
 
 import fa.project.onlinemovieweb.entities.Comment;
 import fa.project.onlinemovieweb.entities.Media;
+import fa.project.onlinemovieweb.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,5 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
     List<Comment> findByParent(Comment parent);
     Page<Comment> findByEpisodeIdAndParentIsNullOrderByCreatedAtDesc(Long episodeId, Pageable pageable);
 
+    List<Comment> findAllByLikedByUser(User u);
 }

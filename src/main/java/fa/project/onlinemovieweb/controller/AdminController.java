@@ -2,6 +2,7 @@ package fa.project.onlinemovieweb.controller;
 
 import fa.project.onlinemovieweb.entities.*;
 import fa.project.onlinemovieweb.repo.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,9 @@ public class AdminController {
 
     @Autowired
     private NotificationRepo notificationRepo;
+
+    @Autowired
+    CommentRepo commentRepo;
 
     @GetMapping({"/admin", "/admin/"})
     public String getAdmin() {
@@ -172,8 +176,13 @@ public class AdminController {
     }
 
     @GetMapping("/admin/users/delete/{id}")
+    @Transactional
     public String deleteUser(@PathVariable Long id) {
         User u = userRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        List<Comment> comments = commentRepo.findAllByLikedByUser(u);
+        for (Comment comment : comments) {
+            comment.getLikedByUsers().remove(u);
+        }
         userRepo.delete(u);
         return "redirect:/admin/users";
     }
