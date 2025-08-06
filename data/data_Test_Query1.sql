@@ -139,14 +139,3 @@ INSERT INTO Media_Genre (media_id, genre_id) VALUES (40, 36), (40, 30);
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (41, 6), (41, 38)
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (42, 8), (42, 13)
 INSERT INTO Media_Genre (media_id, genre_id) VALUES (43, 23), (43, 1)
-
-insert into users(username, email, password, role, enabled) values('asdf', 'asdf@gmail.com', 'Asdf123!', '0', 1)
-insert into users(username, email, password, role, enabled) values('admin', 'admin@gmail.com', 'Admin123!', '1', 1)
-
-INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
-VALUES ('2025-07-20 21:00:00', 3600, 2, 10, NULL);
-INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
-VALUES ('2025-07-18 15:30:00', 2400, 2, 12, NULL);
-INSERT INTO Watch_History (watched_at, duration_watched, user_id, media_id, episode_id)
-VALUES ('2025-07-16 10:05:00', 3200, 2, 8, NULL);
-
