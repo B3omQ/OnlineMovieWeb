@@ -317,6 +317,10 @@
                                   th:text="${#temporals.format(r.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
                         </div>
                     </div>
+                    <div th:if="${r.episode != null}" class="comment-episode mb-1">
+                        Episode <span th:text="${r.episode.episodeNumber}">1</span> - Season <span
+                            th:text="${r.episode.season}">1</span>
+                    </div>
                     <div class="mb-2">
             <span th:each="i : ${#numbers.sequence(1, r.rating)}">
                 <i class="bi bi-star-fill text-warning"></i>
